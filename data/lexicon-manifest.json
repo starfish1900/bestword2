@@ -1,0 +1,60 @@
+{
+  "formatVersion": 1,
+  "algorithm": "Daciuk sorted incremental minimization",
+  "sourceSha256": "87222d75c77c52574868bf0cefd4faf5703d4df166336a4ec9a70cffe72100af",
+  "binarySha256": "7c236cf68580937a2b5e9bb0ebd779512f1d71936cd82ad7f7b86c2a33879db9",
+  "words": 279320,
+  "transforms": 2544319,
+  "seedWords": 130220,
+  "nodes": 603604,
+  "edges": 1306607,
+  "binaryBytes": 8585805,
+  "transformAndSortMs": 447,
+  "minimizeMs": 659,
+  "fullVerificationMs": 494,
+  "totalMs": 1674,
+  "allWordsVerified": true,
+  "allTransformsVerified": true,
+  "acceptedLanguageExact": true,
+  "compressedBytes": 5373266,
+  "compressedSha256": "a2c6ef6c62da93495848e3335b814788842021514131025ea44cde34fbd207d0",
+  "reproducibleBuildVerified": true,
+  "reproducibleCompressionVerified": true,
+  "runtimeAllWordsVerified": true,
+  "runtimeAllTransformsVerified": true,
+  "independent": {
+    "independentAudit": true,
+    "independentMinimality": true,
+    "acceptedLanguageExact": true,
+    "words": 279320,
+    "transforms": 2544319,
+    "seedWords": 130220,
+    "nodes": 603604,
+    "edges": 1306607,
+    "maxPathLength": 16,
+    "minimalityMs": 413.6133,
+    "totalAuditMs": 2074.9444000000003
+  },
+  "benchmark": {
+    "hardware": {
+      "platform": "win32",
+      "arch": "x64",
+      "cpu": "13th Gen Intel(R) Core(TM) i7-13700",
+      "logicalCpus": 24,
+      "totalMemoryBytes": 16766689280
+    },
+    "runtime": "v24.14.0",
+    "loadUncompressedMs": 77.59950000000026,
+    "corpusLookupRoundsMs": [
+      57.227300000000014,
+      47.171100000000024,
+      53.40070000000014,
+      44.542199999999866,
+      43.7801000000004
+    ],
+    "medianCorpusLookupMs": 47.171100000000024,
+    "medianWordsPerSecond": 5921422,
+    "runtimeTransformsMs": 882.5942,
+    "notes": "Single-process local lexicon microbenchmark. This does not measure game-server concurrency, Render capacity, network latency, or resident memory requirements."
+  }
+}

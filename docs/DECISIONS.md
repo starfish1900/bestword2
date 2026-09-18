@@ -1,0 +1,42 @@
+# BestWord implementation contract
+
+## Scope and evidence
+Implement the supplied original-spec.txt as amended below. Source vocabulary: 279,320 unique sorted uppercase words, 3-15 letters; 2,544,319 letters total; 130,220 words of length 9-12. Raw source SHA256: 87222D75C77C52574868BF0CEFD4FAF5703D4DF166336A4EC9A70CFFE72100AF.
+
+Deliver accounts, public seeks lobby, two-player games, public live spectating, history/replay. No ratings, chat, AI, tournaments, self-service password recovery. No paid provisioning or public deployment. A 5,000-game load scenario is required; measured supported capacity must specify tested hardware. Never infer measured capacity from the architecture.
+
+## Agreed clarifications
+- Permanent PASS applies the completed turn's increment once, freezes score/clock, stops all future draws and turns, removes disconnect eligibility, and releases the account's currently-playing slot. The opponent takes consecutive normal turns until PASS or loss.
+- Ordinary disconnect grace is 25 seconds FROM SERVER DETECTION. Active clock continues. Use a 5-second socket heartbeat and 10-second heartbeat timeout. A still-connected game tab prevents disconnection.
+- Confirmed infrastructure outages/deployments pause affected clocks and reconnect allowances. Preserve every acknowledged action. After service is healthy, wait up to 120 seconds for remaining non-PASS participants, then close without a winner if someone is absent. Resume with a short countdown.
+- Exact per-vowel counts, total consonants in bag, and both rack sizes are public. Opponent rack letters, per-consonant bag counts, drafts, and private draw history are never public. Spectators and public replays require no account.
+- Mobile inputs: rack/vowel taps and erase/submit controls; physical keyboard implements original spec. Ivory board, navy surroundings, restrained gold. Main play surface fits 320x568 usable portrait viewport and landscape without page scrolling. History/help may open separate panels.
+- Username ASCII alphanumeric 3-15, case-insensitively unique. Password 12-128 characters; Argon2id; secure opaque session cookies; no email/recovery flow.
+- Initial budget target <=US$100/month; indicative paid Render Virginia setup $64 base plus bandwidth/tax. Initial admission target 100 games, 10 spectators per game, configurable. Same code must support multiple servers and include 5,000 games + 2,500 spectator load scenario. No budget claim that this target fits $100.
+
+## Rules defaults
+- 267 tiles initially: 90 vowels (A E I O U Y), 177 consonants; no blank tiles or bonuses. Use exact distributions and values from original spec.
+- Random first player. Two DISTINCT random 9-12-letter seed words with feasible combined inventory, shared letter consumed once; random legal crossing/placement. Store draws and setup for deterministic replay, never redraw on recovery.
+- Mandatory draw occurs once at each turn start, including turns ending PASS/NO_WORDS. NO_WORDS eligibility is actual drawn count >0 and opponent has not passed.
+- All new tiles collinear, at least two new tiles; every maximal formed word length3-15 and in lexicon. Perpendicular isolated single cells are not words; 2-letter crosswords are invalid. Principal must be unique across both players and seeds. Secondary-only words do not enter principal history.
+- Bridges use pre-move occupancy: first/last preexisting cells WITHIN the full resulting word are pillars; every formerly empty cell strictly between is one span. Pillars need not be resulting word endpoints. Extensions outside pillars do not count.
+- Principal score = full word letter sum * (full word consonant count + spans). Secondary score = full letter sum * (2 if bridge else1). All-vowel principal may score0.
+- Invalid commands leave state/draw/increment unchanged and preserve client draft. Bag exhaustion alone never ends a game.
+- Equality at a loss deadline belongs to the deadline, using database server acceptance time. Duplicate commands return original result before new deadline checks. Earliest eligible loss wins; simultaneous losses for different players mean no-winner abandonment. Same player's clock/disconnect tie is clock loss.
+- First click of each turn horizontal; each subsequent EMPTY/pre-move-empty square click clears draft and toggles direction, including clicking a different square. Occupied existing squares never accept new input; clicking one clears draft without moving cursor. Backspace removes latest typed tile. Include existing prefix and suffix when deriving full principal.
+- A game begins only when both authenticated game connections are ready, after3-second countdown; a pre-start no-show is cancelled without a winner after25seconds. One open seek and one actively playing game per account; passed games do not occupy playing slot.
+
+## Engine/server interfaces
+Shared public types and Zod input validation live in packages/contracts. Engine internal state is exported from packages/engine, with createGame, applyAction, projectGame, dueOutcome, pause/resume/disconnect operations as agreed with root. Pure rules code accepts injected now and random integer generator; no networking or filesystem.
+
+Wire: HTTP /api/session; /api/auth/register, /login, /logout, /password; GET/POST /api/seeks; DELETE /api/seeks/:id; POST /api/seeks/:id/join; GET /api/games/live, /api/games/history, /api/games/:id. JSON errors {error:{code,message}}. Session GET {user:User|null}. Seek POST {seek}; join {gameId}; game GET GameView. Pages use {items,nextCursor}. Socket events: game:subscribe({gameId},ack), game:sync({gameId},ack), game:command(GameCommand,ack); responses CommandReply; pushed game:update(GameView). lobby:subscribe(ack) then lobby:changed notification triggers list refetch. Session cookie authenticates same-origin sockets. No private game state goes to common spectator rooms.
+
+## Durability and health
+Node24/Fastify5/Postgres authority; Socket.IO4 websocket-only with Redis Streams on Valkey. Same-origin React build. Per-game row-locked transactions persist snapshot+events+command receipt+outbox, ack after commit, publish immediately and retry outbox. No global game lock. Background worker uses indexed deadlines and SKIP LOCKED claims.
+
+Each gateway has unique epoch and healthy DB checkpoint every1second after dependencies checked. Before final loss require positive gateway health evidence AFTER candidate deadline; missing evidence means pending confirmation,3-second gap confirms infrastructure incident. Pause from last trustworthy checkpoint clamped after latest committed game transition. Both workers and command path enforce health. On DB recovery persist incident before next healthy checkpoint/adjudication. Spectator-only gateways do not affect game. Lost broadcasts must trigger client periodic revision sync; worker death cannot silently strand next turn.
+
+## Test fixtures and acceptance
+Scoring examples totals: ROOMMATE147; BOOMERANG203+58=261; BOOMERANGS186; SOS10+17+15=42; ANOPIAS51+120=171. Original example4 produces BOOMS and RANGS. Example5 preexisting P means six new tiles and six bridges.
+
+Test tile conservation, every rule edge, random games, exact boundaries, multiple instances, retries/races, privacy, restart/dependency failures at near-zero clocks, browser viewports/keyboard/touch, replay. Lexicon tests all279320 words/all2544319 transforms, enumerate accepted language exact equality, independent minimality, corrupted inputs, deterministic bytes. Initial load target1200 sockets/50commands-sec/100-command bursts/1hour, p95 processing<250ms,p99<750ms. Larger scenario5000games+2500spectators. Test claims must be measured.

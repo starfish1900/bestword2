@@ -1,0 +1,13 @@
+node_modules/
+dist/
+target/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+test-results/
+playwright-report/
+coverage/
+.local/
+*.log
+tools/lexicon-builder/Cargo.lock

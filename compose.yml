@@ -1,0 +1,109 @@
+name: bestword
+
+x-app: &app
+  image: bestword:local
+  build:
+    context: .
+    target: runtime
+  init: true
+  restart: unless-stopped
+  stop_grace_period: 60s
+  environment: &app-environment
+    # The local endpoint is HTTP. Render sets production and uses HTTPS cookies.
+    NODE_ENV: development
+    HOST: 0.0.0.0
+    PORT: "3000"
+    APP_ORIGIN: http://localhost:3000
+    DATABASE_URL: postgresql://bestword:bestword-local@postgres:5432/bestword
+    REDIS_URL: redis://valkey:6379
+    LEXICON_PATH: data/lexicon.bin.gz
+    MAX_ACTIVE_GAMES: "100"
+    MAX_SPECTATORS_PER_GAME: "10"
+    DB_POOL_SIZE: "10"
+    LOG_LEVEL: info
+
+services:
+  postgres:
+    image: postgres:18-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: bestword
+      POSTGRES_PASSWORD: bestword-local
+      POSTGRES_DB: bestword
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    ports:
+      - "127.0.0.1:54329:5432"
+    volumes:
+      # PostgreSQL 18 stores its versioned data directory under this parent.
+      - postgres-data:/var/lib/postgresql
+    shm_size: 128mb
+    stop_grace_period: 30s
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bestword -d bestword"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  valkey:
+    image: valkey/valkey:8
+    restart: unless-stopped
+    command: ["valkey-server", "--appendonly", "yes", "--appendfsync", "everysec", "--maxmemory", "256mb", "--maxmemory-policy", "noeviction"]
+    ports:
+      - "127.0.0.1:6389:6379"
+    volumes:
+      - valkey-data:/data
+    stop_grace_period: 30s
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  migrate:
+    <<: *app
+    restart: "no"
+    command: ["node", "apps/server/dist/migrate.js"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+
+  api:
+    <<: *app
+    command: ["node", "apps/server/dist/index.js"]
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health/ready').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 20s
+
+  worker:
+    <<: *app
+    command: ["node", "apps/server/dist/worker.js"]
+    environment:
+      <<: *app-environment
+      DB_POOL_SIZE: "5"
+      WORKER_INTERVAL_MS: "250"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
+  valkey-data:

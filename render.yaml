@@ -1,0 +1,107 @@
+# yaml-language-server: $schema=https://render.com/schema/render.yaml.json
+# Review-only: applying this Blueprint creates billable resources.
+# Initial base estimate: $25 API + $7 worker + $19 DB + $3 DB storage + $10 KV.
+# Hobby workspace; usage and tax are additional. Admission limits are not benchmarks.
+previews:
+  generation: off
+
+services:
+  - type: web
+    name: bestword-api
+    runtime: docker
+    region: virginia
+    plan: 1c-2g
+    numInstances: 1
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
+    dockerCommand: node apps/server/dist/index.js
+    preDeployCommand: node apps/server/dist/migrate.js
+    healthCheckPath: /health/ready
+    maxShutdownDelaySeconds: 60
+    autoDeployTrigger: off
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: "10000"
+      # APP_ORIGIN defaults to Render's actual RENDER_EXTERNAL_URL.
+      # Set it explicitly to https://your-domain if using a custom domain.
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bestword-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: bestword-keyvalue
+          property: connectionString
+      - key: LEXICON_PATH
+        value: data/lexicon.bin.gz
+      - key: MAX_ACTIVE_GAMES
+        value: "100"
+      - key: MAX_SPECTATORS_PER_GAME
+        value: "10"
+      - key: DB_POOL_SIZE
+        value: "10"
+      - key: LOG_LEVEL
+        value: info
+      - key: METRICS_TOKEN
+        generateValue: true
+
+  - type: worker
+    name: bestword-worker
+    runtime: docker
+    region: virginia
+    plan: 0.5c-512mb
+    numInstances: 1
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
+    dockerCommand: node apps/server/dist/worker.js
+    maxShutdownDelaySeconds: 60
+    autoDeployTrigger: off
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bestword-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: bestword-keyvalue
+          property: connectionString
+      - key: LEXICON_PATH
+        value: data/lexicon.bin.gz
+      - key: MAX_ACTIVE_GAMES
+        value: "100"
+      - key: MAX_SPECTATORS_PER_GAME
+        value: "10"
+      - key: DB_POOL_SIZE
+        value: "5"
+      - key: WORKER_INTERVAL_MS
+        value: "250"
+      - key: LOG_LEVEL
+        value: info
+
+  - type: keyvalue
+    name: bestword-keyvalue
+    region: virginia
+    plan: 256mb
+    maxmemoryPolicy: noeviction
+    persistenceMode: journal-snapshot
+    ipAllowList: []
+
+databases:
+  - name: bestword-db
+    region: virginia
+    plan: 0.5c-1g
+    postgresMajorVersion: "18"
+    databaseName: bestword
+    user: bestword
+    diskSizeGB: 10
+    storageAutoscalingEnabled: false
+    connectionPool: none
+    ipAllowList: []

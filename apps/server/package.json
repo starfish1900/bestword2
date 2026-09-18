@@ -1,0 +1,31 @@
+{
+  "name": "@bestword/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "cd ../.. && tsx watch apps/server/src/index.ts"
+  },
+  "dependencies": {
+    "@bestword/contracts": "0.1.0",
+    "@bestword/engine": "0.1.0",
+    "@bestword/lexicon": "0.1.0",
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/helmet": "^13.0.2",
+    "@fastify/static": "^10.1.4",
+    "@node-rs/argon2": "^2.0.2",
+    "@socket.io/redis-streams-adapter": "^0.3.0",
+    "drizzle-orm": "^0.45.1",
+    "fastify": "^5.12.5",
+    "pg": "^8.16.3",
+    "redis": "^5.11.0",
+    "socket.io": "^4.8.3",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.16.0",
+    "socket.io-client": "^4.8.3"
+  }
+}

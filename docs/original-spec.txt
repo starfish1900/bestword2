@@ -1,0 +1,108 @@
+Here are the rules of the game BestWord. Please ask clarification questions before proceeding to the implementation of server and client :
+Rules of BestWord (played in English) :
+**BestWord — Complete Rules**
+
+BestWord is a two-player word game played on a board of 15 rows by 15 columns, with no premium or bonus squares. Columns are labeled A through O and rows are labeled 1 through 15. Players take turns placing letter tiles on the board to form words that read left-to-right horizontally or top-to-bottom vertically, in crossword fashion. Every word formed must appear in the game's dictionary.
+
+**Letters**
+
+The 26 letters of the English alphabet are divided into vowels and consonants. The vowels are A, E, I, O, U, and Y. All other letters are consonants. Each letter has a point value: A, E, I, O are worth 1 point each; U, Y, S are worth 2; N, R are worth 3; T, D are worth 4; M, L are worth 5; C, G, H are worth 6; K, W are worth 7; P, B are worth 8; F, V are worth 9; X, Z are worth 10; J, Q are worth 11.
+
+The game uses a shared bag of tiles with the following quantities: A ×16, B ×8, C ×10, D ×10, E ×24, F ×7, G ×10, H ×10, I ×16, J ×4, K ×5, L ×8, M ×8, N ×16, O ×13, P ×9, Q ×4, R ×16, S ×16, T ×16, U ×13, V ×7, W ×5, X ×4, Y ×8, Z ×4.
+
+**The Rack**
+
+Each player has a personal rack that can hold up to 10 consonants. Only consonants go on the rack. The rack is hidden from the opponent. Players begin the game with empty racks.
+
+**Game Setup**
+
+To initialize the board, two words are chosen at random from the dictionary, each between 9 and 12 letters long. One is placed horizontally and the other vertically, crossing each other on a shared letter at a randomly chosen valid position that keeps both words within the board. The letters of these two words are consumed from the bag. These initial words do not score for either player.
+
+**Time Control**
+
+Each game is created with a time control chosen by the host: 5, 15, or 25 minutes per player, with a 30-second increment added after each completed turn. Each player's clock runs only during their own turn. If a player's clock reaches zero, that player loses the game immediately regardless of score.
+
+**Turn Structure**
+
+Every turn has two phases: a mandatory draw phase, followed by an action phase.
+
+*Draw phase:* At the start of every turn, the player must draw consonants from the bag according to these rules. If the rack contains 8 or fewer consonants, the player draws 2 consonants from the bag (or fewer if not enough consonants remain in the bag). If the rack contains exactly 9 consonants, the player draws 1 consonant (if at least one is available). If the rack already holds 10 consonants, the draw is skipped. Drawing is automatic and mandatory — it is not an action the player chooses.
+
+*Action phase:* After drawing, the player must choose one of the following actions.
+
+**Action 1 — Place a Word**
+
+The player places at least two new tiles on the board, forming a word called the principal word. Consonants placed must come from the player's rack. Vowels placed must come from the bag (and are consumed from it). The two or more new tiles may be any combination: all consonants, all vowels, or a mix — as long as the total number of newly placed tiles is at least two and each tile's source is valid (rack for consonants, bag for vowels).
+
+The placement follows standard crossword rules (as in Scrabble): all new tiles must lie in a single row or a single column, and together with any existing tiles they pass through, they must form one continuous word (the principal word). Any new tiles that are adjacent to existing tiles in the perpendicular direction must also form valid words; these are called secondary words.
+
+Every word formed — both the principal word and all secondary words — must be between 3 and 15 letters long (inclusive) and must appear in the dictionary. The principal word must also be unique in the game's history: you cannot play the same principal word (same letters in the same order) that has already been played as a principal word earlier in the game. Secondary words may repeat freely. Note that the two initial words are added to the game's history.
+No player can play them as is in the game(you can add prefixes or suffixes and therefore form new words).
+
+The placed word must connect to tiles already on the board — either by extending an existing word or by being adjacent to existing tiles.
+
+**Action 2 — Declare PASS**
+
+The player forfeits the current turn and all future turns permanently, scoring zero for this and every subsequent turn. The game is effectively over for this player. The opponent then continues playing alone on subsequent turns until they also declare PASS, which ends the game.
+
+**Action 3 — Declare NO WORDS**
+
+The player forfeits only the current turn, scoring zero, but may play words on future turns. This action is subject to two restrictions. First, if the opponent has already declared PASS, NO WORDS is not available — the player must either place a word or declare PASS. Second, if the player drew zero consonants this turn (because the bag had no consonants left or the rack was already full at 10), NO WORDS is not available — the player must either place a word or declare PASS.
+
+**Scoring**
+
+BestWord features the concept of bridges. This concept only affects scoring. 
+A bridge is a word (on the current move) that goes through (i.e connects) two preexisting occupied squares (the very first and the very last) SEPARATED BY at least one empty square called "span". When traversing board squares
+of the word from left to right in the direction of the word, the very first and very last occupied square are called "pillars" and any empty square in between are called "spans". In other words, a word forms a bridge when the number of spans is greater than
+zero. Let's denote this number n_spans.
+The score for a principal word is computed as follows : (sum of letter values) × (number of consonants in the word + n_spans).
+The score for a secondary word is computed as follows : if the word is a bridge, (sum of letter values × 2) else  (sum of letter values).
+
+A few examples of bridges and "non-bridges" follows:
+Consider a 15x15 board labelled as in your implementation.
+Example 1 :
+The following words (and these words only ) preexist on the board : 2A BOOM and 6A RANG. If on my current move, i were to play B1 ROOMMATE, this principal word forms a bridge with 3 spans( the empty squares B3, B4, B5).
+No secondary words are formed.
+Example 2 :
+The following words (and these words only ) preexist on the board : E1 BOOM, E6 RANG, 5A BOO, 5F RANG. If on my current move, i were to play 5A BOOMERANG, this principal word forms a bridge with two spans (the empty squares D5, E5).
+The secondary word E1 BOOMERANG also forms a bridge (with one span E5).
+Example 3 : 
+The following word (and this word only ) preexists on the board: 1F RANG. If on my current move, i were to play 1A BOOMERANGS, this principal word does NOT form a bridge.
+Example 4 : 
+The following words (and these words only ) preexist on the board : A1 BOOM and C1 RANG. If on my current move, i were to play 5A SOS, this principal word does NOT form a bridge.
+Example 5 :
+The following words (and these words only ) preexist on the board : F1 FLOPPY, 3A SCHIZOGNATHOUS, 5B ZYGAPOPHYSEAL. If on my current move, i were to play 4C ANOPIAS, this principal word does NOT form a bridge but there are six
+secondary words that form a bridge : HAY,ING, ZOA, GIO, NAP, ASH.
+
+After completing a turn (whether placing a word, passing, or declaring no words), the 30-second increment is added to the player's clock.
+
+**End of Game**
+
+The game ends when both players have declared PASS. The player with the higher cumulative score wins. If scores are equal, the game is a draw.
+
+The game also ends immediately if a player's clock runs out (that player loses) or if a player disconnects and does not return within 25 seconds (that player loses).
+
+Implementation details of BestWord:
+The goal is to implement a web client and a robust production grade server for multiplayer gaming through the internet. Your implementation must allow thousands of concurrent/simultaneous games. Implement a general purpose matchmaking system à la lichess.org 
+where any player can advertise a game request and others see all requests and can choose one to join. You must handle disconnections well (if a disconnected player doesn't return to the game within 25 seconds
+, he loses the game no matter his score) to avoid ghost games polluting server memory. The server must implement the possibility to kibitz/watch/spectate live games.
+The web client must have a Sign in/Sign up page with the following fields : username (must be alphanumeric and 3 to 15 characters long inclusive), password. The game UI must be beautiful with a polished look with smooth animations where necessary (such as for correctly placed words).
+The game UI must be responsive : support for desktop PC, tablet and smartphones. The complete game UI (playing board and other buttons) should appear on the screen with NO SCROLLING needed.
+The dictionary/lexicon must be represented as a GADDAG to allow fast verification of words and also prepare for the future introduction of move generation for an AI module. The GADDAG construction must use Daciuk's incremental 
+minimization algorithm. Its binary file size must be as compact as possible and it must be prebuilt (not rebuilt at the start of each game).
+Move entry :
+Keyboard input must be permitted when placing words on the board in the web client in the following way : first the user clicks on an empty square (the unicode char "Rightwards White Arrow" or U+21E8 
+is displayed on the clicked square to indicate the direction of the move (horizontal); if another square or the same square is clicked again,  the unicode char "Downwards White Arrow" or U+21E9 is displayed replacing the previous arrow
+arrow and indicating a vertical move; the alternation between vertical and horizontal arrows continues on every click); when the user types a valid character A to Z  ( a consonant available on his rack or a vowel available in the bag),
+the typed character appears on the board in the square where the arrow is currently displayed and the arrow is moved to the next available empty square in the current direction (indicated by the arrow) i.e by "jumping" over contiguous
+occupied squares if any; when the user presses BACKSPACE (to edit his typed letters), the arrow is moved "leftwards" (in the current vertical or horizontal direction) to the square of the most recently typed letter and the latter is erased;if 
+after typing a few characters a square is clicked, all characters typed during the current move are erased from the board; if the user presses ENTER (after typing his move), the move is validated and if everything is correct, it is
+executed on the board.
+A move is internally represented by at least the following : the row and column of the starting square of the played word, the direction of the word and the played word itself. Quackle (a popular Scrabble AI engine) 
+uses the following shortcut for the move string : if it starts with a letter, it is a vertical move (since columns are labeled with letters), if it starts with a digit, it is a horizontal move.
+When typing letters on the keyboard to appear on the board, the components of the move must be inferred in the following way : the direction is the direction of the arrow on the latest clicked square (before starting to type),
+the row and column of the starting square of the move is the same as those of the latest clicked square if the latter is preceded (in the direction of the move) by an empty square or is on the edge of the board, otherwise it is
+the row and column of the first contiguous occupied square to the "left"(in the direction of the move) of the latest clicked square that is itself either preceded immediately by an empty square or is on the edge of the board; the 
+played word is constructed by concatenating (starting from the inferred starting square of the move) letters from contiguous occupied squares with letters typed by the user in order of occurrence. For example, if the word "MAST"
+and the word "PIECE" appear horizontally on the same row separated by two empty squares, and i click on the first empty square between them and type the letters E and R, the inferred word of my move is "MASTERPIECE".
+Important note : TEST EVERYTHING THOROUGHLY (game rules, server/client communication, gaddag etc..)
