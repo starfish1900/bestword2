@@ -5,5 +5,52 @@
 - Implemented viewport-sized accessible DOM board, exact keyboard move inference, click alternation, inventory reservation, backspace across existing tiles, clearing, tap rack/vowels, PASS confirmation, NO WORDS eligibility, move score breakdown, public replay and step/auto-play controls.
 - Added a complete ivory/navy/gold interface using local system fonts and CSS only. Portrait and landscape rules include 320x568 and short landscape layouts. No remote visual assets or fonts.
 - Draft helper tests: 5 passing, including MASTERPIECE inference, vertical skips, inventory reservation including Y, edge wrapping, and click semantics. Replay regression test added.
-- Initial typecheck: all React/client source passes; build configuration blocked by duplicated Vite7 (web) versus Vite8 (root/plugin) types. Root notified to deduplicate Vite7 before integrated verification.
-- Still to perform: deduplicated build/typecheck; live API/browser workflows and screenshot inspection across viewport sizes. Do not treat current CSS as visually verified yet.
+- Aligned the client with Vite 8 to resolve a duplicated-Vite build/plugin mismatch. Final strict TypeScript check and production build pass. Current client bundle is approximately 135 KB JavaScript + 8.7 KB CSS compressed (build estimate, not a measured HTTP response size).
+- All 11 client unit tests pass (5 move-input scenarios, 1 replay reconstruction test and 5 pending-receipt tests). The five receipt tests were added after the root's 168-test consolidated run. This separate client-only report overlaps its original six client tests. [Machine-readable client unit evidence](../evidence/client-unit-final.json).
+- `SERVICE_RECOVERING` now retains the exact pending command in memory and sessionStorage, as does an acknowledgement timeout. It can represent an ambiguous committed action. A successful or definitive rejected reply clears the pending command; retry never creates a fresh ID for that uncertain action.
+- Production builds now precompute Brotli and gzip siblings for JavaScript, CSS and HTML with Node's built-in compression library. Following the final clock fix, current totals are 477,015 bytes original, 123,246 bytes Brotli and 142,764 bytes gzip across all three files. Actual HTTP negotiation, types and decoded-byte equality passed for the homepage, JavaScript and CSS in the earlier eight-check run.
+
+## Live browser evidence
+
+On the local Windows x64 host, against the actual Node server, PostgreSQL 18 and Redis 7.2.16:
+
+- Installed Chrome: complete browser workflow passed in 7.8 seconds.
+- Playwright Chromium 153: complete browser workflow passed in 7.6 seconds.
+- Playwright WebKit 26.6: complete browser workflow passed in 16.7 seconds.
+- Playwright Firefox 155: downloaded successfully, but Windows refuses to launch it before any application test executes. The Windows SideBySide event identifies an unresolved `mozglue` assembly. Firefox application compatibility has **not** been established on this host; the cross-browser CI configuration includes a Linux Firefox run.
+
+Final verification used Playwright 1.63.0 against the latest compiled same-origin application at `http://localhost:3000` on 2026-09-18: **all eight Chromium/WebKit checks passed in 60.0 seconds**. The actual keyboard game flow passed in 10.7 seconds on Chromium and 17.5 seconds on WebKit. This final run includes revision-aware periodic synchronization: the test observes a real `game:sync` request with a revision and the server's `unchanged` reply while verifying that the unsubmitted draft survives. [Final eight-check browser report](../evidence/browser-final.json).
+
+Two additional checks run on each browser project: production asset compression (actual HTTP responses; identity, Brotli and gzip have identical decoded bytes and correct content types/Vary), and missed-match recovery (an explicitly labeled HTTP fixture confirms a later session refresh exposes Continue game even without a match notification or live-list item). The fixture is separate from the real gameplay test and does not establish server behavior.
+
+The fourth check on each browser is a **real touchscreen game at 320×568**, with `hasTouch:true`. It chooses a legal move containing a new consonant and vowel, taps the board/rack/vowel controls, erases and replaces the final tile using buttons, submits, checks accepted tile positions and an independently calculated score, then permanently passes both players. Chromium played ADO for 6 points (5.6 seconds); WebKit played ACE for 8 points (8.2 seconds). Both recorded nine actual `touchstart` events and zero keyboard events during gameplay. Windows WebKit reports `navigator.maxTouchPoints=0` despite touch emulation; the test relies on delivered touch events and successful actions instead of that capability hint. Both games finished and released their account slots.
+
+A separate focused **Chromium acknowledgement fixture** passed in 6.6 seconds. A legal `game:command` reached the real server and committed; the proxy replaced its first successful acknowledgement with `SERVICE_RECOVERING`, held the real retry acknowledgement, and verified identical command ID/payload plus retained sessionStorage. Forwarding the retry acknowledgement cleared storage, and the server had exactly one accepted word. This is client acknowledgement-error injection after a real commit, not a claim of an actual PostgreSQL transport failure. [Acknowledgement fixture evidence](../evidence/browser-ack-fixture.json).
+
+The final clock change passes the strict TypeScript check and production build. Its separate focused **browser clock-injection check passed on Chromium and WebKit** in 23.9 seconds total (10.0 and 12.9 seconds respectively). Only the page's `Date.now()` advanced by one hour; the actual server, local `performance.now()` and timers were unchanged. Both browsers kept the turn and actions available immediately after the jump, preserved two draft tiles through an observed real `unchanged` sync at revision 3, and kept the countdown within two seconds of the server. Both then submitted the drafted AAL successfully and passed both players to finish. Chromium displayed 900→899→895 seconds over the measured 4.39 seconds; WebKit displayed 899→899→896 over 3.49 seconds. This checks a device wall-clock adjustment, not suspension or server time changes. Earlier reports were preserved. [Clock-injection evidence](../evidence/browser-clock-injection.json).
+
+Final verification found and resolved two compiled-hosting issues: a direct uncompressed homepage request now has an explicit route, and development/test security headers no longer upgrade local WebKit asset requests to HTTPS. Production retains the HTTPS upgrade policy. The lobby now refreshes its authenticated active-game ID alongside its lists, so a lost notification does not strand a player.
+
+The real workflow creates/reuses two isolated test accounts, opens and joins a seek, verifies host automatic navigation, rejects an invalid principal without losing the draft, types a real dictionary-backed legal word found independently from the generated board/rack, observes its public update, uses NO WORDS, permanently passes both players, confirms solo-turn restrictions, and replays all four accepted actions with score details. The spectator receives no private rack. No page JavaScript errors occurred.
+
+Both live and explicit-fixture browser checks verified the whole game at 1280×800, 390×844, 320×568 and 568×320 with no page overflow or clipped primary actions. Screenshots were visually inspected. Small portrait controls were rearranged to enlarge the board while preserving all actions. Keyboard selection, typed tiles, backspace, and the PASS confirmation dialog were also exercised in the fixture suite.
+
+Final WebKit screenshot review found a percentage-height/aspect-ratio interaction that let the board overlap its footnote. A definite square frame height fixed it. The final real-game checks now verify board containment, no footnote overlap, and square cell proportions at every viewport during both live play and replay; the corrected smallest WebKit screenshot was visually inspected.
+
+Saved screenshot and report evidence:
+
+- [Real active desktop game, WebKit](../evidence/desktop-game.png)
+- [Real smallest portrait game, WebKit](../evidence/small-phone-game.png)
+- [Real landscape game](../../apps/web/test-results/e2e/game-two-real-players-matc-a53ea-ip-pass-spectate-and-replay-chromium/landscape-active.png)
+- [Gold draft tiles during input](../../apps/web/test-results/e2e/game-two-real-players-matc-a53ea-ip-pass-spectate-and-replay-chromium/draft-input.png)
+- [Earlier six-check HTML report](../../apps/web/test-results/report/index.html) (generated, ignored by version control; final machine-readable reports above are retained)
+
+## Final audit against the specification
+
+- Original click alternation, occupied-square behavior, prefix/suffix inference, MASTERPIECE, vertical typing, backspace and local inventory reservations are implemented and tested.
+- All action eligibility is governed by authoritative server views. Expired local clock estimates disable actions while awaiting the confirmed server result. Infrastructure pauses freeze clocks and preserve drafts; ordinary disconnection keeps the active clock running.
+- Server-forced socket disconnects reconnect after a short delay, including deployment/session renewal. Stale revisions or older timestamps cannot replace newer client state.
+- Periodic synchronization sends the known revision and accepts a small `unchanged` reply without repeatedly downloading game history. Local clocks now advance using monotonic `performance.now()`, with a fresh server-time anchor from full snapshots or unchanged replies; snapshot/revision and draft remain untouched by an unchanged reply. A page wall-clock adjustment cannot expire a turn or disable input. Changed-state broadcasts still send full authoritative snapshots.
+- Replay labels explicitly distinguish scores at the chosen position from the final result. Historical racks or bag counts are not invented or revealed.
+- Authentication inputs have precise accessible labels and separate descriptive hints. The DOM board has row/cell coordinates, keyboard focus navigation and visible focus. Reduced-motion preference disables animations. No external fonts or images are required.
+- Final live verification includes the new sync protocol, private session room changes, compressed assets and lobby recovery. The Vite development process was stopped afterward. These browser checks do not establish Render deployment, outage recovery or 5,000-game capacity.

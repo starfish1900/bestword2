@@ -17,4 +17,6 @@
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
 .lobby-resume{margin:20px 0 -10px}
+/* A definite height keeps WebKit percentage-sized grids inside the padded frame. */
+.board-frame{height:min(100cqw,100cqh)}
 @media(max-width:700px) and (orientation:portrait){.move-actions{display:grid;grid-template-columns:minmax(0,1fr) 118px;gap:4px 7px}.draft-preview{grid-column:1/-1}.submit-row{grid-column:1}.alternative-actions{grid-column:2;height:33px;gap:4px}.alternative-actions>.text-button{font-size:9px;min-height:33px;flex:1;justify-content:center;text-align:center;line-height:1.2}.alternative-actions>span{height:17px}.submit-row .erase-button{width:33px}.submit-row .submit-button{gap:6px;padding-left:9px;padding-right:9px}}

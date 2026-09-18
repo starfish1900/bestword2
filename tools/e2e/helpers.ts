@@ -3,20 +3,29 @@ import { resolve } from 'node:path';
 import { expect, type Browser, type BrowserContext, type Page } from '@playwright/test';
 import { isVowel, type GameView, type Letter, type PlaceWordAction, type PlacedTile } from '@bestword/contracts';
 const password='BestWordTestOnly2026!';
-export async function account(browser:Browser,baseURL:string,username:string):Promise<{context:BrowserContext;page:Page}> {
-  const context=await browser.newContext({baseURL,viewport:{width:1280,height:800}});const page=await context.newPage();
-  // A cross-browser run reuses this run's two accounts after the prior game finishes.
-  const probe=await context.request.post('/api/auth/login',{data:{username,password}});
-  if(probe.ok()) { await context.request.post('/api/auth/logout',{data:{}});await page.goto('/sign-in'); }
-  else { expect(probe.status()).toBe(401);await page.goto('/sign-up'); }
-  await page.getByLabel('Username',{exact:true}).fill(username);await page.getByLabel('Password',{exact:true}).fill(password);
-  await page.getByRole('button',{name:probe.ok()?'Sign in':'Create account',exact:true}).click();
-  await expect(page).toHaveURL(`${baseURL}/`);await expect(page.getByRole('heading',{name:'Find your next game'})).toBeVisible();
-  return {context,page};
+export async function account(browser:Browser,baseURL:string,username:string,onPage?:(page:Page)=>void,contextOptions:Parameters<Browser['newContext']>[0]={}):Promise<{context:BrowserContext;page:Page}> {
+  const context=await browser.newContext({baseURL,viewport:{width:1280,height:800},...contextOptions});const page=await context.newPage();
+  onPage?.(page);
+  try {
+    // Reuse the run's pair through one UI login, without a duplicate HTTP probe.
+    await page.goto('/sign-in');
+    await page.getByLabel('Username',{exact:true}).fill(username);await page.getByLabel('Password',{exact:true}).fill(password);
+    const loginResponse=page.waitForResponse(response=>new URL(response.url()).pathname==='/api/auth/login'&&response.request().method()==='POST');
+    await page.getByRole('button',{name:'Sign in',exact:true}).click();const login=await loginResponse;
+    if(login.status()===401){
+      // Only an explicit invalid-credentials response may trigger new-account setup.
+      await page.goto('/sign-up');
+      await page.getByLabel('Username',{exact:true}).fill(username);await page.getByLabel('Password',{exact:true}).fill(password);
+      const registrationResponse=page.waitForResponse(response=>new URL(response.url()).pathname==='/api/auth/register'&&response.request().method()==='POST');
+      await page.getByRole('button',{name:'Create account',exact:true}).click();expect((await registrationResponse).ok()).toBe(true);
+    }else expect(login.ok()).toBe(true);
+    await expect(page).toHaveURL(`${baseURL}/`);await expect(page.getByRole('heading',{name:'Find your next game'})).toBeVisible();
+    return {context,page};
+  }catch(error){await context.close();throw error;}
 }
 let dictionary:Promise<Set<string>>|undefined;
 async function words(){dictionary??=readFile(resolve('data/dictionary.txt'),'utf8').then(text=>new Set(text.split(/\r?\n/).map(item=>item.trim()).filter(Boolean)));return dictionary;}
-export async function findLegalPlacement(view:GameView):Promise<{action:PlaceWordAction;tiles:PlacedTile[]}> {
+export async function findLegalPlacement(view:GameView,accept?:(tiles:PlacedTile[])=>boolean):Promise<{action:PlaceWordAction;tiles:PlacedTile[]}> {
   if(!view.you)throw Error('A player rack is required.');
   const lexicon=await words();const board=view.game.board;const anchors=board.flatMap((letter,index)=>letter?[{letter,index}]:[]);
   const rack=view.you.rack.reduce<Record<string,number>>((counts,letter)=>{counts[letter]=(counts[letter]??0)+1;return counts;},{});
@@ -43,7 +52,7 @@ export async function findLegalPlacement(view:GameView):Promise<{action:PlaceWor
           while(rr<15&&cc<15&&board[rr*15+cc]){after+=board[rr*15+cc];rr+=direction==='H'?1:0;cc+=direction==='V'?1:0;}
           const secondary=before+letter+after;if(secondary.length>1&&!lexicon.has(secondary)){valid=false;break;}tiles.push({row:r,column:c,letter});
         }
-        if(valid&&tiles.length>=2)return {action:{type:'PLACE_WORD',row,column,direction,word},tiles};
+        if(valid&&tiles.length>=2&&(!accept||accept(tiles)))return {action:{type:'PLACE_WORD',row,column,direction,word},tiles};
       }
     }
   }

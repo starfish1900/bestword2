@@ -1,0 +1,203 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\folia\\Documents\\Codex\\2026-09-17\\p\\outputs\\bestword\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tools/e2e/clock.spec.ts",
+      "--project=chromium",
+      "--project=webkit",
+      "--output=apps/web/test-results/clock",
+      "--reporter=list,json"
+    ],
+    "configFile": "C:\\Users\\folia\\Documents\\Codex\\2026-09-17\\p\\outputs\\bestword\\playwright.config.ts",
+    "rootDir": "C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/tools/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/apps/web/test-results/clock",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/tools/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/apps/web/test-results/clock",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/tools/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/apps/web/test-results/clock",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/tools/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm start",
+      "url": "http://localhost:3000/api/session",
+      "reuseExistingServer": true,
+      "timeout": 60000
+    }
+  },
+  "suites": [
+    {
+      "title": "clock.spec.ts",
+      "file": "clock.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "one-hour page wall-clock jump preserves the turn and draft through real periodic sync",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10021,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T04:52:08.482Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-clock-injection",
+                      "contentType": "application/json",
+                      "body": "ewogICJzY29wZSI6ICJPbmx5IHBhZ2UgRGF0ZS5ub3cgc2hpZnRlZDsgcmVhbCBzZXJ2ZXIgYW5kIHBlcmZvcm1hbmNlLm5vdyB1bmNoYW5nZWQiLAogICJnYW1lSWQiOiAiYzllMDIwOTktYzE5Yi00NjgxLThiMGYtM2E5YThmZmFlMzg2IiwKICAid2FsbENsb2NrU2hpZnRNcyI6IDM2MDAwMDAsCiAgInBlcmZvcm1hbmNlQXRJbmplY3Rpb24iOiA0ODg5LjEwMDAwMDAyMzg0MiwKICAiY2xvY2tCZWZvcmUiOiA5MDAsCiAgImNsb2NrQWZ0ZXJKdW1wIjogODk5LAogICJjbG9ja0FmdGVyU3luYyI6IDg5NSwKICAiZWxhcHNlZFNlY29uZHMiOiA0LjM4NzQwNjA5OTk5OTk5OSwKICAicmV2aXNpb25CZWZvcmUiOiAzLAogICJyZXZpc2lvbkFmdGVyU3luYyI6IDMsCiAgInVuY2hhbmdlZFJlcGxpZXMiOiAxLAogICJkcmFmdFRpbGVzUHJlc2VydmVkIjogMiwKICAiYWNjZXB0ZWRXb3JkIjogIkFBTCIKfQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "218eb078ae9d79f54cb4-85ec86498eb1ed236af6",
+          "file": "clock.spec.ts",
+          "line": 12,
+          "column": 1
+        },
+        {
+          "title": "one-hour page wall-clock jump preserves the turn and draft through real periodic sync",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 12855,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T04:52:18.966Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-clock-injection",
+                      "contentType": "application/json",
+                      "body": "ewogICJzY29wZSI6ICJPbmx5IHBhZ2UgRGF0ZS5ub3cgc2hpZnRlZDsgcmVhbCBzZXJ2ZXIgYW5kIHBlcmZvcm1hbmNlLm5vdyB1bmNoYW5nZWQiLAogICJnYW1lSWQiOiAiMjRlM2I1Y2YtZDExOC00YzkwLTg3M2QtYWFhMTUyZThiMmM0IiwKICAid2FsbENsb2NrU2hpZnRNcyI6IDM2MDAwMDAsCiAgInBlcmZvcm1hbmNlQXRJbmplY3Rpb24iOiA2MDc0LAogICJjbG9ja0JlZm9yZSI6IDg5OSwKICAiY2xvY2tBZnRlckp1bXAiOiA4OTksCiAgImNsb2NrQWZ0ZXJTeW5jIjogODk2LAogICJlbGFwc2VkU2Vjb25kcyI6IDMuNDg5MzM4NzAwMDAwMDAwMiwKICAicmV2aXNpb25CZWZvcmUiOiAzLAogICJyZXZpc2lvbkFmdGVyU3luYyI6IDMsCiAgInVuY2hhbmdlZFJlcGxpZXMiOiAxLAogICJkcmFmdFRpbGVzUHJlc2VydmVkIjogMiwKICAiYWNjZXB0ZWRXb3JkIjogIkFBTCIKfQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "218eb078ae9d79f54cb4-b755784f3da84cf4d439",
+          "file": "clock.spec.ts",
+          "line": 12,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-18T04:52:08.015Z",
+    "duration": 23923.734999999997,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

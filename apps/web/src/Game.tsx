@@ -5,6 +5,7 @@ import { api, gameRequest, gameSync, getSocket, messageOf, resetSocket, sendComm
 import { ErrorNotice, Icon, Modal, Rules, Spinner } from './components';
 import { availableCount, clearDraft, clickSquare, emptyDraft, eraseLetter, inferMove, reserved, tileIndex, typeLetter, type Draft } from './draft';
 import { replayBoard, replayScores } from './replay';
+import { pendingAfterReply } from './pending';
 import { useApp } from './store';
 
 const VALUES:Record<Letter,number>={A:1,B:8,C:6,D:4,E:1,F:9,G:6,H:6,I:1,J:11,K:7,L:5,M:5,N:3,O:1,P:8,Q:11,R:3,S:2,T:4,U:2,V:9,W:7,X:10,Y:2,Z:10};
@@ -27,26 +28,41 @@ export function Game() {
   const {view:storedView,setView,clearView,setActiveGameId}=useApp(); const user=useApp(state=>state.user);
   const view=storedView?.game.id===gameId?storedView:null;
   const [connected,setConnected]=useState(false); const [loading,setLoading]=useState(true); const [error,setError]=useState('');
-  const [draft,setDraft]=useState<Draft>(emptyDraft); const [now,setNow]=useState(Date.now()); const [offset,setOffset]=useState(0);
+  const [draft,setDraft]=useState<Draft>(emptyDraft); const [now,setNow]=useState(()=>performance.now()); const [offset,setOffset]=useState(0);
   const [pending,setPending]=useState<GameCommand|null>(()=>readPending(gameId)); const [sending,setSending]=useState(false);
   const [confirmPass,setConfirmPass]=useState(false); const [historyOpen,setHistoryOpen]=useState(false); const [help,setHelp]=useState(false); const [leaveOpen,setLeaveOpen]=useState(false);
   const [replayMode,setReplayMode]=useState(searchParams.has('replay')); const [replayIndex,setReplayIndex]=useState(0); const [autoReplay,setAutoReplay]=useState(false);
   const [copyStatus,setCopyStatus]=useState('');
   const viewRef=useRef<GameView|null>(null); const previousTurn=useRef<string|null>(null); const boardRef=useRef<HTMLDivElement>(null);
+  const latestClockTime=useRef(0);
+  const anchorClock=useCallback((serverTime:number)=>{
+    if(serverTime<latestClockTime.current)return;
+    latestClockTime.current=serverTime;
+    // Local wall-clock changes must not advance deadlines or disable a valid turn.
+    const localTime=performance.now();setOffset(serverTime-localTime);setNow(localTime);
+  },[]);
   const receive=useCallback((next:GameView)=>{
     if(next.game.id!==gameId) return;
     if(viewRef.current && viewRef.current.game.id===gameId && (next.game.revision<viewRef.current.game.revision||(next.game.revision===viewRef.current.game.revision&&next.game.serverTime<viewRef.current.game.serverTime))) return;
-    viewRef.current=next; setView(next); setOffset(next.game.serverTime-Date.now()); setLoading(false);
+    viewRef.current=next; setView(next); anchorClock(next.game.serverTime); setLoading(false);
     if(next.you) { if(next.game.status==='finished'||next.game.players[next.you.seat].passed) { if(useApp.getState().activeGameId===gameId)setActiveGameId(null); } else setActiveGameId(gameId); }
     const turn=`${next.game.moves.length}:${next.game.activeSeat}`;
     if(previousTurn.current!==null && previousTurn.current!==turn) { setDraft(emptyDraft()); setError(''); }
     previousTurn.current=turn;
     if(next.game.status==='finished') { setConfirmPass(false); setDraft(emptyDraft()); }
-  },[gameId,setView,setActiveGameId]);
+  },[anchorClock,gameId,setView,setActiveGameId]);
   const handleReply=useCallback((reply:CommandReply)=>{ if(reply.ok) receive(reply.view); else { if(reply.view) receive(reply.view); setError(reply.error.message); } },[receive]);
-  const sync=useCallback(async()=>{ try {const reply=await gameSync(gameId,viewRef.current?.game.revision);if(!('unchanged'in reply))handleReply(reply);}catch(error){setError(messageOf(error));} },[gameId,handleReply]);
+  const sync=useCallback(async()=>{
+    const revision=viewRef.current?.game.revision;
+    try {
+      const reply=await gameSync(gameId,revision);
+      if('unchanged'in reply){
+        if(viewRef.current?.game.id===gameId&&viewRef.current.game.revision===revision)anchorClock(reply.serverTime);
+      }else handleReply(reply);
+    }catch(error){setError(messageOf(error));}
+  },[anchorClock,gameId,handleReply]);
   useEffect(()=>{
-    clearView(); viewRef.current=null; previousTurn.current=null; setLoading(true); setDraft(emptyDraft()); setPending(readPending(gameId)); setReplayIndex(0); setAutoReplay(false); setReplayMode(searchParams.has('replay'));
+    clearView(); viewRef.current=null; previousTurn.current=null; latestClockTime.current=0; setLoading(true); setDraft(emptyDraft()); setPending(readPending(gameId)); setReplayIndex(0); setAutoReplay(false); setReplayMode(searchParams.has('replay'));
     let alive=true; let reconnectTimer:number|undefined;
     void api<GameView>(`/games/${gameId}`).then(next=>{if(alive)receive(next);}).catch(error=>{if(alive){setError(messageOf(error));setLoading(false);}});
     const socket=getSocket();
@@ -58,7 +74,7 @@ export function Game() {
     const timer=window.setInterval(()=>{if(socket.connected)void sync();},8000);
     return()=>{alive=false;window.clearInterval(timer);if(reconnectTimer!==undefined)window.clearTimeout(reconnectTimer);socket.off('connect',subscribe);socket.off('disconnect',disconnected);socket.off('connect_error',connectionError);socket.off('game:update',updated);resetSocket();};
   },[clearView,gameId,handleReply,receive,sync,user?.id]);
-  useEffect(()=>{const timer=window.setInterval(()=>setNow(Date.now()),200);return()=>window.clearInterval(timer);},[]);
+  useEffect(()=>{const timer=window.setInterval(()=>setNow(performance.now()),200);return()=>window.clearInterval(timer);},[]);
   useEffect(()=>{if(!autoReplay||!view)return;const timer=window.setInterval(()=>setReplayIndex(index=>{if(index>=view.game.moves.length){setAutoReplay(false);return index;}return index+1;}),1400);return()=>window.clearInterval(timer);},[autoReplay,view?.game.moves.length]);
   const game=view?.game; const you=view?.you;
   const serverNow=now+offset;
@@ -74,7 +90,7 @@ export function Game() {
     const current=viewRef.current;if(!current||sending)return;
     const command=retry??{commandId:crypto.randomUUID(),gameId,expectedRevision:current.game.revision,action};
     setPending(command);keepPending(gameId,command);setSending(true);setError('');setConfirmPass(false);
-    try {const reply=await sendCommand(command);handleReply(reply);setPending(null);keepPending(gameId,null);if(reply.ok)setDraft(emptyDraft());}
+    try {const reply=await sendCommand(command);handleReply(reply);const nextPending=pendingAfterReply(command,reply);setPending(nextPending);keepPending(gameId,nextPending);if(reply.ok)setDraft(emptyDraft());}
     catch(error){setError(messageOf(error));}
     finally{setSending(false);}
   }
@@ -91,7 +107,7 @@ export function Game() {
     };
     window.addEventListener('keydown',keydown);return()=>window.removeEventListener('keydown',keydown);
   },[canAct,canSubmit,confirmPass,help,historyOpen,leaveOpen,move,putLetter]);
-  // Reuse the saved command ID automatically after a lost acknowledgement.
+  // Reuse the saved command ID after a lost acknowledgement or uncertain recovery reply.
   const retryId=useRef<string|null>(null);
   useEffect(()=>{if(connected&&pending&&!sending&&view&&retryId.current!==pending.commandId){retryId.current=pending.commandId;void commitRef.current(pending.action,pending);}},[connected,pending,sending,!!view]);
   if(loading&&!view)return <main className="game-loading"><Spinner label="Setting the table…"/>{error&&<ErrorNotice message={error}/>}</main>;

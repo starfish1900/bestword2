@@ -1,0 +1,130 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\folia\\Documents\\Codex\\2026-09-17\\p\\outputs\\bestword\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tools/e2e/ack-recovery.spec.ts",
+      "--project=chromium",
+      "--output=apps/web/test-results/ack",
+      "--reporter=list,json"
+    ],
+    "configFile": "C:\\Users\\folia\\Documents\\Codex\\2026-09-17\\p\\outputs\\bestword\\playwright.config.ts",
+    "rootDir": "C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/tools/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/apps/web/test-results/ack",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/tools/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm start",
+      "url": "http://localhost:3000/api/session",
+      "reuseExistingServer": true,
+      "timeout": 60000
+    }
+  },
+  "suites": [
+    {
+      "title": "ack-recovery.spec.ts",
+      "file": "ack-recovery.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "ack fixture preserves a committed command through SERVICE_RECOVERING and retry",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6596,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T04:41:50.732Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "ack-fixture-verification",
+                      "contentType": "application/json",
+                      "body": "ewogICJmaXh0dXJlIjogIldlYlNvY2tldCBhY2tub3dsZWRnZW1lbnQgcmVwbGFjZW1lbnQgYWZ0ZXIgcmVhbCBzZXJ2ZXIgY29tbWl0IiwKICAiZ2FtZUlkIjogImU2MGQ3NDRjLWRlMjgtNDkwNi1hMzZkLTNkNjkwMWI0MjE0OSIsCiAgImNvbW1hbmRJZCI6ICJhYjJlYmI4Mi00YWY5LTRjM2QtYmNhYy04ZjcxYWFhNWYzOTciLAogICJpZGVudGljYWxDb21tYW5kQXR0ZW1wdHMiOiAyLAogICJjb21taXR0ZWRXb3JkQ291bnQiOiAxLAogICJzdG9yYWdlUmV0YWluZWRVbnRpbFJlYWxSZXRyeUFjayI6IHRydWUsCiAgInN0b3JhZ2VDbGVhcmVkQWZ0ZXJTdWNjZXNzIjogdHJ1ZQp9"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7917c529010dedc989d4-df82ae86845a16064632",
+          "file": "ack-recovery.spec.ts",
+          "line": 5,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-18T04:41:50.277Z",
+    "duration": 7286.120999999999,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

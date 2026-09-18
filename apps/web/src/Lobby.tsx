@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import type { GamePage, GameSummary, Seek, SeekPage, TimeControl } from '@bestword/contracts';
+import type { GamePage, GameSummary, Seek, SeekPage, TimeControl, User } from '@bestword/contracts';
 import { api, getSocket, messageOf, resetSocket } from './api';
 import { ErrorNotice, Icon, Rules, Spinner } from './components';
 import { useApp } from './store';
@@ -16,10 +16,11 @@ export function Lobby() {
   const [connected,setConnected] = useState(false);
   const refresh = useCallback(async () => {
     try {
-      const results = await Promise.all([api<SeekPage>('/seeks'), api<GamePage>('/games/live'), api<GamePage>('/games/history')]);
+      const results = await Promise.all([api<SeekPage>('/seeks'), api<GamePage>('/games/live'), api<GamePage>('/games/history'), user ? api<{user:User|null;activeGameId:string|null}>('/session') : Promise.resolve(null)]);
       setSeeks(results[0].items); setSeekCursor(results[0].nextCursor); setLive(results[1].items); setLiveCursor(results[1].nextCursor); setHistory(results[2].items); setHistoryCursor(results[2].nextCursor); setError('');
+      if(results[3]&&useApp.getState().user?.id===user?.id)useApp.getState().setActiveGameId(results[3].activeGameId??null);
     } catch(error) { setError(messageOf(error)); } finally { setLoading(false); }
-  }, []);
+  }, [user?.id]);
   useEffect(() => {
     void refresh(); const socket = getSocket(); let alive=true; let reconnectTimer:number|undefined;
     const subscribe = () => { setConnected(true); socket.emit('lobby:subscribe', () => { void refresh(); }); };

@@ -92,13 +92,17 @@ npm run test:e2e
 
 By default the browser tests use the compiled application at `http://127.0.0.1:3000`, starting `npm start` if necessary. Set `APP_ORIGIN` to that origin. For an already running development preview set `BESTWORD_BASE_URL=http://localhost:5173`. Set `BESTWORD_CROSS_BROWSER=1` to run Chromium, Firefox and WebKit; otherwise the suite runs Chromium. `PLAYWRIGHT_CHANNEL=chrome` uses an installed Chrome for the Chromium project.
 
-The browser suite creates two isolated accounts for each run, then reuses that pair across browser engines. It plays a genuine legal word found from the supplied dictionary and verifies matchmaking, invalid drafts, scoring updates, NO WORDS, PASS, private/public views, replay and full-game layouts at **1280×800, 390×844, 320×568 and 568×320**. Set `BESTWORD_E2E_RUN_ID` to reuse the same test pair across manual reruns when testing repeatedly against the account registration rate limit.
+The browser suite creates two isolated accounts for each run, then reuses that pair across browser engines. It plays genuine legal words found from the supplied dictionary and verifies matchmaking, invalid drafts, revision-aware synchronization, scoring updates, NO WORDS, PASS, private/public views, replay and full-game layouts at **1280×800, 390×844, 320×568 and 568×320**. A separate 320×568 touch workflow taps rack/vowels, erases, submits and verifies the actual server score without keyboard input. Set `BESTWORD_E2E_RUN_ID` to reuse the same test pair across manual reruns when testing repeatedly against the account registration rate limit. Additional checks verify production HTTP compression, lobby recovery from an explicitly labeled missed-notification fixture, retained command IDs when a real commit's acknowledgement is replaced by a recovery-error fixture, and preserved clocks/input/drafts when only the page's wall clock jumps forward one hour during a real game.
 
 Generated reports and screenshots are in `apps/web/test-results/`. The separate `apps/web/scripts/verify-layout.mjs` performs clearly identified wire-fixture layout checks; those checks are not evidence of live server behavior.
+
+The isolated [backup/restore drill](docs/progress/backup.md) uses real `pg_dump` and `pg_restore` with disposable fixture databases. Run `node tools/testing/backup-restore.mjs` after building; set `BESTWORD_PG_BIN` if the PostgreSQL client tools are not included in the local runtime.
 
 See [client verification notes](docs/progress/client.md), [engine verification notes](docs/progress/engine.md) and [lexicon verification notes](docs/progress/lexicon.md) for recorded results and limitations. To rebuild or independently audit the dictionary representation, follow [the lexicon compiler guide](tools/lexicon-builder/README.md).
 
 ## Project map
+
+See [the implementation architecture](docs/ARCHITECTURE.md) for transaction flow, private/public projections, notifications, recovery and multi-instance scaling boundaries.
 
 | Location | Responsibility |
 |---|---|
@@ -110,11 +114,14 @@ See [client verification notes](docs/progress/client.md), [engine verification n
 | `tools/lexicon-builder` | Rust offline compiler using Daciuk's incremental minimization, plus independent audits |
 | `data` | Original dictionary, prebuilt lexicon and build/audit metadata |
 | `tools/e2e` | Real browser-to-server acceptance tests |
+| `tools/testing/backup-restore.mjs` | Guarded local PostgreSQL fixture backup/restore and receipt verification |
 | `render.yaml`, `Dockerfile`, `compose.yml` | Render deployment blueprint and repeatable container/local setup |
 
 ## Render and growth
 
 The Render Blueprint defines the application, worker, PostgreSQL and Key Value services. PostgreSQL owns accepted game state; commands lock only their own game. Server instances share presence and broadcasts through Key Value, so players in one game can connect to different application instances.
+
+Follow [the operations and Render deployment guide](docs/OPERATIONS.md) for provisioning, configuration, backups, recovery, metrics and safe updates. [Deployment verification notes](docs/progress/deployment.md) distinguish prepared configuration from checks actually run. The [load-test guide](tools/load/README.md) describes isolated test data, scenarios and measured reports; run load tests only against a dedicated test environment.
 
 The initial active-game limit is configurable with `MAX_ACTIVE_GAMES`; it defaults to **100**. `MAX_SPECTATORS_PER_GAME` defaults to **10**. Increasing these limits is an operational decision that must follow capacity testing. More application instances, database resources and bandwidth can be provisioned without rewriting game rules or the browser client.
 
