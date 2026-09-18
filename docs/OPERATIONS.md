@@ -119,6 +119,8 @@ Keep the same vocabulary artifact when restoring historical data. Restart both r
 
 ## Capacity and scaling gate
 
+Executed local workloads, exact code provenance and their limits are recorded in [the capacity evidence](progress/capacity.md). Those runs do not establish the capacity or bill of a Render instance plan.
+
 Run the load driver against an isolated test database and report the machine/service sizes, versions, duration, socket counts, command mix, connection failures, command latency percentiles, process RSS, datastore load and bandwidth. A single laptop also running the load clients cannot establish Render capacity.
 
 The initial acceptance target is 100 games, up to 1,000 spectators, 1,200 sockets, 50 commands/second, 100-command bursts and a one-hour run. Target server processing p95 below 250 ms and p99 below 750 ms with no accepted-command loss, duplicate application, privacy leakage or false outage forfeits. Confirm the workload actually sustained its target and track end-to-end delay separately. Run process kill, dependency interruption, reconnect and duplicate-command tests as separate correctness checks; an idle-socket count is not a gameplay benchmark.

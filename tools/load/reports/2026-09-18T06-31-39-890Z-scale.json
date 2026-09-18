@@ -1,0 +1,4062 @@
+{
+  "formatVersion": 2,
+  "runId": "5629278c-e010-4079-ae70-7ad91185773e",
+  "scenario": "scale",
+  "settings": {
+    "games": 5000,
+    "spectators": 2500,
+    "commandsPerSecond": 250,
+    "burst": 100,
+    "burstEverySeconds": 60,
+    "durationSeconds": 900,
+    "apiInstances": 2,
+    "workers": 1,
+    "templates": 16,
+    "syncIntervalSeconds": 8
+  },
+  "status": "completed",
+  "startedAt": "2026-09-18T06:32:13.799Z",
+  "finishedAt": "2026-09-18T06:47:14.426Z",
+  "elapsedSeconds": 900,
+  "timing": {
+    "offeredLoadSeconds": 900,
+    "commandDrainSeconds": 0.003447299999999814,
+    "viewerDrainSeconds": 0.6167195000000065,
+    "totalMeasuredWallSeconds": 900.627
+  },
+  "hardware": {
+    "os": "win32",
+    "release": "10.0.26200",
+    "arch": "x64",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-13700",
+    "logicalCpus": 24,
+    "totalMemoryBytes": 16766689280,
+    "node": "v24.14.0"
+  },
+  "environment": {
+    "kind": "local shared hardware with separate API/worker and load-client processes",
+    "databaseHost": "127.0.0.1:54329",
+    "schema": "bw_load_5629278ce0104079ae707ad91185773e",
+    "redisDatabase": 15,
+    "versions": {
+      "postgresql": "PostgreSQL 18.4 on x86_64-windows, compiled by msvc-19.44.35226, 64-bit",
+      "redisServer": [
+        "redis_version:7.2.16",
+        "redis_mode:standalone",
+        "os:MSYS_NT-10.0-26200 3.6.10-8fbd9808.x86_64 x86_64"
+      ],
+      "redisMaxmemory": {
+        "maxmemory": "134217728"
+      },
+      "serverGamesSha256": "d0ddfac6bd373242591e962735cbaf52e5046c11687c36b0b198eed0b47760cc",
+      "compiledArtifacts": {
+        "apps/server/dist/app.js": "55cf07562103c5df9fc00146bcf2deb6f3aef8de60bcb489338fc253e646c38d",
+        "apps/server/dist/auth.js": "d296a9ddc32e7628b6981d87592e99b89e85f98e9c9ef91d9212344b58ab8901",
+        "apps/server/dist/config.js": "ee6858756f3d029320b6dd3bf7707a31a79a337f7fca75f8a6612b61c8341029",
+        "apps/server/dist/db.js": "cbc27ac3ac91532facc956469bb7339af69bf0bfe284f15eb81463496aa0cc86",
+        "apps/server/dist/errors.js": "b91d0b5ffcc08f469b9f95846674afd4bad45711a566a345c249a97b29fae0b7",
+        "apps/server/dist/games.js": "d0ddfac6bd373242591e962735cbaf52e5046c11687c36b0b198eed0b47760cc",
+        "apps/server/dist/health.js": "0c49e0a8348dfed73179a15e4dec921f88eb2e768cf560be252d808a119c1bad",
+        "apps/server/dist/index.js": "a1f1b8d471fb0de15b4315a99078ef27c13a6057ad5e860a78cfffea3e32b92c",
+        "apps/server/dist/kv.js": "4b61007968bcb57bb33f52961d50e2d289d0cc1e91b55a8b0c46a2fe9483d13d",
+        "apps/server/dist/migrate.js": "e24492668ee21b5aab5d158ca15d24c0eb221eba4608af79e835765761332b15",
+        "apps/server/dist/realtime.js": "6207e06390d394f0f46c5e8f3d1a855835e0b745a2a555a5d959601564c858c6",
+        "apps/server/dist/worker.js": "a1f09107cc79ea5cef96e51382b8f6e0217c3e0520a67ca41af1ea0235259b97",
+        "packages/contracts/dist/index.js": "b92604e86cfd50003cbc4b27cbb22a36ae9b491b46510b6daa5e15ae445b7efc",
+        "packages/engine/dist/index.js": "a7bc39968bd64ce71083900d6bac71ee07f08402374b4f7792849f697ac957a4",
+        "packages/lexicon/dist/index.js": "39aaeeb92c3df8985f4b56dc5638b872ea3728b4b85860519f487d71b271a1fa"
+      },
+      "compiledCombinedSha256": "521d2148ece4cebe58907671db20042c58d5ff67b51da3c0da2af0e0aa9d5bd9",
+      "packageLockSha256": "396ee9025c43d1c61a4de9c71cc5bd1c0438a53381f9d42e1521aec83384177c",
+      "harnessArtifacts": {
+        "tools/load/run.mjs": "b95242a991708b616085ef07da780896226e26f2e39fae049caf00d503bd17e1",
+        "tools/load/runner.ts": "c7e35a1f896c2e206b35d6f52f5e26ee4c540f53915a54fb7f96000eba8a9a98",
+        "tools/load/child.mjs": "eba0ee1f866d5cfe0f22daf9201ed9d36866778d24850e9d7da6db8738bbb085",
+        "tools/load/scenarios.json": "3820729a8446620017f647de783bf60b633526868c787c5f09172eed164fe802",
+        "tools/load/observations.ts": "c64cca92e1111ed5177ed82c2a03acd86c85170a07252801d4488e2857fd4c1a",
+        "tools/testing/moves.ts": "39a96a22468bf5e1b1b117eebd1aaa3460d829034a801b9f9183ce6fe1031233"
+      },
+      "harnessCombinedSha256": "e63b025314c8f481a0ab4b32314b7894e504a46ec2bd9478a3cda543d9d091c4",
+      "lexiconArtifactSha256": "a2c6ef6c62da93495848e3335b814788842021514131025ea44cde34fbd207d0"
+    },
+    "apiProcesses": [
+      {
+        "pid": 21116,
+        "url": "http://127.0.0.1:59610"
+      },
+      {
+        "pid": 22680,
+        "url": "http://127.0.0.1:59616"
+      }
+    ],
+    "logDirectory": "C:\\Users\\folia\\Documents\\Codex\\2026-09-17\\p\\outputs\\bestword\\.local\\load\\2026-09-18T06-31-39-890Z-scale"
+  },
+  "startup": {
+    "phase": "complete",
+    "failurePhase": null,
+    "socketsAttempted": 12500,
+    "successfulConnections": 12500,
+    "connectionFailures": 0,
+    "disconnects": 0,
+    "disconnectReasons": {},
+    "peakConnectedSockets": 12500,
+    "tablesCreated": 5000,
+    "childProcesses": [
+      {
+        "pid": 21116,
+        "role": "api",
+        "peakRssIncludingStartup": 908840960,
+        "latestSample": {
+          "rss": 843714560,
+          "cpuCores": 0.23946863063387294,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        "exitCode": 0,
+        "signalCode": null
+      },
+      {
+        "pid": 22680,
+        "role": "api",
+        "peakRssIncludingStartup": 903843840,
+        "latestSample": {
+          "rss": 866000896,
+          "cpuCores": 0.2710304466198251,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        "exitCode": 0,
+        "signalCode": null
+      },
+      {
+        "pid": 14896,
+        "role": "worker",
+        "peakRssIncludingStartup": 261222400,
+        "latestSample": {
+          "rss": 255287296,
+          "cpuCores": 0.19460295614310916,
+          "sockets": null,
+          "waiting": null
+        },
+        "exitCode": 0,
+        "signalCode": null
+      }
+    ]
+  },
+  "workload": {
+    "initialReadySockets": 12500,
+    "targetSockets": 12500,
+    "connectedAtMeasurementEnd": 12500,
+    "minConnectedSockets": 12500,
+    "minSampledSockets": 12500,
+    "currentConnectedSockets": 0,
+    "attempted": 226400,
+    "accepted": 226400,
+    "duplicates": 2264,
+    "retries": 0,
+    "completedGameCycles": 1964,
+    "skippedBusy": 0,
+    "traffic": {
+      "baseline": {
+        "scheduled": 225000,
+        "offered": 225000,
+        "attempted": 225000,
+        "accepted": 225000,
+        "failed": 0,
+        "skipped": 0
+      },
+      "burst": {
+        "scheduled": 1400,
+        "offered": 1400,
+        "attempted": 1400,
+        "accepted": 1400,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    "bursts": [
+      {
+        "at": 1789713193808,
+        "requested": 100,
+        "offered": 100,
+        "accepted": 100,
+        "failed": 0
+      },
+      {
+        "at": 1789713253809,
+        "requested": 100,
+        "offered": 100,
+        "accepted": 100,
+        "failed": 0
+      },
+      {
+        "at": 1789713313808,
+        "requested": 100,
+        "offered": 100,
+        "accepted": 100,
+        "failed": 0
+      },
+      {
+        "at": 1789713373811,
+        "requested": 100,
+        "offered": 100,
+        "accepted": 100,
+        "failed": 0
+      },
+      {
+        "at": 1789713433814,
+        "requested": 100,
+        "offered": 100,
+        "accepted": 100,
+        "failed": 0
+      },
+      {
+        "at": 1789713493809,
+        "requested": 100,
+        "offered": 100,
+        "accepted": 100,
+        "failed": 0
+      },
+      {
+        "at": 1789713553813,
+        "requested": 100,
+        "offered": 100,
+        "accepted": 100,
+        "failed": 0
+      },
+      {
+        "at": 1789713613810,
+        "requested": 100,
+        "offered": 100,
+        "accepted": 100,
+        "failed": 0
+      },
+      {
+        "at": 1789713673807,
+        "requested": 100,
+        "offered": 100,
+        "accepted": 100,
+        "failed": 0
+      },
+      {
+        "at": 1789713733811,
+        "requested": 100,
+        "offered": 100,
+        "accepted": 100,
+        "failed": 0
+      },
+      {
+        "at": 1789713793810,
+        "requested": 100,
+        "offered": 100,
+        "accepted": 100,
+        "failed": 0
+      },
+      {
+        "at": 1789713853817,
+        "requested": 100,
+        "offered": 100,
+        "accepted": 100,
+        "failed": 0
+      },
+      {
+        "at": 1789713913811,
+        "requested": 100,
+        "offered": 100,
+        "accepted": 100,
+        "failed": 0
+      },
+      {
+        "at": 1789713973811,
+        "requested": 100,
+        "offered": 100,
+        "accepted": 100,
+        "failed": 0
+      }
+    ],
+    "requiredBursts": 14,
+    "acceptedPerSecond": 251.55555555555554,
+    "baselineAcceptedPerSecond": 250,
+    "actionMix": {
+      "NO_WORDS": 51729,
+      "PLACE_WORD": 170119,
+      "PASS": 4552
+    },
+    "gameUpdates": 568649,
+    "revisionSync": {
+      "intervalSeconds": 8,
+      "sent": 1395888,
+      "unchanged": 1395095,
+      "changed": 793
+    },
+    "engineIoIncomingBytes": 7586880498,
+    "engineIoIncomingAverageBytesPerSecond": 8429867.22,
+    "disconnects": 0,
+    "privacyFailures": 0
+  },
+  "latencyMs": {
+    "endToEndAcknowledgement": {
+      "count": 226400,
+      "p50": 5.819800000055693,
+      "p95": 37.59739999996964,
+      "p99": 138.07219999993686,
+      "max": 668.6433999999426
+    },
+    "serviceCommandIncludingCommitAndPublish": {
+      "count": 228664,
+      "p50": 4.91690000006929,
+      "p95": 22.570700000040233,
+      "p99": 78.13399999996182,
+      "max": 235.43229999998584
+    },
+    "revisionSync": {
+      "count": 1395888,
+      "p50": 11.43819999997504,
+      "p95": 62.6771000000881,
+      "p99": 126.7949999999255,
+      "max": 633.1315000000177
+    },
+    "gameUpdateFromAcceptedMove": {
+      "count": 566700,
+      "p50": 5,
+      "p95": 38,
+      "p99": 277,
+      "max": 760,
+      "resolutionMs": 1,
+      "overflowThresholdMs": 10000
+    },
+    "loadSchedulerLag": {
+      "count": 226400,
+      "p50": 0.7084999999497086,
+      "p95": 5.496600000013132,
+      "p99": 145.48629999998957,
+      "max": 622.9469999999274
+    },
+    "loadClientEventLoopP99": 32.227327
+  },
+  "resources": {
+    "children": [
+      {
+        "pid": 22680,
+        "peakRss": 903843840,
+        "cpuCoreSeconds": 606.1559999999997,
+        "samples": 912,
+        "role": "api",
+        "maxWaiting": 525,
+        "averageCpuCores": 0.6735066666666664
+      },
+      {
+        "pid": 21116,
+        "peakRss": 908840960,
+        "cpuCoreSeconds": 611.188,
+        "samples": 912,
+        "role": "api",
+        "maxWaiting": 529,
+        "averageCpuCores": 0.6790977777777778
+      },
+      {
+        "pid": 14896,
+        "peakRss": 261222400,
+        "cpuCoreSeconds": 141.03099999999998,
+        "samples": 906,
+        "role": "worker",
+        "maxWaiting": 0,
+        "averageCpuCores": 0.1567011111111111
+      }
+    ],
+    "driver": {
+      "rss": 922288128,
+      "heapTotal": 815882240,
+      "heapUsed": 705535488,
+      "external": 6840034,
+      "arrayBuffers": 2757524
+    }
+  },
+  "errors": {},
+  "details": [],
+  "durableVerification": {
+    "passed": true,
+    "acknowledgedReceiptsChecked": 226400,
+    "successfulReceipts": 226400,
+    "snapshotMoves": 226400,
+    "gameInvariantsChecked": 6964
+  },
+  "viewerFreshness": {
+    "passed": true,
+    "timeoutMs": 10000,
+    "expectedViewers": 12500,
+    "confirmedViewers": 12500,
+    "broadcastViewers": 12239,
+    "initializationOnlyViewers": 261,
+    "staleExamples": [],
+    "acknowledgementsCountAsBroadcast": false
+  },
+  "retiredViewerFreshness": {
+    "gamesChecked": 1964,
+    "viewerChecks": 4953,
+    "failures": 0,
+    "maxDrainMs": 286.64280000003055
+  },
+  "samples": [
+    {
+      "at": 1789713148845,
+      "elapsedSeconds": 15.046,
+      "accepted": 3758,
+      "attempted": 3760,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 8483798,
+        "used_memory_rss": 8483964,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 3922763776,
+      "connected": 12500,
+      "driverRss": 553553920,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 595603456,
+          "cpuCores": 0.5012291118270159,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 640802816,
+          "cpuCores": 0.5631184238045255,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 226189312,
+          "cpuCores": 0.09395851731460586,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713163851,
+      "elapsedSeconds": 30.052,
+      "accepted": 7510,
+      "attempted": 7512,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 1,
+        "oldest_ms": "7"
+      },
+      "deadlines": {
+        "checks_due": 36,
+        "oldest_check_lag_ms": 38,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9246611,
+        "used_memory_rss": 9253394,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 3616104448,
+      "connected": 12500,
+      "driverRss": 641224704,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 748978176,
+          "cpuCores": 0.5310081244243032,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 731602944,
+          "cpuCores": 0.45330235266922764,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 225853440,
+          "cpuCores": 0.0779917874647803,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713178823,
+      "elapsedSeconds": 45.024,
+      "accepted": 11253,
+      "attempted": 11255,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 66,
+        "oldest_check_lag_ms": 110,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9595650,
+        "used_memory_rss": 9579810,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 3467067392,
+      "connected": 12500,
+      "driverRss": 728133632,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 763154432,
+          "cpuCores": 0.639803068615474,
+          "sockets": 6250,
+          "waiting": 22
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 785793024,
+          "cpuCores": 0.5456451630601217,
+          "sockets": 6250,
+          "waiting": 1
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 226963456,
+          "cpuCores": 0.21998466706870531,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713193820,
+      "elapsedSeconds": 60.021,
+      "accepted": 15000,
+      "attempted": 15104,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9535904,
+        "used_memory_rss": 9548785,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 3422572544,
+      "connected": 12500,
+      "driverRss": 654135296,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 795471872,
+          "cpuCores": 0.452145409963849,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 808157184,
+          "cpuCores": 0.7030607444483205,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 228057088,
+          "cpuCores": 0.06277271881697939,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713208825,
+      "elapsedSeconds": 75.026,
+      "accepted": 18851,
+      "attempted": 18855,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9576867,
+        "used_memory_rss": 9592124,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 3353571328,
+      "connected": 12500,
+      "driverRss": 706449408,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 777871360,
+          "cpuCores": 0.5624639718348365,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 870961152,
+          "cpuCores": 0.5473547953783621,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 227254272,
+          "cpuCores": 0.06280780810719214,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713223829,
+      "elapsedSeconds": 90.03,
+      "accepted": 22604,
+      "attempted": 22606,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 1,
+        "oldest_ms": "5"
+      },
+      "deadlines": {
+        "checks_due": 66,
+        "oldest_check_lag_ms": 41,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9480343,
+        "used_memory_rss": 9480042,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 3399581696,
+      "connected": 12500,
+      "driverRss": 692596736,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 872845312,
+          "cpuCores": 0.6240516090680693,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 840183808,
+          "cpuCores": 0.6559993440006535,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 226365440,
+          "cpuCores": 0.15470990660744252,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713238842,
+      "elapsedSeconds": 105.043,
+      "accepted": 26358,
+      "attempted": 26359,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 1,
+        "oldest_ms": "7"
+      },
+      "deadlines": {
+        "checks_due": 38,
+        "oldest_check_lag_ms": 38,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9493088,
+        "used_memory_rss": 9491605,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 3361234944,
+      "connected": 12500,
+      "driverRss": 681443328,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 847228928,
+          "cpuCores": 0.5939759439742673,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 866185216,
+          "cpuCores": 0.49997865091161064,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 227512320,
+          "cpuCores": 0.12496939499516505,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713253848,
+      "elapsedSeconds": 120.049,
+      "accepted": 30150,
+      "attempted": 30211,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 30,
+        "oldest_ms": "16"
+      },
+      "deadlines": {
+        "checks_due": 156,
+        "oldest_check_lag_ms": 118,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9362884,
+        "used_memory_rss": 9335136,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 3336925184,
+      "connected": 12500,
+      "driverRss": 662970368,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 847679488,
+          "cpuCores": 0.6239647459918477,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 836857856,
+          "cpuCores": 0.7350153618210644,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 227348480,
+          "cpuCores": 0.20289372198089634,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713268834,
+      "elapsedSeconds": 135.035,
+      "accepted": 33956,
+      "attempted": 33957,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9280136,
+        "used_memory_rss": 9270112,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 3265789952,
+      "connected": 12500,
+      "driverRss": 697163776,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 870514688,
+          "cpuCores": 0.6568761131650419,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 863375360,
+          "cpuCores": 0.7029247870477936,
+          "sockets": 6250,
+          "waiting": 24
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 231452672,
+          "cpuCores": 0.09342825644187777,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713283838,
+      "elapsedSeconds": 150.039,
+      "accepted": 37707,
+      "attempted": 37708,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 47,
+        "oldest_check_lag_ms": 12,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9149261,
+        "used_memory_rss": 9120023,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 3289518080,
+      "connected": 12500,
+      "driverRss": 698224640,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 863346688,
+          "cpuCores": 0.6406401524263878,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 853598208,
+          "cpuCores": 0.5469769722694721,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 232726528,
+          "cpuCores": 0.15610419955319885,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713298836,
+      "elapsedSeconds": 165.037,
+      "accepted": 41457,
+      "attempted": 41458,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 8979946,
+        "used_memory_rss": 8972623,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 3264688128,
+      "connected": 12500,
+      "driverRss": 683974656,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 853147648,
+          "cpuCores": 0.8430877654363793,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 855203840,
+          "cpuCores": 0.6542174537038985,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 232738816,
+          "cpuCores": 0.10957965245319162,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713313858,
+      "elapsedSeconds": 180.059,
+      "accepted": 45233,
+      "attempted": 45313,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 33,
+        "oldest_ms": "26"
+      },
+      "deadlines": {
+        "checks_due": 63,
+        "oldest_check_lag_ms": 55,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 8821210,
+        "used_memory_rss": 8800851,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 3236446208,
+      "connected": 12500,
+      "driverRss": 682913792,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 879239168,
+          "cpuCores": 0.6413814295361554,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 851386368,
+          "cpuCores": 0.5160340066410459,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 231907328,
+          "cpuCores": 0.12501060089895402,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713328843,
+      "elapsedSeconds": 195.044,
+      "accepted": 49058,
+      "attempted": 49060,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 1,
+        "oldest_ms": "4"
+      },
+      "deadlines": {
+        "checks_due": 75,
+        "oldest_check_lag_ms": 83,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 8688371,
+        "used_memory_rss": 8693695,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 3255934976,
+      "connected": 12500,
+      "driverRss": 714973184,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 868827136,
+          "cpuCores": 0.5480053704526303,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 850395136,
+          "cpuCores": 0.46785469171468064,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 237445120,
+          "cpuCores": 0.06253402148549864,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713343862,
+      "elapsedSeconds": 210.063,
+      "accepted": 52810,
+      "attempted": 52813,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 8494604,
+        "used_memory_rss": 8503327,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 3218599936,
+      "connected": 12500,
+      "driverRss": 695410688,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 865800192,
+          "cpuCores": 0.626064609867746,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 873865216,
+          "cpuCores": 0.6412549899526719,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 236343296,
+          "cpuCores": 0.25016948982935705,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713358838,
+      "elapsedSeconds": 225.039,
+      "accepted": 56557,
+      "attempted": 56558,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 100,
+        "oldest_check_lag_ms": 7,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 8482533,
+        "used_memory_rss": 8572649,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 3235753984,
+      "connected": 12500,
+      "driverRss": 715317248,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 863117312,
+          "cpuCores": 0.563146868703368,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 863494144,
+          "cpuCores": 0.5781451144237142,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 238723072,
+          "cpuCores": 0.03099708007505717,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713373853,
+      "elapsedSeconds": 240.054,
+      "accepted": 60319,
+      "attempted": 60412,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 22,
+        "oldest_ms": "21"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9171290,
+        "used_memory_rss": 9231564,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 3238055936,
+      "connected": 12500,
+      "driverRss": 685613056,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 858288128,
+          "cpuCores": 0.7029647111715007,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 861798400,
+          "cpuCores": 0.7661238822317545,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 240353280,
+          "cpuCores": 0.13976977123282436,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713388844,
+      "elapsedSeconds": 255.045,
+      "accepted": 64158,
+      "attempted": 64160,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 1,
+        "oldest_ms": "3"
+      },
+      "deadlines": {
+        "checks_due": 152,
+        "oldest_check_lag_ms": 8,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9493862,
+        "used_memory_rss": 9518234,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 3200118784,
+      "connected": 12500,
+      "driverRss": 726392832,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 893427712,
+          "cpuCores": 0.5934578762300495,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 887640064,
+          "cpuCores": 0.7190807527685207,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 242057216,
+          "cpuCores": 0.13835449465329044,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713403846,
+      "elapsedSeconds": 270.047,
+      "accepted": 67909,
+      "attempted": 67910,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9549635,
+        "used_memory_rss": 9542974,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 3127939072,
+      "connected": 12500,
+      "driverRss": 734367744,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 883376128,
+          "cpuCores": 0.6879962160208324,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 878424064,
+          "cpuCores": 0.5926156295027302,
+          "sockets": 6250,
+          "waiting": 63
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 244674560,
+          "cpuCores": 0.07720966641266337,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713418850,
+      "elapsedSeconds": 285.051,
+      "accepted": 71660,
+      "attempted": 71661,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 63,
+        "oldest_check_lag_ms": 30,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9607269,
+        "used_memory_rss": 9621937,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 3168624640,
+      "connected": 12500,
+      "driverRss": 700338176,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 881045504,
+          "cpuCores": 0.6090309387716702,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 877535232,
+          "cpuCores": 0.5458275730696427,
+          "sockets": 6250,
+          "waiting": 40
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 244723712,
+          "cpuCores": 0.1562816202760778,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713433875,
+      "elapsedSeconds": 300.076,
+      "accepted": 75460,
+      "attempted": 75518,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 41,
+        "oldest_ms": "33"
+      },
+      "deadlines": {
+        "checks_due": 100,
+        "oldest_check_lag_ms": 119,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9517145,
+        "used_memory_rss": 9507395,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2739302400,
+      "connected": 12500,
+      "driverRss": 690499584,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 872595456,
+          "cpuCores": 0.8289876480840359,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 860946432,
+          "cpuCores": 0.7980639249204029,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 251428864,
+          "cpuCores": 0.09382953050896853,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713448851,
+      "elapsedSeconds": 315.052,
+      "accepted": 79260,
+      "attempted": 79262,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9552841,
+        "used_memory_rss": 9582457,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2742784000,
+      "connected": 12500,
+      "driverRss": 689401856,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 864346112,
+          "cpuCores": 0.6248953300322312,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 860803072,
+          "cpuCores": 0.6567661912359393,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 250642432,
+          "cpuCores": 0.13845569289261037,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713463863,
+      "elapsedSeconds": 330.064,
+      "accepted": 83013,
+      "attempted": 83015,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9432766,
+        "used_memory_rss": 9436998,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2835845120,
+      "connected": 12500,
+      "driverRss": 687386624,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 864542720,
+          "cpuCores": 0.6241662778964092,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 853598208,
+          "cpuCores": 0.8603528306959005,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 251027456,
+          "cpuCores": 0.23056020316099163,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713478864,
+      "elapsedSeconds": 345.065,
+      "accepted": 86760,
+      "attempted": 86765,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 110
+        },
+        {
+          "status": "active",
+          "count": 4999
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 99,
+        "oldest_check_lag_ms": 37,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9414460,
+        "used_memory_rss": 9418456,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2616696832,
+      "connected": 12500,
+      "driverRss": 738549760,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 899883008,
+          "cpuCores": 0.6564224735039539,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 890576896,
+          "cpuCores": 0.6250251885150929,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 256413696,
+          "cpuCores": 0.1391332692989003,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713493878,
+      "elapsedSeconds": 360.079,
+      "accepted": 90554,
+      "attempted": 90618,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 313
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 39,
+        "oldest_ms": "44"
+      },
+      "deadlines": {
+        "checks_due": 1,
+        "oldest_check_lag_ms": 36,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9251816,
+        "used_memory_rss": 9251641,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2724245504,
+      "connected": 12500,
+      "driverRss": 683765760,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 863645696,
+          "cpuCores": 0.687077983351135,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 886476800,
+          "cpuCores": 0.608061718264433,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 253112320,
+          "cpuCores": 0.34311161420811076,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713508846,
+      "elapsedSeconds": 375.047,
+      "accepted": 94359,
+      "attempted": 94360,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 313
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 1,
+        "oldest_ms": "4"
+      },
+      "deadlines": {
+        "checks_due": 98,
+        "oldest_check_lag_ms": 1,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9154075,
+        "used_memory_rss": 9155727,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2669035520,
+      "connected": 12500,
+      "driverRss": 688709632,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 901857280,
+          "cpuCores": 0.6410169869501402,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 874946560,
+          "cpuCores": 0.6242355865103475,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 254009344,
+          "cpuCores": 0.21611776701202706,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713523853,
+      "elapsedSeconds": 390.054,
+      "accepted": 98110,
+      "attempted": 98112,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 313
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 1,
+        "oldest_ms": "6"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 8890459,
+        "used_memory_rss": 8894041,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2644221952,
+      "connected": 12500,
+      "driverRss": 703844352,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 896704512,
+          "cpuCores": 0.5939455945835449,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 883527680,
+          "cpuCores": 0.688104385435262,
+          "sockets": 6250,
+          "waiting": 19
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 254726144,
+          "cpuCores": 0.07794560639856346,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713538848,
+      "elapsedSeconds": 405.049,
+      "accepted": 101859,
+      "attempted": 101861,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 313
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 94,
+        "oldest_check_lag_ms": 76,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 8867060,
+        "used_memory_rss": 8815164,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2674737152,
+      "connected": 12500,
+      "driverRss": 742801408,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 895471616,
+          "cpuCores": 0.7658097728523925,
+          "sockets": 6250,
+          "waiting": 45
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 878710784,
+          "cpuCores": 0.5779728352767302,
+          "sockets": 6250,
+          "waiting": 7
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 256679936,
+          "cpuCores": 0.1242323598676274,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713553874,
+      "elapsedSeconds": 420.075,
+      "accepted": 105627,
+      "attempted": 105717,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 313
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 32,
+        "oldest_ms": "33"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 8682864,
+        "used_memory_rss": 8651443,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2728001536,
+      "connected": 12500,
+      "driverRss": 688209920,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 889282560,
+          "cpuCores": 0.5779906365516805,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 866828288,
+          "cpuCores": 0.6243988659956075,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 252338176,
+          "cpuCores": 0.1567868795945654,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713568845,
+      "elapsedSeconds": 435.046,
+      "accepted": 109458,
+      "attempted": 109460,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 313
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 8603371,
+        "used_memory_rss": 8598412,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2706067456,
+      "connected": 12500,
+      "driverRss": 711536640,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 885207040,
+          "cpuCores": 0.5310044073366048,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 862916608,
+          "cpuCores": 0.7953165049956405,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 256106496,
+          "cpuCores": 0.014878431313424811,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713583855,
+      "elapsedSeconds": 450.056,
+      "accepted": 113211,
+      "attempted": 113213,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 313
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 100,
+        "oldest_check_lag_ms": 80,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 8576579,
+        "used_memory_rss": 8754359,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2718167040,
+      "connected": 12500,
+      "driverRss": 695599104,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 896389120,
+          "cpuCores": 0.6088575882101225,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 869396480,
+          "cpuCores": 0.7499137599176164,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 253423616,
+          "cpuCores": 0,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713598851,
+      "elapsedSeconds": 465.052,
+      "accepted": 116960,
+      "attempted": 116962,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 313
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 99,
+        "oldest_check_lag_ms": 7,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9416731,
+        "used_memory_rss": 9465491,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2645417984,
+      "connected": 12500,
+      "driverRss": 709058560,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 890953728,
+          "cpuCores": 0.6409553895048609,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 876347392,
+          "cpuCores": 0.6870197861698217,
+          "sockets": 6250,
+          "waiting": 4
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 253358080,
+          "cpuCores": 0.030601881759067532,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713613876,
+      "elapsedSeconds": 480.077,
+      "accepted": 120750,
+      "attempted": 120818,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 313
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 43,
+        "oldest_ms": "32"
+      },
+      "deadlines": {
+        "checks_due": 100,
+        "oldest_check_lag_ms": 27,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9577351,
+        "used_memory_rss": 9555581,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2726326272,
+      "connected": 12500,
+      "driverRss": 686440448,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 882532352,
+          "cpuCores": 0.6571362900665689,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 866299904,
+          "cpuCores": 0.7029280201707526,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 257994752,
+          "cpuCores": 0.18784230638379046,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713628869,
+      "elapsedSeconds": 495.07,
+      "accepted": 124555,
+      "attempted": 124566,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 313
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 99,
+        "oldest_check_lag_ms": 37,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9607759,
+        "used_memory_rss": 9600676,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2728939520,
+      "connected": 12500,
+      "driverRss": 729305088,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 889716736,
+          "cpuCores": 0.641012051026572,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 865714176,
+          "cpuCores": 0.7180712326662783,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 256163840,
+          "cpuCores": 0.21874111988461992,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713643851,
+      "elapsedSeconds": 510.052,
+      "accepted": 128310,
+      "attempted": 128312,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 520
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 2,
+        "oldest_check_lag_ms": 35,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9598600,
+        "used_memory_rss": 9595731,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2760314880,
+      "connected": 12500,
+      "driverRss": 704958464,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 898392064,
+          "cpuCores": 0.7799561664634511,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 875896832,
+          "cpuCores": 0.7190069743676897,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 253001728,
+          "cpuCores": 0.26380874523005865,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713658880,
+      "elapsedSeconds": 525.081,
+      "accepted": 132066,
+      "attempted": 132069,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 883
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 3,
+        "oldest_check_lag_ms": 166,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9692941,
+        "used_memory_rss": 9691311,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2795401216,
+      "connected": 12500,
+      "driverRss": 687050752,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 857153536,
+          "cpuCores": 1.0321861031544062,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 881569792,
+          "cpuCores": 0.7189675026689261,
+          "sockets": 6250,
+          "waiting": 95
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 254902272,
+          "cpuCores": 0.21738514784782753,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713673881,
+      "elapsedSeconds": 540.082,
+      "accepted": 135914,
+      "attempted": 135919,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1251
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 39,
+        "oldest_ms": "40"
+      },
+      "deadlines": {
+        "checks_due": 83,
+        "oldest_check_lag_ms": 162,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9570106,
+        "used_memory_rss": 9554993,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2674114560,
+      "connected": 12500,
+      "driverRss": 692133888,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 861716480,
+          "cpuCores": 0.8901276443041422,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 877670400,
+          "cpuCores": 0.7030241840319336,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 253001728,
+          "cpuCores": 0.3127695826484602,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713688866,
+      "elapsedSeconds": 555.067,
+      "accepted": 139664,
+      "attempted": 139665,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1251
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 1,
+        "oldest_ms": "7"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9456583,
+        "used_memory_rss": 9439342,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2672570368,
+      "connected": 12500,
+      "driverRss": 707825664,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 862994432,
+          "cpuCores": 0.7039631123328827,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 871616512,
+          "cpuCores": 0.641049617240343,
+          "sockets": 6250,
+          "waiting": 68
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 253640704,
+          "cpuCores": 0.09358068367260886,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713703875,
+      "elapsedSeconds": 570.076,
+      "accepted": 143414,
+      "attempted": 143418,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1464
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 3,
+        "oldest_check_lag_ms": 56,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9417675,
+        "used_memory_rss": 9410732,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2691293184,
+      "connected": 12500,
+      "driverRss": 749027328,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 861925376,
+          "cpuCores": 0.5480376501866016,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 888905728,
+          "cpuCores": 0.8602362208662535,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 255684608,
+          "cpuCores": 0.07698850561611677,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713718876,
+      "elapsedSeconds": 585.077,
+      "accepted": 147167,
+      "attempted": 147168,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1564
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 96,
+        "oldest_check_lag_ms": 87,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9300812,
+        "used_memory_rss": 9318767,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2679463936,
+      "connected": 12500,
+      "driverRss": 715898880,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 866070528,
+          "cpuCores": 0.6559367676955689,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 887627776,
+          "cpuCores": 0.6252664885774236,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 253366272,
+          "cpuCores": 0.09400139122059048,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713733885,
+      "elapsedSeconds": 600.086,
+      "accepted": 150958,
+      "attempted": 151020,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1564
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 44,
+        "oldest_ms": "44"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9128983,
+        "used_memory_rss": 9127377,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2718646272,
+      "connected": 12500,
+      "driverRss": 705794048,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 863047680,
+          "cpuCores": 0.8122522405873527,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 872566784,
+          "cpuCores": 0.6410777627326187,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 256389120,
+          "cpuCores": 0.15694590074802792,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713748885,
+      "elapsedSeconds": 615.086,
+      "accepted": 154766,
+      "attempted": 154770,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1564
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 1,
+        "oldest_ms": "7"
+      },
+      "deadlines": {
+        "checks_due": 10,
+        "oldest_check_lag_ms": 40,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9011491,
+        "used_memory_rss": 8999116,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2755170304,
+      "connected": 12500,
+      "driverRss": 695529472,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 865525760,
+          "cpuCores": 0.6560719710952488,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 881741824,
+          "cpuCores": 0.6559086975093225,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 256401408,
+          "cpuCores": 0.17137902523993867,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713763879,
+      "elapsedSeconds": 630.08,
+      "accepted": 158513,
+      "attempted": 158519,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1564
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 8798781,
+        "used_memory_rss": 8764574,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2683293696,
+      "connected": 12500,
+      "driverRss": 736706560,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 862855168,
+          "cpuCores": 0.6714361279397063,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 889405440,
+          "cpuCores": 0.6558662688678014,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 254107648,
+          "cpuCores": 0.2019541765973283,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713778875,
+      "elapsedSeconds": 645.076,
+      "accepted": 162266,
+      "attempted": 162268,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1564
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 8687273,
+        "used_memory_rss": 8668723,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2782601216,
+      "connected": 12500,
+      "driverRss": 721199104,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 864911360,
+          "cpuCores": 0.719003091713232,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 890470400,
+          "cpuCores": 0.7030356439071613,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 254947328,
+          "cpuCores": 0.10802535206354016,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713793898,
+      "elapsedSeconds": 660.099,
+      "accepted": 166120,
+      "attempted": 166123,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1564
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 1,
+        "oldest_ms": "16"
+      },
+      "deadlines": {
+        "checks_due": 99,
+        "oldest_check_lag_ms": 13,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 8604401,
+        "used_memory_rss": 8568101,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2720600064,
+      "connected": 12500,
+      "driverRss": 712323072,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 869756928,
+          "cpuCores": 0.7028453037486203,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 882159616,
+          "cpuCores": 0.7971234033932719,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 257900544,
+          "cpuCores": 0.17175780432013177,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713808881,
+      "elapsedSeconds": 675.082,
+      "accepted": 169867,
+      "attempted": 169869,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1564
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9121354,
+        "used_memory_rss": 9133215,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2703642624,
+      "connected": 12500,
+      "driverRss": 718733312,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 868089856,
+          "cpuCores": 0.6393298785582187,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 884625408,
+          "cpuCores": 0.6555375612546194,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 258138112,
+          "cpuCores": 0.1227896987760734,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713823871,
+      "elapsedSeconds": 690.072,
+      "accepted": 173615,
+      "attempted": 173617,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1564
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 101,
+        "oldest_check_lag_ms": 153,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9454520,
+        "used_memory_rss": 9462430,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2684370944,
+      "connected": 12500,
+      "driverRss": 747753472,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 874909696,
+          "cpuCores": 0.781135448886814,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 903843840,
+          "cpuCores": 0.6549629945908397,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 257548288,
+          "cpuCores": 0.1398539644902787,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713838888,
+      "elapsedSeconds": 705.089,
+      "accepted": 177370,
+      "attempted": 177371,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1712
+        },
+        {
+          "status": "active",
+          "count": 4999
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 60,
+        "oldest_check_lag_ms": 73,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9636721,
+        "used_memory_rss": 9638505,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2685857792,
+      "connected": 12500,
+      "driverRss": 761888768,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 882044928,
+          "cpuCores": 0.7192189302423821,
+          "sockets": 6250,
+          "waiting": 156
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 861261824,
+          "cpuCores": 0.8280829739139748,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 257671168,
+          "cpuCores": 0.09402338361550484,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713853924,
+      "elapsedSeconds": 720.125,
+      "accepted": 181166,
+      "attempted": 181230,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1877
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 64,
+        "oldest_ms": "70"
+      },
+      "deadlines": {
+        "checks_due": 1,
+        "oldest_check_lag_ms": 18,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9606732,
+        "used_memory_rss": 9611783,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2596790272,
+      "connected": 12500,
+      "driverRss": 728367104,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 882851840,
+          "cpuCores": 0.842867585502259,
+          "sockets": 6250,
+          "waiting": 178
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 864124928,
+          "cpuCores": 0.6418735509105172,
+          "sockets": 6250,
+          "waiting": 293
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 259059712,
+          "cpuCores": 0.2656981138031102,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713868876,
+      "elapsedSeconds": 735.077,
+      "accepted": 184966,
+      "attempted": 184968,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1877
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 176,
+        "oldest_check_lag_ms": 74,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9619556,
+        "used_memory_rss": 9602964,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2813480960,
+      "connected": 12500,
+      "driverRss": 735461376,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 861687808,
+          "cpuCores": 0.6249194478831612,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 852135936,
+          "cpuCores": 0.5469775739194229,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 255139840,
+          "cpuCores": 0.1554333831450771,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713883907,
+      "elapsedSeconds": 750.108,
+      "accepted": 188706,
+      "attempted": 188726,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1877
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9502908,
+        "used_memory_rss": 9503071,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2779762688,
+      "connected": 12500,
+      "driverRss": 758059008,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 876183552,
+          "cpuCores": 0.6075491119657256,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 862023680,
+          "cpuCores": 0.7028776992803258,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 252751872,
+          "cpuCores": 0.282105140585882,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713898897,
+      "elapsedSeconds": 765.098,
+      "accepted": 192471,
+      "attempted": 192473,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1877
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 299,
+        "oldest_check_lag_ms": 56,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9491353,
+        "used_memory_rss": 9477441,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2758975488,
+      "connected": 12500,
+      "driverRss": 723681280,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 843816960,
+          "cpuCores": 0.9381009396610968,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 874139648,
+          "cpuCores": 0.7178498258164097,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 255533056,
+          "cpuCores": 0.2628887926836984,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713913915,
+      "elapsedSeconds": 780.116,
+      "accepted": 196323,
+      "attempted": 196328,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1877
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 1,
+        "oldest_check_lag_ms": 42,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9371162,
+        "used_memory_rss": 9372070,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2780581888,
+      "connected": 12500,
+      "driverRss": 745512960,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 852135936,
+          "cpuCores": 0.827946349076634,
+          "sockets": 6250,
+          "waiting": 35
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 871739392,
+          "cpuCores": 0.6227490114233268,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 256917504,
+          "cpuCores": 0.29537430860209624,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713928889,
+      "elapsedSeconds": 795.09,
+      "accepted": 200070,
+      "attempted": 200071,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1877
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 1,
+        "oldest_ms": "3"
+      },
+      "deadlines": {
+        "checks_due": 13,
+        "oldest_check_lag_ms": 19,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9364715,
+        "used_memory_rss": 9345644,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2827866112,
+      "connected": 12500,
+      "driverRss": 741826560,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 852180992,
+          "cpuCores": 0.8111316025062808,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 875560960,
+          "cpuCores": 0.7339567699462902,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 257712128,
+          "cpuCores": 0.20113356511019856,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713943903,
+      "elapsedSeconds": 810.104,
+      "accepted": 203823,
+      "attempted": 203825,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1877
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 1,
+        "oldest_ms": "7"
+      },
+      "deadlines": {
+        "checks_due": 100,
+        "oldest_check_lag_ms": 163,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9124466,
+        "used_memory_rss": 9106756,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2810777600,
+      "connected": 12500,
+      "driverRss": 726810624,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 864886784,
+          "cpuCores": 0.7037752141966417,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 854708224,
+          "cpuCores": 0.6875661419612867,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 257650688,
+          "cpuCores": 0.1862151775128423,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713958900,
+      "elapsedSeconds": 825.101,
+      "accepted": 207572,
+      "attempted": 207574,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1877
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 200,
+        "oldest_check_lag_ms": 156,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9111378,
+        "used_memory_rss": 9072168,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2860404736,
+      "connected": 12500,
+      "driverRss": 766697472,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 881184768,
+          "cpuCores": 0.5621909762746469,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 862052352,
+          "cpuCores": 0.7020048379417028,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 252633088,
+          "cpuCores": 0.15464989381855448,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713973932,
+      "elapsedSeconds": 840.133,
+      "accepted": 211427,
+      "attempted": 211432,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1877
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 8828719,
+        "used_memory_rss": 8839924,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2774171648,
+      "connected": 12500,
+      "driverRss": 764592128,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 873390080,
+          "cpuCores": 0.6252261442963973,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 864026624,
+          "cpuCores": 0.6859587831629728,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 253394944,
+          "cpuCores": 0.1880272263423542,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789713988902,
+      "elapsedSeconds": 855.103,
+      "accepted": 215173,
+      "attempted": 215175,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1877
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 99,
+        "oldest_check_lag_ms": 17,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 8800826,
+        "used_memory_rss": 8770352,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2746621952,
+      "connected": 12500,
+      "driverRss": 784678912,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 847122432,
+          "cpuCores": 0.7029495985138067,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 865943552,
+          "cpuCores": 0.6249891251892145,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 255844352,
+          "cpuCores": 0.1081561870597952,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789714003912,
+      "elapsedSeconds": 870.113,
+      "accepted": 218925,
+      "attempted": 218927,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1877
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 205,
+        "oldest_check_lag_ms": 118,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 8505725,
+        "used_memory_rss": 8517869,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2855813120,
+      "connected": 12500,
+      "driverRss": 756699136,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 853688320,
+          "cpuCores": 0.7029601421598877,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 882700288,
+          "cpuCores": 0.7190534256695954,
+          "sockets": 6250,
+          "waiting": 31
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 253939712,
+          "cpuCores": 0.27955387563284,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789714018912,
+      "elapsedSeconds": 885.113,
+      "accepted": 222674,
+      "attempted": 222677,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1877
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 96,
+        "oldest_check_lag_ms": 43,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9031962,
+        "used_memory_rss": 9059914,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2828455936,
+      "connected": 12500,
+      "driverRss": 762671104,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 873897984,
+          "cpuCores": 0.796202792851378,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 854167552,
+          "cpuCores": 0.6399031826484481,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 258498560,
+          "cpuCores": 0.2650098848686969,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789714033896,
+      "elapsedSeconds": 900.097,
+      "accepted": 226400,
+      "attempted": 226400,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1964
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 5,
+        "oldest_check_lag_ms": 192,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 9434092,
+        "used_memory_rss": 9463097,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2769444864,
+      "connected": 12500,
+      "driverRss": 800317440,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 874438656,
+          "cpuCores": 0.7957518632025253,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 860602368,
+          "cpuCores": 1.0297397213116537,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 256716800,
+          "cpuCores": 0.17134460687867709,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789714035566,
+      "elapsedSeconds": 901.767,
+      "accepted": 226400,
+      "attempted": 226400,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 1964
+        },
+        {
+          "status": "active",
+          "count": 5000
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 1,
+        "oldest_check_lag_ms": 47,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 8398117,
+        "used_memory_rss": 8415427,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 2848952320,
+      "connected": 12500,
+      "driverRss": 742006784,
+      "children": [
+        {
+          "pid": 21116,
+          "role": "api",
+          "rss": 840429568,
+          "cpuCores": 0.2345641095152963,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 22680,
+          "role": "api",
+          "rss": 863686656,
+          "cpuCores": 0.2609401624820423,
+          "sockets": 6250,
+          "waiting": 0
+        },
+        {
+          "pid": 14896,
+          "role": "worker",
+          "rss": 254550016,
+          "cpuCores": 0.20028796080909317,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    }
+  ],
+  "gate": {
+    "fullPreset": false,
+    "throughputTolerancePercent": 5,
+    "durationMet": true,
+    "socketTargetMet": true,
+    "baseRateMet": true,
+    "burstTargetMet": true,
+    "processingP95Met": true,
+    "processingP99Met": true,
+    "noDisconnects": true,
+    "noPrivacyFailure": true,
+    "noApplicationErrors": true,
+    "viewerFreshness": true,
+    "durable": true
+  },
+  "limitations": [
+    "This is local hardware evidence, not Render capacity or a promise that US$100 supports the workload.",
+    "Accounts, sessions and deterministic starting fixtures are seeded directly; signup, login, lobby/admission and the initial countdown are excluded.",
+    "Full legal action sequences are precomputed using the engine and lexicon. Completed games are replaced by fresh active fixtures; replacement subscription/DB work remains inside measurement.",
+    "Service timing wraps Games.command through commit and publication. Authentication and transport add to the separately measured end-to-end acknowledgement.",
+    "The driver and local PostgreSQL/Redis share hardware with the child servers; CPU, network and storage contention affect results.",
+    "Engine.IO incoming byte counts are an application-level approximation, not a billable egress measurement.",
+    "A one-hour configured preset is not evidence of an executed one-hour run."
+  ],
+  "stopReason": null,
+  "error": null,
+  "cleanupError": null
+}

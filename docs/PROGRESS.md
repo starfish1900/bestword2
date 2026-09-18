@@ -13,7 +13,7 @@ Accounts, lobby, two-player games, scoring, clocks, live spectators, permanent P
 
 The final consolidated run passed **175/175 tests in 113.47 seconds**. Its [JSON report](evidence/verification-175.json) includes 14 multi-gateway integration, 12 health and 14 real fault/resource cases. This includes the connection-join race found during the larger capacity setup, reproduced and fixed with a regression. See [server evidence](progress/server.md).
 
-The final combined Chromium/WebKit run passed all **11 enabled checks in 88.36 seconds**, with one deliberate WebKit skip for the Chromium-only acknowledgement fixture. It covers real games/replay, touch-only input, compression, lobby recovery, four viewport sizes including 320×568, uncertain acknowledgements and a one-hour page-clock adjustment. See the retained [combined browser report](evidence/browser-latest.json) and [client notes](progress/client.md).
+The final release Chromium/WebKit run passed all **11 enabled checks in 88.83 seconds**, with one deliberate WebKit skip for the Chromium-only acknowledgement fixture. It covers real games/replay, touch-only input, compression, lobby recovery, four viewport sizes including 320×568, uncertain acknowledgements and a one-hour page-clock adjustment. See the retained [release browser report](evidence/browser-release.json) and [client notes](progress/client.md).
 
 ## Operations and capacity verification
 
@@ -22,8 +22,7 @@ The final combined Chromium/WebKit run passed all **11 enabled checks in 88.36 s
 - Strict builds/type checks pass. The last dependency audit reported zero vulnerabilities.
 - Render, Docker, Compose and CI configuration is prepared; deployment schemas and references validate. No services have been purchased or publicly deployed.
 - The [full strict hour on final code](../tools/load/reports/2026-09-18T05-30-44-454Z-acceptance.json) passed with **1,200 maintained sockets** (100 simultaneous games and 1,000 spectators), **185,805 accepted commands**, **536,126 revision syncs** and **5,183 completed-game cycles**. Every receipt and all 5,283 saved game states verified, as did all 1,200 final viewer pushes and 62,196 retiring-viewer checks. All 59 bursts completed; service p95/p99 was 10.26/45.03 ms. Zero errors or disconnects; all child processes exited cleanly. Earlier runs remain in the capacity history.
-- The [strict five-minute scale trial](../tools/load/reports/2026-09-18T05-24-43-476Z-scale.json) passed with **5,000 simultaneous games, 2,500 spectators and 12,500 maintained sockets**. It accepted 75,400 commands (250 baseline/second plus four 100-command bursts), performed 465,330 revision syncs, verified every receipt and final viewer push, and recorded zero errors or disconnects. Child processes shut down cleanly. See [capacity evidence](progress/capacity.md) for resource use and exact limits.
-- A 900-second scale trial is running to exercise complete game cycles at 12,500 sockets. Its outcome remains pending. The [load guide](../tools/load/README.md) explains current gates and report limitations.
+- The [strict fifteen-minute scale trial](../tools/load/reports/2026-09-18T06-31-39-890Z-scale.json) passed with **5,000 simultaneous games, 2,500 spectators and 12,500 maintained sockets**. It accepted 226,400 commands (250 baseline/second plus fourteen 100-command bursts), performed 1,395,888 revision syncs and completed 1,964 game cycles. Every receipt and all 6,964 game states verified; durability, privacy and viewer-delivery gates passed. Zero errors or disconnects; all child processes shut down cleanly. See [capacity evidence](progress/capacity.md) for the explicit push/initialization distinction, resource use and exact limits. The [load guide](../tools/load/README.md) explains reproduction and report limitations.
 
 No Render capacity or US$100-for-5,000-games claim has been established. Initial admission remains 100 games and 10 spectators per game.
 
@@ -31,6 +30,6 @@ No Render capacity or US$100-for-5,000-games claim has been established. Initial
 
 Docker and WSL are unavailable. Local integration uses PostgreSQL and a community Redis Windows build; prepared CI targets PostgreSQL 18 and Valkey 8, but no hosted CI or Linux container run has executed. Chromium/WebKit pass; Firefox cannot launch because of a Windows side-by-side runtime error and remains unverified locally.
 
-Local test subprocesses have passed automatic sandbox approval. No user approval is pending. Source and evidence are saved here; work continues through capacity verification.
+Local test subprocesses passed automatic sandbox approval. No user approval is pending. Source and completed local verification evidence are saved here; the environment limitations above remain explicit.
 
 

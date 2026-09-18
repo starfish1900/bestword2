@@ -1,0 +1,620 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\folia\\Documents\\Codex\\2026-09-17\\p\\outputs\\bestword\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--project=chromium",
+      "--project=webkit",
+      "--output=apps/web/test-results/release",
+      "--reporter=list,json"
+    ],
+    "configFile": "C:\\Users\\folia\\Documents\\Codex\\2026-09-17\\p\\outputs\\bestword\\playwright.config.ts",
+    "rootDir": "C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/tools/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/apps/web/test-results/release",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/tools/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/apps/web/test-results/release",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/tools/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/apps/web/test-results/release",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/tools/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.63.0",
+    "workers": 1,
+    "webServer": {
+      "command": "npm start",
+      "url": "http://localhost:3000/api/session",
+      "reuseExistingServer": true,
+      "timeout": 60000
+    }
+  },
+  "suites": [
+    {
+      "title": "ack-recovery.spec.ts",
+      "file": "ack-recovery.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "ack fixture preserves a committed command through SERVICE_RECOVERING and retry",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6138,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T06:48:47.970Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "ack-fixture-verification",
+                      "contentType": "application/json",
+                      "body": "ewogICJmaXh0dXJlIjogIldlYlNvY2tldCBhY2tub3dsZWRnZW1lbnQgcmVwbGFjZW1lbnQgYWZ0ZXIgcmVhbCBzZXJ2ZXIgY29tbWl0IiwKICAiZ2FtZUlkIjogImUyOWU4MTM5LTE5N2YtNGVkOS05ZGQ5LWNmNjM2NTVhYjQ0YSIsCiAgImNvbW1hbmRJZCI6ICI2ZTJhYWY5OC1mNWVmLTRmNzYtYjg2Yy0yM2VlYjZiMTEwZDgiLAogICJpZGVudGljYWxDb21tYW5kQXR0ZW1wdHMiOiAyLAogICJjb21taXR0ZWRXb3JkQ291bnQiOiAxLAogICJzdG9yYWdlUmV0YWluZWRVbnRpbFJlYWxSZXRyeUFjayI6IHRydWUsCiAgInN0b3JhZ2VDbGVhcmVkQWZ0ZXJTdWNjZXNzIjogdHJ1ZQp9"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7917c529010dedc989d4-df82ae86845a16064632",
+          "file": "ack-recovery.spec.ts",
+          "line": 5,
+          "column": 1
+        },
+        {
+          "title": "ack fixture preserves a committed command through SERVICE_RECOVERING and retry",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "Focused Chromium wire-acknowledgement fixture",
+                  "location": {
+                    "file": "C:\\Users\\folia\\Documents\\Codex\\2026-09-17\\p\\outputs\\bestword\\tools\\e2e\\ack-recovery.spec.ts",
+                    "line": 6,
+                    "column": 8
+                  }
+                }
+              ],
+              "expectedStatus": "skipped",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "skipped",
+                  "duration": 1,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T06:49:36.139Z",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Focused Chromium wire-acknowledgement fixture",
+                      "location": {
+                        "file": "C:\\Users\\folia\\Documents\\Codex\\2026-09-17\\p\\outputs\\bestword\\tools\\e2e\\ack-recovery.spec.ts",
+                        "line": 6,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "7917c529010dedc989d4-a2bbecd085ce9970979f",
+          "file": "ack-recovery.spec.ts",
+          "line": 5,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "clock.spec.ts",
+      "file": "clock.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "one-hour page wall-clock jump preserves the turn and draft through real periodic sync",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 9791,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T06:48:54.336Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-clock-injection",
+                      "contentType": "application/json",
+                      "body": "ewogICJzY29wZSI6ICJPbmx5IHBhZ2UgRGF0ZS5ub3cgc2hpZnRlZDsgcmVhbCBzZXJ2ZXIgYW5kIHBlcmZvcm1hbmNlLm5vdyB1bmNoYW5nZWQiLAogICJnYW1lSWQiOiAiNTAzNjY1NjQtM2Q2OC00YWMzLTgyNWMtMTU3YWFlMWU4OGNlIiwKICAid2FsbENsb2NrU2hpZnRNcyI6IDM2MDAwMDAsCiAgInBlcmZvcm1hbmNlQXRJbmplY3Rpb24iOiA0NDk5LjUsCiAgImNsb2NrQmVmb3JlIjogOTAwLAogICJjbG9ja0FmdGVySnVtcCI6IDg5OSwKICAiY2xvY2tBZnRlclN5bmMiOiA4OTUsCiAgImVsYXBzZWRTZWNvbmRzIjogNC4zNzExNDA5LAogICJyZXZpc2lvbkJlZm9yZSI6IDMsCiAgInJldmlzaW9uQWZ0ZXJTeW5jIjogMywKICAidW5jaGFuZ2VkUmVwbGllcyI6IDEsCiAgImRyYWZ0VGlsZXNQcmVzZXJ2ZWQiOiAyLAogICJhY2NlcHRlZFdvcmQiOiAiQUFTIgp9"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "218eb078ae9d79f54cb4-85ec86498eb1ed236af6",
+          "file": "clock.spec.ts",
+          "line": 12,
+          "column": 1
+        },
+        {
+          "title": "one-hour page wall-clock jump preserves the turn and draft through real periodic sync",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 13646,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T06:49:36.523Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "browser-clock-injection",
+                      "contentType": "application/json",
+                      "body": "ewogICJzY29wZSI6ICJPbmx5IHBhZ2UgRGF0ZS5ub3cgc2hpZnRlZDsgcmVhbCBzZXJ2ZXIgYW5kIHBlcmZvcm1hbmNlLm5vdyB1bmNoYW5nZWQiLAogICJnYW1lSWQiOiAiN2RjYzgxMGEtZGZlNi00N2QyLWFjOTgtZTJmZjc4ZmYzZGIzIiwKICAid2FsbENsb2NrU2hpZnRNcyI6IDM2MDAwMDAsCiAgInBlcmZvcm1hbmNlQXRJbmplY3Rpb24iOiA2ODE5LAogICJjbG9ja0JlZm9yZSI6IDg5OSwKICAiY2xvY2tBZnRlckp1bXAiOiA4OTksCiAgImNsb2NrQWZ0ZXJTeW5jIjogODk1LAogICJlbGFwc2VkU2Vjb25kcyI6IDQuNDc3NTkxNzAwMDAwMDAwNSwKICAicmV2aXNpb25CZWZvcmUiOiAzLAogICJyZXZpc2lvbkFmdGVyU3luYyI6IDMsCiAgInVuY2hhbmdlZFJlcGxpZXMiOiAxLAogICJkcmFmdFRpbGVzUHJlc2VydmVkIjogMiwKICAiYWNjZXB0ZWRXb3JkIjogIkFBSCIKfQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "218eb078ae9d79f54cb4-b755784f3da84cf4d439",
+          "file": "clock.spec.ts",
+          "line": 12,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "encoding.spec.ts",
+      "file": "encoding.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "production assets negotiate Brotli and gzip without changing content",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 148,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T06:49:04.151Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f1201e8c00d062114086-9009d4ffcc0e03f6def7",
+          "file": "encoding.spec.ts",
+          "line": 17,
+          "column": 1
+        },
+        {
+          "title": "production assets negotiate Brotli and gzip without changing content",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 34,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T06:49:50.192Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "f1201e8c00d062114086-8a1ba3b2639d5c038479",
+          "file": "encoding.spec.ts",
+          "line": 17,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "game.spec.ts",
+      "file": "game.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "two real players match, place a word, skip, pass, spectate and replay",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10378,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T06:49:04.321Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8b1bb1493a64c9fc3ab6-bcfb40f8434096f7b5ab",
+          "file": "game.spec.ts",
+          "line": 19,
+          "column": 1
+        },
+        {
+          "title": "two real players match, place a word, skip, pass, spectate and replay",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 16766,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T06:49:50.237Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8b1bb1493a64c9fc3ab6-5c399dabe4f6468d6f8e",
+          "file": "game.spec.ts",
+          "line": 19,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "lobby-recovery.spec.ts",
+      "file": "lobby-recovery.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "lobby refresh recovers a missed match notification from the session",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 15525,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T06:49:14.722Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a714b5dbf01b9b8d3996-e71bb72a0d74f3cf2f0c",
+          "file": "lobby-recovery.spec.ts",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "lobby refresh recovers a missed match notification from the session",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1080,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T06:50:07.022Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a714b5dbf01b9b8d3996-526dfe8bd74421512c02",
+          "file": "lobby-recovery.spec.ts",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "touch.spec.ts",
+      "file": "touch.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "real 320x568 touchscreen plays rack and vowel tiles, erases and passes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5478,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T06:49:30.272Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "touch-verification",
+                      "contentType": "application/json",
+                      "body": "ewogICJnYW1lSWQiOiAiZmYzODdlZTEtOTBjZS00NDQ0LTgxOWItMDIzMTcwYTE4NTUyIiwKICAid29yZCI6ICJBQkIiLAogICJ0aWxlcyI6IFsKICAgIHsKICAgICAgInJvdyI6IDgsCiAgICAgICJjb2x1bW4iOiAxLAogICAgICAibGV0dGVyIjogIkEiCiAgICB9LAogICAgewogICAgICAicm93IjogOCwKICAgICAgImNvbHVtbiI6IDMsCiAgICAgICJsZXR0ZXIiOiAiQiIKICAgIH0KICBdLAogICJleHBlY3RlZFNjb3JlIjogMzQsCiAgImlucHV0cyI6IHsKICAgICJ0b3VjaCI6IDgsCiAgICAia2V5Ym9hcmQiOiAwCiAgfSwKICAibWF4VG91Y2hQb2ludHMiOiAxLAogICJoYXNUb3VjaCI6IHRydWUsCiAgInZpZXdwb3J0IjogewogICAgIndpZHRoIjogMzIwLAogICAgImhlaWdodCI6IDU2OAogIH0KfQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "1506cf64783f7365f542-53daf32b6788377314c3",
+          "file": "touch.spec.ts",
+          "line": 36,
+          "column": 1
+        },
+        {
+          "title": "real 320x568 touchscreen plays rack and vowel tiles, erases and passes",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8028,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-09-18T06:50:08.123Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "touch-verification",
+                      "contentType": "application/json",
+                      "body": "ewogICJnYW1lSWQiOiAiYWFkYTllMjYtZTIzMy00MjQ2LTk4MTQtZTI2Y2Q2YjFmMWI3IiwKICAid29yZCI6ICJBQVMiLAogICJ0aWxlcyI6IFsKICAgIHsKICAgICAgInJvdyI6IDMsCiAgICAgICJjb2x1bW4iOiA1LAogICAgICAibGV0dGVyIjogIkEiCiAgICB9LAogICAgewogICAgICAicm93IjogNCwKICAgICAgImNvbHVtbiI6IDUsCiAgICAgICJsZXR0ZXIiOiAiUyIKICAgIH0KICBdLAogICJleHBlY3RlZFNjb3JlIjogNCwKICAiaW5wdXRzIjogewogICAgInRvdWNoIjogOSwKICAgICJrZXlib2FyZCI6IDAKICB9LAogICJtYXhUb3VjaFBvaW50cyI6IDAsCiAgImhhc1RvdWNoIjogdHJ1ZSwKICAidmlld3BvcnQiOiB7CiAgICAid2lkdGgiOiAzMjAsCiAgICAiaGVpZ2h0IjogNTY4CiAgfQp9"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "1506cf64783f7365f542-9edca274d33381210ced",
+          "file": "touch.spec.ts",
+          "line": 36,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-09-18T06:48:47.384Z",
+    "duration": 88828.41,
+    "expected": 11,
+    "skipped": 1,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
