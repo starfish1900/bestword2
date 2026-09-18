@@ -25,6 +25,7 @@ export async function migrate(db:Database):Promise<void> {
       CREATE TABLE IF NOT EXISTS users (id uuid PRIMARY KEY, username varchar(15) NOT NULL, username_key varchar(15) NOT NULL UNIQUE, password_hash text NOT NULL, created_at bigint NOT NULL);
       CREATE TABLE IF NOT EXISTS sessions (token_hash text PRIMARY KEY, user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE, expires_at bigint NOT NULL);
       CREATE INDEX IF NOT EXISTS sessions_expiry ON sessions(expires_at);
+      CREATE INDEX IF NOT EXISTS sessions_user ON sessions(user_id,expires_at);
       CREATE TABLE IF NOT EXISTS games (id uuid PRIMARY KEY, state jsonb NOT NULL, revision integer NOT NULL, status text NOT NULL, created_at bigint NOT NULL, updated_at bigint NOT NULL, next_deadline bigint, gateways jsonb NOT NULL DEFAULT '[[],[]]');
       CREATE INDEX IF NOT EXISTS games_deadlines ON games(next_deadline) WHERE status <> 'finished';
       CREATE INDEX IF NOT EXISTS games_history ON games(created_at DESC,id DESC);

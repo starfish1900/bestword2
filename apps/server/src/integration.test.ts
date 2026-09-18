@@ -50,6 +50,7 @@ describe.skipIf(!enabled)('real database, multiple gateways, and WebSocket integ
     const rejected=await a.app.inject({method:'POST',url:'/api/auth/register',headers:{origin:'https://other.invalid'},payload:{username:'abc',password:'abcdefghijkl'}});expect(rejected.statusCode).toBe(403);
     const malformed=await api(a,'/api/games/not-a-uuid');expect(malformed.statusCode).toBe(400);expect(JSON.stringify(malformed.json())).not.toMatch(/stack|password_hash|SELECT /);
     expect((await api(a,'/api/seeks',undefined,{minutes:5})).statusCode).toBe(401);
+    const badJson=await a.app.inject({method:'POST',url:'/api/seeks',headers:{'content-type':'application/json'},payload:'{'});expect(badJson.statusCode).toBe(400);
   });
   it('atomically resolves two simultaneous joins and prevents a second active slot',async()=>{
     const host=await player(),one=await player(),two=await player();const seek=(await api(a,'/api/seeks',host,{minutes:15})).json().seek;

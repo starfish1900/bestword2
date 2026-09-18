@@ -39,6 +39,7 @@ export async function buildApp(config:Config){
     if(error instanceof z.ZodError)return reply.code(400).send({error:{code:'INVALID_REQUEST',message:'Please check the supplied fields.',details:{fields:error.flatten().fieldErrors}}});
     if(error instanceof HttpError)return reply.code(error.statusCode).send({error:error.toJSON()});
     if(error instanceof EngineError)return reply.code(400).send({error:{code:error.code,message:error.message}});
+    if(error instanceof Error&&'statusCode'in error&&typeof error.statusCode==='number'&&error.statusCode>=400&&error.statusCode<500)return reply.code(error.statusCode).send({error:{code:'INVALID_REQUEST',message:error.statusCode===413?'This request is too large.':'The request could not be read. Please check its format.'}});
     app.log.error({err:error,requestId:request.id},'Request failed');return reply.code(503).send({error:{code:'SERVICE_RECOVERING',message:'The service is reconnecting. Please try again shortly.'}});
   });
   app.get('/health/live',async()=>({ok:true}));
@@ -71,11 +72,12 @@ export async function buildApp(config:Config){
   app.get('/api/games/:id',async request=>{const {id}=idSchema.parse(request.params);const session=await auth.lookup(request.cookies.bw_session);return games.view(id,session?.user.id);});
   app.get('/metrics',async(request,reply)=>{
     const supplied=request.headers.authorization?.replace(/^Bearer /,'')??'';const expected=config.METRICS_TOKEN??'';
-    if(config.NODE_ENV==='production'&&(!expected||supplied.length!==expected.length||!timingSafeEqual(Buffer.from(supplied),Buffer.from(expected))))return reply.code(404).send();
+    const suppliedBytes=Buffer.from(supplied),expectedBytes=Buffer.from(expected);
+    if(config.NODE_ENV==='production'&&(!expected||suppliedBytes.length!==expectedBytes.length||!timingSafeEqual(suppliedBytes,expectedBytes)))return reply.code(404).send();
     const result=await db.pool.query<{status:string;count:string}>('SELECT status,count(*) AS count FROM games GROUP BY status');
     const memory=process.memoryUsage();return reply.type('text/plain; version=0.0.4').send(['# TYPE bestword_active_games gauge',...result.rows.map(row=>`bestword_active_games{status="${row.status}"} ${row.count}`),`bestword_process_rss_bytes ${memory.rss}`,`bestword_socket_connections ${realtime.io.engine.clientsCount}`,`bestword_database_pool_waiting ${db.pool.waitingCount}`,`bestword_service_ready ${health.ready?1:0}`,''].join('\n'));
   });
-  const webRoot=resolve('apps/web/dist');if(existsSync(resolve(webRoot,'index.html'))){await app.register(staticFiles,{root:webRoot,index:false,redirect:false,list:false,setHeaders:(response,path)=>response.header('Cache-Control',path.includes(`${process.platform==='win32'?'\\':'/'}assets${process.platform==='win32'?'\\':'/'}`)?'public, max-age=31536000, immutable':'no-cache')});app.setNotFoundHandler((request,reply)=>{if(request.method==='GET'&&!request.url.startsWith('/api/')&&!request.url.startsWith('/assets/')&&request.headers.accept?.includes('text/html'))return reply.header('Cache-Control','no-cache').sendFile('index.html');return reply.code(404).send({error:{code:'NOT_FOUND',message:'This page was not found.'}});});}
+  const webRoot=resolve('apps/web/dist');if(existsSync(resolve(webRoot,'index.html'))){await app.register(staticFiles,{root:webRoot,index:false,redirect:false,list:false,preCompressed:true,setHeaders:(response,path)=>response.header('Cache-Control',path.includes(`${process.platform==='win32'?'\\':'/'}assets${process.platform==='win32'?'\\':'/'}`)?'public, max-age=31536000, immutable':'no-cache')});app.setNotFoundHandler((request,reply)=>{if(request.method==='GET'&&!request.url.startsWith('/api/')&&!request.url.startsWith('/assets/')&&request.headers.accept?.includes('text/html'))return reply.header('Cache-Control','no-cache').sendFile('index.html');return reply.code(404).send({error:{code:'NOT_FOUND',message:'This page was not found.'}});});}
   let closing=false;let cycle:Promise<void>|null=null;
   // Every gateway can take over the scheduler if the worker stops. Row locks and
   // SKIP LOCKED claims make this safe across any number of instances.

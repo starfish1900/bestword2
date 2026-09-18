@@ -14,13 +14,16 @@
 - API instances take over deadline processing when the worker stops. Private broadcasts target currently valid session rooms. Command acknowledgements follow database commit; outbox retirement waits for Redis stream writes.
 
 ## Milestone 3 — hardening and operational verification in progress
-- Real network-failure tests for PostgreSQL/Redis are being added using isolated test proxies.
-- Render/Docker/CI/operations artifacts are being prepared. No paid service or public deployment has been created.
+- Four real network-failure/revocation tests pass using isolated proxies. Both PostgreSQL and Redis were interrupted for4.2seconds with1.5seconds left on the next clock; accepted state survived and clocks resumed without an incorrect loss or duplicate draw.
+- The consolidated run passed154 tests in40.40seconds. Its machine-readable report is saved at evidence/verification-154.json.
+- An adapter retry loop discovered by these tests was corrected. Half-open connections and abrupt process termination are receiving additional checks.
+- Render/Docker/CI/operations artifacts are complete and schemas validate. No paid service or public deployment has been created.
 - Load driver and capacity measurements remain in progress. No5,000-game capacity claim has been established; a US$100 monthly deployment has not been benchmarked.
-- Final cross-browser checks, documentation, load evidence, and a fresh consolidated verification run remain.
+- Compiled same-origin browser checks, a real backup/restore drill, load evidence, and a final consolidated verification run remain.
 
 ## Environment limitations
 - Docker and WSL are not installed here. Portable PostgreSQL and a community Redis Windows build are used for local integration; Valkey/container compatibility is also covered by prepared CI, which has not been executed remotely.
 - Native build/test subprocesses require automatic sandbox approval; routine requests have succeeded. No user approval is pending.
+- Chromium and WebKit pass full browser games. The downloaded Firefox executable is blocked by a Windows side-by-side runtime error before the application opens; Linux CI is configured to run it.
 
 Detailed evidence and exact commands are saved under progress/ and test output directories. Default tests skip service integration unless BESTWORD_INTEGRATION=1 is supplied.

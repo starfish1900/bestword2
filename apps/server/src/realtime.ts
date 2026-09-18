@@ -28,7 +28,19 @@ const syncSchema=z.object({gameId:z.uuid(),revision:z.number().int().nonnegative
 const SPECTATOR_ADD="redis.call('ZREMRANGEBYSCORE',KEYS[1],'-inf',ARGV[1]); if not redis.call('ZSCORE',KEYS[1],ARGV[2]) and redis.call('ZCARD',KEYS[1])>=tonumber(ARGV[3]) then return 0 end; redis.call('ZADD',KEYS[1],ARGV[4],ARGV[2]);redis.call('PEXPIRE',KEYS[1],45000);return 1";
 const broadcastWrites=new AsyncLocalStorage<Promise<unknown>[]>();
 function durableAdapter(kv:KeyValue){
-  const factory=createAdapter(kv,{streamName:'bw:socket-stream',maxLen:10000});
+  const readers=new Set<KeyValue>();
+  // The adapter immediately retries a failed XREAD. Its blocking read clients
+  // must wait through reconnects; inheriting our fail-fast command setting would
+  // produce a microtask spin that prevents reconnect timers from running.
+  const transport=new Proxy(kv,{get(target,key){
+    if(key==='duplicate')return ()=>{
+      const reader=target.duplicate({disableOfflineQueue:false,commandsQueueMaxLength:100,commandOptions:{timeout:10000},socket:{...target.options?.socket,socketTimeout:10000}});
+      reader.disconnect=async()=>{if(reader.isOpen)reader.destroy();};
+      readers.add(reader);return reader;
+    };
+    const value=Reflect.get(target,key,target) as unknown;return typeof value==='function'?value.bind(target):value;
+  }});
+  const factory=createAdapter(transport,{streamName:'bw:socket-stream',maxLen:10000});
   return function(...args:Parameters<typeof factory>){
     const adapter=factory(...args);const publish=adapter.doPublish.bind(adapter);
     // Socket.IO's emit returns before XADD, and its cluster adapter absorbs XADD
@@ -37,6 +49,8 @@ function durableAdapter(kv:KeyValue){
       const write=Promise.resolve(publish(message));write.catch(()=>{});
       broadcastWrites.getStore()?.push(write);return write;
     };
+    const close=adapter.close.bind(adapter);
+    adapter.close=()=>{close();for(const reader of readers)if(reader.isOpen)reader.destroy();};
     return adapter;
   };
 }
