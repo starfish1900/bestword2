@@ -10,4 +10,3 @@ playwright-report/
 coverage/
 .local/
 *.log
-tools/lexicon-builder/Cargo.lock
