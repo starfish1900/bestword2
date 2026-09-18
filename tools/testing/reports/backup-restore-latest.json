@@ -1,0 +1,61 @@
+{
+  "runId": "f508bdeaa5aada00",
+  "startedAt": "2026-09-18T04:09:40.243Z",
+  "status": "passed",
+  "fixtureOnly": true,
+  "databases": {
+    "source": "bw_restore_f508bdeaa5aada00_source",
+    "restored": "bw_restore_f508bdeaa5aada00_restored"
+  },
+  "checks": {
+    "exactTableContents": true,
+    "exactConstraints": true,
+    "passwordHashVerified": true,
+    "snapshotAndLexiconVersion": true,
+    "tileConservation": 267,
+    "acceptedReceiptsReplayedWithoutMutation": 2,
+    "pendingOutboxPreserved": 5,
+    "outboxSequenceContinues": true
+  },
+  "cleanup": {
+    "bw_restore_f508bdeaa5aada00_source": "dropped",
+    "bw_restore_f508bdeaa5aada00_restored": "dropped"
+  },
+  "tools": {
+    "dump": "pg_dump (PostgreSQL) 18.6",
+    "restore": "pg_restore (PostgreSQL) 18.6"
+  },
+  "postgres": "18.4",
+  "rowCounts": {
+    "commands": 2,
+    "game_events": 6,
+    "game_players": 2,
+    "games": 1,
+    "incidents": 0,
+    "outbox": 5,
+    "playing_slots": 1,
+    "schema_migrations": 1,
+    "seeks": 0,
+    "service_epochs": 0,
+    "sessions": 2,
+    "users": 2
+  },
+  "contentsSha256": "d20806c11c4e0e5ed5e8d07195e8563ec7d7063dee8a4feb52fa3bd8780e363a",
+  "fixture": {
+    "acceptedActions": [
+      "PLACE_WORD",
+      "PASS"
+    ],
+    "score": 22,
+    "revision": 5,
+    "lexiconVersion": "87222d75c77c52574868bf0cefd4faf5703d4df166336a4ec9a70cffe72100af"
+  },
+  "backup": {
+    "path": ".local/backup-tests/f508bdeaa5aada00/fixtures.dump",
+    "bytes": 24750,
+    "sha256": "8919d572c93c6805c1d490a11e931b4a3fa9bec175b562eeb724f6cd739bd196",
+    "dumpMs": 150,
+    "restoreMs": 127
+  },
+  "finishedAt": "2026-09-18T04:09:41.745Z"
+}

@@ -1,6 +1,6 @@
 # Server verification checkpoint
 
-18 September 2026: **168/168 tests passed in 110.35 seconds** in the consolidated local run. The retained [JSON report](../evidence/verification-168.json) includes 112 engine, 12 lexicon, 6 client, 13 server integration, 12 health and 13 fault/resource tests. Later client-only additions and capacity checks have separate reports.
+18 September 2026: **174/174 tests passed in 113.82 seconds** in the consolidated local run. The retained [JSON report](../evidence/verification-174.json) includes 112 engine, 12 lexicon, 11 client, 13 server integration, 12 health and 14 fault/resource tests. Later client-only additions and capacity checks have separate reports.
 
 Service tests use real PostgreSQL 18.4 and Redis 7.2.16 with multiple gateways. Isolated PostgreSQL schemas and unique game/account IDs protect development data. Fault proxies affect only test-owned connections; process-kill cases terminate only a test-owned API child.
 
@@ -30,3 +30,4 @@ Without BESTWORD_INTEGRATION=1 the service cases are deliberately skipped. A def
 PostgreSQL locks each game independently; admission uses a separate short lock. API/worker scheduling uses short SKIP LOCKED claims. Redis leases recover missed disconnect callbacks. Game notifications contain only ID, revision and finished flag; actual stream writes precede outbox retirement. Interested gateways fetch current state and emit local private/public projections, selecting valid sessions before private delivery. Blocking readers and ordinary commands have separate reconnect/timeout behavior.
 
 This establishes local functional and failure-path behavior, not Render capacity, regional recovery or a monthly cost guarantee. See [backup evidence](backup.md), [architecture](../ARCHITECTURE.md) and [load evidence](../../tools/load/README.md).
+

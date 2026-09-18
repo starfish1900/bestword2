@@ -11,9 +11,9 @@ The original specification and exact dictionary are preserved. [DECISIONS.md](DE
 
 Accounts, lobby, two-player games, scoring, clocks, live spectators, permanent PASS, public replay and outage recovery are implemented. Multiple API instances share PostgreSQL authority and Redis-compatible coordination. [ARCHITECTURE.md](ARCHITECTURE.md) describes the implementation.
 
-The consolidated run passed **168/168 tests in 110.35 seconds**. Its [JSON report](evidence/verification-168.json) includes 13 multi-gateway integration, 12 health and 13 real fault/resource cases. See [server evidence](progress/server.md).
+The consolidated run passed **174/174 tests in 113.82 seconds**. Its [JSON report](evidence/verification-174.json) includes 13 multi-gateway integration, 12 health and 14 real fault/resource cases. See [server evidence](progress/server.md).
 
-Six Chromium/WebKit browser checks passed against the compiled application: real games/replay, compression, lobby recovery and four viewport sizes including 320×568. Additional touch-input and uncertain-acknowledgement checks are in progress. [Client notes](progress/client.md) record the latest results.
+Eight Chromium/WebKit browser checks passed against the compiled application: real games/replay, touch-only input, compression, lobby recovery and four viewport sizes including 320×568. A separate Chromium acknowledgement fixture verified safe retry and retained pending state after a real committed move. A final local-clock adjustment check is in progress. [Client notes](progress/client.md) record the latest results.
 
 ## Operations and capacity verification
 
@@ -30,3 +30,4 @@ No Render capacity or US$100-for-5,000-games claim has been established. Initial
 Docker and WSL are unavailable. Local integration uses PostgreSQL and a community Redis Windows build; prepared CI targets PostgreSQL 18 and Valkey 8, but no hosted CI or Linux container run has executed. Chromium/WebKit pass; Firefox cannot launch because of a Windows side-by-side runtime error and remains unverified locally.
 
 Local test subprocesses have passed automatic sandbox approval. No user approval is pending. Source and evidence are saved here; work continues through capacity verification.
+

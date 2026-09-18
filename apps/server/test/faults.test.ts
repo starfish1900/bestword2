@@ -5,7 +5,7 @@ import { resolve } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { afterAll,afterEach,beforeAll,beforeEach,describe,expect,it } from 'vitest';
 import { io as connectSocket,type Socket } from 'socket.io-client';
-import type { CommandReply,GameCommand,GameView,Seat,User } from '@bestword/contracts';
+import { INCREMENT_MS,type CommandReply,type GameCommand,type GameView,type Seat,type User } from '@bestword/contracts';
 import { assertStateInvariants,type EngineState } from '@bestword/engine';
 import { FaultProxy } from '../../../tools/testing/fault-proxy.js';
 import { buildApp } from '../src/app.js';
@@ -13,6 +13,7 @@ import { digestToken } from '../src/auth.js';
 import { readConfig,type Config } from '../src/config.js';
 import { createDatabase,databaseNow,migrate,transaction,type Database } from '../src/db.js';
 import { createKeyValue,KEY_VALUE_REPLY_TIMEOUT_MS } from '../src/kv.js';
+import { Games } from '../src/games.js';
 
 const enabled=process.env['BESTWORD_INTEGRATION']==='1';
 const sourceDatabase=process.env['BESTWORD_TEST_DATABASE_URL']??process.env['DATABASE_URL'];
@@ -97,6 +98,52 @@ describe.skipIf(!enabled)('real dependency faults and durable game recovery',()=
     return {command,seat,saved,acceptedRevision:reply.acceptedRevision!};
   }
   function acceptedContent(value:EngineState):unknown{return {board:value.board,players:value.players.map(player=>({id:player.id,score:player.score,rack:player.rack,passed:player.passed})),bag:value.bag,drawOrder:value.consonantDrawOrder,drawnThisTurn:value.drawnThisTurn,history:value.principalHistory,moves:value.moves};}
+
+  it('an injected lost COMMIT acknowledgement resolves the actual PostgreSQL receipt on identical retry without a second move, draw or increment',async()=>{
+    const instance=await launch(),game=await table(instance),before=await state(game.id),seat=before.activeSeat;
+    const command:GameCommand={gameId:game.id,commandId:randomUUID(),expectedRevision:before.revision,action:{type:'NO_WORDS'}};
+    const service=instance.application.games,normalCommand=service.command.bind(service),commandDb=createDatabase(databaseUrl,1);
+    let injected=0;
+    // Deterministic acknowledgement-loss injection, NOT a real network fault:
+    // only this command uses this separate pool. The PostgreSQL COMMIT really
+    // completes before its response is hidden from the command service.
+    const injectedPool=new Proxy(commandDb.pool,{get(target,key){
+      if(key==='connect')return async()=>{
+        const client=await target.connect();let selectedGame=false;
+        return new Proxy(client,{get(connection,property){
+          const value=Reflect.get(connection,property,connection) as unknown;
+          if(property==='query')return async(...args:unknown[])=>{
+            const result=await Reflect.apply(connection.query,connection,args);
+            if(args[0]==='SELECT * FROM games WHERE id=$1 FOR UPDATE'&&Array.isArray(args[1])&&args[1][0]===game.id)selectedGame=true;
+            if(args[0]==='COMMIT'&&selectedGame&&injected===0){injected++;throw new Error('Connection terminated unexpectedly: injected acknowledgement loss after real COMMIT');}
+            return result;
+          };
+          return typeof value==='function'?value.bind(connection):value;
+        }});
+      };
+      const value=Reflect.get(target,key,target) as unknown;return typeof value==='function'?value.bind(target):value;
+    }});
+    const isolated=new Games({...commandDb,pool:injectedPool},service.kv,service.health,service.lexicon,service.config);
+    service.command=(input,user)=>input.commandId===command.commandId&&injected===0?isolated.command(input,user):normalCommand(input,user);
+    try{
+      const uncertain=await request(game.players[seat].socket,'game:command',command);
+      expect(injected).toBe(1);expect(uncertain.ok).toBe(false);expect('acceptedRevision'in uncertain).toBe(false);
+      if(!uncertain.ok)expect(uncertain.error.code).toBe('SERVICE_RECOVERING');
+      const committed=await state(game.id);assertStateInvariants(committed);expect(committed.moves).toHaveLength(1);
+      expect(committed.moves[0]!.action).toBe('NO_WORDS');expect(committed.revision).toBe(before.revision+1);
+      const nextSeat:Seat=seat===0?1:0;
+      expect(committed.players[nextSeat].rack).toHaveLength(before.players[nextSeat].rack.length+2);
+      expect(committed.consonantDrawOrder).toEqual(before.consonantDrawOrder.slice(0,-2));
+      expect(committed.clocksMs[seat]).toBe(before.clocksMs[seat]-(committed.moves[0]!.at-before.turnStartedAt!)+INCREMENT_MS);
+      const duplicate=await request(game.players[seat].socket,'game:command',command);
+      expect(duplicate.ok).toBe(true);if(duplicate.ok)expect(duplicate.acceptedRevision).toBe(committed.revision);
+      const restored=await state(game.id);expect(restored.revision).toBe(committed.revision);expect(restored.clocksMs).toEqual(committed.clocksMs);expect(restored.turnStartedAt).toBe(committed.turnStartedAt);
+      expect(acceptedContent(restored)).toEqual(acceptedContent(committed));assertStateInvariants(restored);
+      const receipt=await observer.pool.query<{reply:{ok:boolean;revision:number}}>('SELECT reply FROM commands WHERE game_id=$1 AND command_id=$2',[game.id,command.commandId]);
+      expect(receipt.rows).toEqual([{reply:{ok:true,revision:committed.revision}}]);
+      expect((await observer.pool.query('SELECT 1 FROM game_events WHERE game_id=$1 AND kind=\'action\'',[game.id])).rowCount).toBe(1);
+    }finally{service.command=normalCommand;await commandDb.pool.end();}
+  },15000);
 
   for(const dependency of ['Redis','PostgreSQL'] as const)it(`${dependency} network loss near zero preserves the acknowledged move, pauses and resumes without redrawing`,async()=>{
     const proxy=await proxyFor(dependency==='Redis'?sourceRedis!:databaseUrl,dependency==='Redis'?6379:5432);
