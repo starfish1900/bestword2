@@ -57,7 +57,7 @@ export function commandError(error:unknown):CommandReply {
   return {ok:false,error:{code:'SERVICE_RECOVERING',message:'The service is reconnecting. Your accepted moves are saved.'}};
 }
 function safeAck(ack:Ack|undefined,reply:CommandReply):void{if(typeof ack==='function')ack(reply);}
-export async function publishGame(_io:GameIO,games:Games,state:EngineState):Promise<void>{
+export async function publishGame(games:Games,state:EngineState):Promise<void>{
   if(!games.kv.isReady)throw new Error('Broadcast unavailable');
   // Await the actual durable stream write before retiring the PostgreSQL outbox.
   // Keep snapshots and private racks out of Redis transport history entirely.
@@ -75,11 +75,10 @@ async function deliverLocal(io:GameIO,games:Games,state:EngineState):Promise<voi
   }
   io.local.to(`game:${state.id}:spectators`).emit('game:update',projectGame(state,null,now,spectators));
 }
-export function createPublisher(_kv:KeyValue):GameIO{return new Server<Incoming,Outgoing,Record<string,never>,SocketData>();}
 export function attachRealtime(app:FastifyInstance,auth:Auth,games:Games,config:Config):{io:GameIO;stop:()=>Promise<void>} {
   const allowedOrigin=new URL(config.APP_ORIGIN).origin;
   const io:GameIO=new Server(app.server,{transports:['websocket'],pingInterval:5000,pingTimeout:10000,maxHttpBufferSize:16384,serveClient:false,adapter:sharedAdapter(games.kv),allowRequest:(request,callback)=>callback(null,!request.headers.origin||request.headers.origin===allowedOrigin)});
-  games.publish=state=>publishGame(io,games,state);
+  games.publish=state=>publishGame(games,state);
   auth.onSessionRevoked=hash=>{io.in(`session:${hash}`).disconnectSockets(true);};
   auth.onUserSessionsRevoked=id=>{io.in(`user:${id}`).disconnectSockets(true);};
   const sockets=new Set<GameSocket>();
@@ -175,9 +174,13 @@ export function attachRealtime(app:FastifyInstance,auth:Auth,games:Games,config:
   let pulsing=false;
   const heartbeat=setInterval(()=>{if(pulsing||draining||!games.kv.isReady)return;pulsing=true;void(async()=>{
     const now=Date.now();const entries:Array<{key:string;member:string;deadline:number}>=[];
-    const hashes=[...new Set([...sockets].filter(socket=>socket.data.user&&socket.data.token).map(socket=>digestToken(socket.data.token!)))];
+    // Query and validate the same population. Connections arriving during the
+    // query have already authenticated and belong to the next heartbeat.
+    const snapshot=[...sockets];
+    const hashes=[...new Set(snapshot.filter(socket=>socket.data.user&&socket.data.token).map(socket=>digestToken(socket.data.token!)))];
     const valid=new Set(hashes.length?(await games.db.pool.query<{token_hash:string}>('SELECT token_hash FROM sessions WHERE token_hash=ANY($1::text[]) AND expires_at>$2',[hashes,now])).rows.map(row=>row.token_hash):[]);
-    for(const socket of sockets){
+    for(const socket of snapshot){
+      if(!socket.connected)continue;
       if(now>=socket.data.expiresAt||(socket.data.user&&(!socket.data.token||!valid.has(digestToken(socket.data.token))))){socket.disconnect(true);continue;}
       const game=socket.data.game;
       if(game){const key=game.seat===null?`bw:spectators:${game.id}`:`bw:presence:${game.id}:${game.seat}`;entries.push({key,member:game.member,deadline:now+16000});}

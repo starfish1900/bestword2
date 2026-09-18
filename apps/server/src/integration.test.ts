@@ -86,6 +86,29 @@ describe.skipIf(!enabled)('real database, multiple gateways, and WebSocket integ
     expect(serverSocket?.rooms.has(`watch:${first.gameId}`)).toBe(false);expect(serverSocket?.rooms.has(`game:${first.gameId}:spectators`)).toBe(false);
     expect(await a.games.spectators(first.gameId)).toBe(0);expect(await a.games.spectators(second.gameId)).toBe(1);
   });
+  it('keeps newly authenticated sockets when they arrive during a session heartbeat query',async()=>{
+    const previous=await player(),next=await player();const oldSocket=await connect(urlA,previous);
+    const entered=Promise.withResolvers<void>(),release=Promise.withResolvers<void>();
+    const original=a.db.pool.query;let held=false;let fresh:Socket|undefined;
+    // Delay only delivery of this real query's result. Authentication and all
+    // other database operations continue while the new socket joins the set.
+    a.db.pool.query=((...args:unknown[])=>{
+      const result=Reflect.apply(original,a.db.pool,args);
+      if(!held&&typeof args[0]==='string'&&args[0].startsWith('SELECT token_hash FROM sessions WHERE token_hash=ANY')){
+        held=true;return Promise.resolve(result).then(async value=>{entered.resolve();await release.promise;return value;});
+      }
+      return result;
+    }) as typeof original;
+    try{
+      await a.db.pool.query('DELETE FROM sessions WHERE token_hash=$1',[digestToken(previous.cookie.split('=')[1]!)]);
+      await eventually(async()=>{await Promise.race([entered.promise,delay(20)]);return held;},Boolean,6500);
+      fresh=await connect(urlA,next);
+      const revoked=new Promise<void>(resolve=>oldSocket.once('disconnect',()=>resolve()));
+      release.resolve();await revoked;
+      expect(await fresh.timeout(2000).emitWithAck('lobby:subscribe')).toEqual({ok:true});
+      expect(fresh.connected).toBe(true);
+    }finally{release.resolve();a.db.pool.query=original;oldSocket.disconnect();fresh?.disconnect();}
+  });
   it('atomically resolves two simultaneous joins and prevents a second active slot',async()=>{
     const host=await player(),one=await player(),two=await player();const seek=(await api(a,'/api/seeks',host,{minutes:15})).json().seek;
     const responses=await Promise.all([api(a,`/api/seeks/${seek.id}/join`,one,{}),api(b,`/api/seeks/${seek.id}/join`,two,{})]);expect(responses.filter(r=>r.statusCode===200)).toHaveLength(1);expect(responses.filter(r=>r.statusCode===404||r.statusCode===409)).toHaveLength(1);

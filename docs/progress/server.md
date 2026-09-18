@@ -1,6 +1,6 @@
 # Server verification checkpoint
 
-18 September 2026: **174/174 tests passed in 113.82 seconds** in the consolidated local run. The retained [JSON report](../evidence/verification-174.json) includes 112 engine, 12 lexicon, 11 client, 13 server integration, 12 health and 14 fault/resource tests. Later client-only additions and capacity checks have separate reports.
+18 September 2026: **175/175 tests passed in 113.47 seconds** in the final consolidated local run. The retained [JSON report](../evidence/verification-175.json) includes 112 engine, 12 lexicon, 11 client, 14 server integration, 12 health and 14 fault/resource tests. The [earlier 174-test checkpoint](../evidence/verification-174.json) remains available. Browser and capacity checks have separate reports.
 
 Service tests use real PostgreSQL 18.4 and Redis 7.2.16 with multiple gateways. Isolated PostgreSQL schemas and unique game/account IDs protect development data. Fault proxies affect only test-owned connections; process-kill cases terminate only a test-owned API child.
 
@@ -9,6 +9,7 @@ Service tests use real PostgreSQL 18.4 and Redis 7.2.16 with multiple gateways. 
 - Account hashing/cookies, unique names, rejected origins/inputs, logout and password/session revocation. A controlled login/password-change race rejects old credentials after revocation.
 - Competing seek claims, one active playing slot, countdown, actual dictionary-backed placement, conflicting actions, invalid state preservation and original receipt replay after newer revisions.
 - Spectator/public privacy, session-specific delivery despite lost revocation notifications, permanent PASS, frozen clocks, released slots, multiple tabs and serialized overlapping game subscriptions.
+- A new authenticated connection arriving during a session heartbeat query stays connected. A real-query response barrier reproduced the earlier live-set race before the fix; the [focused regression](../evidence/heartbeat-join-regression.json) and final suite pass after snapshotting the socket population. The same check still disconnects a revoked session.
 - Deadline adjudication after positive health evidence, overdue pre-start cancellation, API scheduling without a worker, durable outbox retry and deployment recovery without redrawing.
 - PostgreSQL/Redis interruptions with only 1.5 seconds left on the next clock preserve acknowledged board/rack/draw state and resume without a false loss.
 - Half-open Redis replies and chained batches reject promptly; oversized batches cannot leave a poisoned partial MULTI connection.
