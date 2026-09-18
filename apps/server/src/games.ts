@@ -65,12 +65,13 @@ export class Games {
       // Leases recover missed disconnect callbacks. Preserve the last gateway when
       // absent so a gateway failure is still distinguished from a player's exit.
       for(const seat of [0,1] as const){
+        if(dueOutcome(state,now))break;
         if(state.players[seat].passed)continue;
         const live=await this.livePresence(c,state.id,seat,now);
         if(live.length)gateways[seat]=live;
         if(state.players[seat].connected!==Boolean(live.length))state=setConnected(state,seat,Boolean(live.length),now);
       }
-      state=startIfReady(state,now);
+      if(!dueOutcome(state,now))state=startIfReady(state,now);
     }
     // A delayed scheduler may start a countdown whose effective clock deadline is already past.
     const afterStart=dueOutcome(state,now);
@@ -101,7 +102,9 @@ export class Games {
       else{try{state=applyAction(state,seat,command.action,now,this.lexicon);}catch(e){if(e instanceof EngineError)error={code:e.code,message:e.message};else throw e;}}
       await this.persist(c,row.state,state,settled.gateways,settled.handled);if(state.revision!==row.revision)changed=state;
       const receipt:Receipt=error?{ok:false,error}:{ok:true,revision:state.revision};
-      await c.query('INSERT INTO commands(game_id,user_id,command_id,payload_hash,reply,created_at) VALUES($1,$2,$3,$4,$5,$6)',[row.id,user.id,command.commandId,payloadHash,JSON.stringify(receipt),now]);
+      // Existing receipts were handled above. Fresh requests after a terminal
+      // outcome cannot change the game and must not grow its receipt history.
+      if(error?.code!=='GAME_FINISHED')await c.query('INSERT INTO commands(game_id,user_id,command_id,payload_hash,reply,created_at) VALUES($1,$2,$3,$4,$5,$6)',[row.id,user.id,command.commandId,payloadHash,JSON.stringify(receipt),now]);
       const view=projectGame(state,seat,now);return error?{ok:false as const,error,view}:{ok:true as const,view,acceptedRevision:state.revision};
     });
     if(changed)await this.announce(changed);return reply;

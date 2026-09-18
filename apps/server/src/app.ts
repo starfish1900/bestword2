@@ -27,7 +27,7 @@ export async function buildApp(config:Config){
   const db=createDatabase(config.DATABASE_URL,config.DB_POOL_SIZE);const kv=createKeyValue(config.REDIS_URL);
   await kv.connect();await migrate(db);const lexicon=await Gaddag.open(config.LEXICON_PATH);
   const health=new Health(db,kv,'api');await health.start();const auth=new Auth(db,kv,config);const games=new Games(db,kv,health,lexicon,config);
-  await app.register(cookie);await app.register(helmet,{contentSecurityPolicy:{directives:{defaultSrc:["'self'"],scriptSrc:["'self'"],styleSrc:["'self'","'unsafe-inline'"],imgSrc:["'self'",'data:'],connectSrc:["'self'"],fontSrc:["'self'"],objectSrc:["'none'"],frameAncestors:["'none'"]}},crossOriginEmbedderPolicy:false});
+  await app.register(cookie);await app.register(helmet,{contentSecurityPolicy:{directives:{defaultSrc:["'self'"],scriptSrc:["'self'"],styleSrc:["'self'","'unsafe-inline'"],imgSrc:["'self'",'data:'],connectSrc:["'self'"],fontSrc:["'self'"],objectSrc:["'none'"],frameAncestors:["'none'"],upgradeInsecureRequests:config.NODE_ENV==='production'?[]:null}},crossOriginEmbedderPolicy:false});
   app.addHook('onRequest',async(request,reply)=>{
     if(request.url.startsWith('/api/'))reply.header('Cache-Control','no-store');
     if(['POST','PUT','PATCH','DELETE'].includes(request.method)){
@@ -77,7 +77,16 @@ export async function buildApp(config:Config){
     const result=await db.pool.query<{status:string;count:string}>('SELECT status,count(*) AS count FROM games GROUP BY status');
     const memory=process.memoryUsage();return reply.type('text/plain; version=0.0.4').send(['# TYPE bestword_active_games gauge',...result.rows.map(row=>`bestword_active_games{status="${row.status}"} ${row.count}`),`bestword_process_rss_bytes ${memory.rss}`,`bestword_socket_connections ${realtime.io.engine.clientsCount}`,`bestword_database_pool_waiting ${db.pool.waitingCount}`,`bestword_service_ready ${health.ready?1:0}`,''].join('\n'));
   });
-  const webRoot=resolve('apps/web/dist');if(existsSync(resolve(webRoot,'index.html'))){await app.register(staticFiles,{root:webRoot,index:false,redirect:false,list:false,preCompressed:true,setHeaders:(response,path)=>response.header('Cache-Control',path.includes(`${process.platform==='win32'?'\\':'/'}assets${process.platform==='win32'?'\\':'/'}`)?'public, max-age=31536000, immutable':'no-cache')});app.setNotFoundHandler((request,reply)=>{if(request.method==='GET'&&!request.url.startsWith('/api/')&&!request.url.startsWith('/assets/')&&request.headers.accept?.includes('text/html'))return reply.header('Cache-Control','no-cache').sendFile('index.html');return reply.code(404).send({error:{code:'NOT_FOUND',message:'This page was not found.'}});});}
+  const webRoot=resolve('apps/web/dist');
+  if(existsSync(resolve(webRoot,'index.html'))){
+    await app.register(staticFiles,{root:webRoot,index:false,redirect:false,list:false,preCompressed:true,
+      setHeaders:(response,path)=>response.header('Cache-Control',/[\\/]assets[\\/]/.test(path)?'public, max-age=31536000, immutable':'no-cache')});
+    app.get('/',async(_request,reply)=>reply.header('Cache-Control','no-cache').sendFile('index.html'));
+    app.setNotFoundHandler((request,reply)=>{
+      if(request.method==='GET'&&!request.url.startsWith('/api/')&&!request.url.startsWith('/assets/')&&request.headers.accept?.includes('text/html'))return reply.header('Cache-Control','no-cache').sendFile('index.html');
+      return reply.code(404).send({error:{code:'NOT_FOUND',message:'This page was not found.'}});
+    });
+  }
   let closing=false;let cycle:Promise<void>|null=null;
   // Every gateway can take over the scheduler if the worker stops. Row locks and
   // SKIP LOCKED claims make this safe across any number of instances.

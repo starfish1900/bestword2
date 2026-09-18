@@ -1,15 +1,32 @@
 # Server verification checkpoint
 
-2026-09-18: strict server build passes. The9-test integration suite passes against PostgreSQL18.4 and Redis7.2.16 with two Fastify/Socket.IO gateways and no dedicated worker. It creates and removes a unique PostgreSQL schema, uses unique account/game IDs, and never truncates the user's development database. Socket traffic really crosses the Redis Streams adapter.
+18 September 2026: **168/168 tests passed in 110.35 seconds** in the consolidated local run. The retained [JSON report](../evidence/verification-168.json) includes 112 engine, 12 lexicon, 6 client, 13 server integration, 12 health and 13 fault/resource tests. Later client-only additions and capacity checks have separate reports.
 
-Verified: secure account hashing/cookies and logout; unique names; rejected origins/inputs; two simultaneous seek claims; one active playing slot; automatic countdown; actual dictionary-backed placement; invalid state preservation; original command receipts after newer revisions; conflicting simultaneous actions; spectator/public history privacy; permanentPASS and frozen clock; near-zero clock adjudication; multiple-tab readiness; committed outbox retry; gateway deployment pause and durable restart without redrawing.
+Service tests use real PostgreSQL 18.4 and Redis 7.2.16 with multiple gateways. Isolated PostgreSQL schemas and unique game/account IDs protect development data. Fault proxies affect only test-owned connections; process-kill cases terminate only a test-owned API child.
 
-Command: `BESTWORD_INTEGRATION=1 DATABASE_URL=<local test database> REDIS_URL=<local Redis> npm test -- apps/server/src/integration.test.ts` (set environment variables using the syntax for your shell). Result:9 passed,24.97seconds total. Focused health test evidence is maintained separately by the health review.
+## Verified behavior
 
-Subsequent consolidated run:154/154 tests pass in40.40seconds, including11 focused health tests and4 real dependency/revocation tests. Redis and PostgreSQL TCP connections were interrupted for4.2seconds after an acknowledged action started a1.5second clock. Accepted state, racks and stored draw order survived; neither interruption caused an incorrect timeout. Recovery resumed through one countdown. Restarting an API preserved the original receipt revision and exactly one command. A revoked session was excluded from private updates even without a revocation notification. Report: `../evidence/verification-154.json`.
+- Account hashing/cookies, unique names, rejected origins/inputs, logout and password/session revocation. A controlled login/password-change race rejects old credentials after revocation.
+- Competing seek claims, one active playing slot, countdown, actual dictionary-backed placement, conflicting actions, invalid state preservation and original receipt replay after newer revisions.
+- Spectator/public privacy, session-specific delivery despite lost revocation notifications, permanent PASS, frozen clocks, released slots, multiple tabs and serialized overlapping game subscriptions.
+- Deadline adjudication after positive health evidence, overdue pre-start cancellation, API scheduling without a worker, durable outbox retry and deployment recovery without redrawing.
+- PostgreSQL/Redis interruptions with only 1.5 seconds left on the next clock preserve acknowledged board/rack/draw state and resume without a false loss.
+- Half-open Redis replies and chained batches reject promptly; oversized batches cannot leave a poisoned partial MULTI connection.
+- Half-open PostgreSQL reads and unanswered rollback remain bounded. Uncertain clients are discarded and locks become available. A nine-second traffic blackhole preserves the game and near-zero clock.
+- Abrupt API death preserves acknowledged receipts/draws. Fresh terminal requests cannot grow receipts; request-triggered expiry still commits the finished game transition.
 
-The Redis test exposed a microtask retry loop in the Streams adapter when its blocking read clients inherited fail-fast offline behavior. Read clients now queue through reconnects, while game-command/publication clients remain fail-fast; write promises still protect durable outbox retirement.
+Health tests additionally cover ambiguous COMMIT, checkpoint races, consistent lock ordering, monotonic pause time, actual PONG validation, incident handling and idempotent shutdown.
 
-These tests do not establish Render capacity, whole-region recovery, backup restoration, or a monthly cost guarantee. Half-open network connections, abrupt process termination, backup restoration and load measurements are being checked separately.
+## Reproduction and scope
 
-Implementation notes: PostgreSQL serializes only each game's state, with a separate short admission lock for the account/cap constraints. API processes and the worker share short SKIP LOCKED scheduling claims. Redis leases reconcile lost disconnect callbacks. Session-specific game rooms are selected from current database sessions before each private broadcast. Adapter XADD promises are observed so a swallowed Socket.IO publication error leaves the PostgreSQL outbox available for retry.
+Set BESTWORD_INTEGRATION=1, DATABASE_URL and REDIS_URL to dedicated local test services, then run:
+
+```sh
+npm test -- --reporter=default --reporter=json --outputFile=.local/test-results/consolidated.json
+```
+
+Without BESTWORD_INTEGRATION=1 the service cases are deliberately skipped. A default unit-test run is not the complete suite.
+
+PostgreSQL locks each game independently; admission uses a separate short lock. API/worker scheduling uses short SKIP LOCKED claims. Redis leases recover missed disconnect callbacks. Game notifications contain only ID, revision and finished flag; actual stream writes precede outbox retirement. Interested gateways fetch current state and emit local private/public projections, selecting valid sessions before private delivery. Blocking readers and ordinary commands have separate reconnect/timeout behavior.
+
+This establishes local functional and failure-path behavior, not Render capacity, regional recovery or a monthly cost guarantee. See [backup evidence](backup.md), [architecture](../ARCHITECTURE.md) and [load evidence](../../tools/load/README.md).

@@ -1,6 +1,7 @@
 import { beforeAll,afterAll,describe,it,expect } from 'vitest';
 import pg from 'pg';
 import { randomBytes,randomUUID } from 'node:crypto';
+import { hash,Algorithm } from '@node-rs/argon2';
 import { io as clientIO,type Socket } from 'socket.io-client';
 import { buildApp } from './app.js';
 import { readConfig } from './config.js';
@@ -52,6 +53,39 @@ describe.skipIf(!enabled)('real database, multiple gateways, and WebSocket integ
     expect((await api(a,'/api/seeks',undefined,{minutes:5})).statusCode).toBe(401);
     const badJson=await a.app.inject({method:'POST',url:'/api/seeks',headers:{'content-type':'application/json'},payload:'{'});expect(badJson.statusCode).toBe(400);
   });
+  it('cannot issue a session from an old password after concurrent password revocation',async()=>{
+    const p=await player(),password='Original password 8931';
+    const options={algorithm:Algorithm.Argon2id,memoryCost:19456,timeCost:2,parallelism:1};
+    const original=await hash(password,options),replacement=await hash('Replacement password 8931',options);
+    await a.db.pool.query('UPDATE users SET password_hash=$2 WHERE id=$1',[p.user.id,original]);
+    const locker=await a.db.pool.connect();let response:ReturnType<typeof api>|undefined;
+    try{
+      await locker.query('BEGIN');await locker.query('SELECT id FROM users WHERE id=$1 FOR UPDATE',[p.user.id]);
+      const pid=(await locker.query<{pid:number}>('SELECT pg_backend_pid() AS pid')).rows[0]!.pid;
+      response=api(b,'/api/auth/login',undefined,{username:p.user.username,password});
+      await eventually(()=>admin.query<{blocked:boolean}>('SELECT EXISTS(SELECT 1 FROM pg_stat_activity WHERE $1=ANY(pg_blocking_pids(pid))) AS blocked',[pid]),r=>r.rows[0]!.blocked,3000);
+      await locker.query('UPDATE users SET password_hash=$2 WHERE id=$1',[p.user.id,replacement]);await locker.query('DELETE FROM sessions WHERE user_id=$1',[p.user.id]);await locker.query('COMMIT');
+      expect((await response).statusCode).toBe(401);expect((await a.db.pool.query('SELECT 1 FROM sessions WHERE user_id=$1',[p.user.id])).rowCount).toBe(0);
+    }finally{await locker.query('ROLLBACK').catch(()=>{});locker.release();await response?.catch(()=>{});}
+  });
+  it('changes passwords atomically and revokes every preceding session',async()=>{
+    const p=await player(),password='First secure password 992',next='Next secure password 993';
+    await a.db.pool.query('UPDATE users SET password_hash=$2 WHERE id=$1',[p.user.id,await hash(password,{algorithm:Algorithm.Argon2id,memoryCost:19456,timeCost:2,parallelism:1})]);
+    const login=await api(b,'/api/auth/login',undefined,{username:p.user.username,password});expect(login.statusCode).toBe(200);
+    const other={user:p.user,cookie:String(login.headers['set-cookie']).split(';')[0]!};
+    const changed=await api(a,'/api/auth/password',p,{currentPassword:password,newPassword:next});expect(changed.statusCode).toBe(200);
+    expect((await api(b,'/api/session',p)).json().user).toBeNull();expect((await api(b,'/api/session',other)).json().user).toBeNull();
+    const current={user:p.user,cookie:String(changed.headers['set-cookie']).split(';')[0]!};expect((await api(b,'/api/session',current)).json().user).toEqual(p.user);
+    expect((await api(a,'/api/auth/login',undefined,{username:p.user.username,password})).statusCode).toBe(401);
+    expect((await api(a,'/api/auth/login',undefined,{username:p.user.username,password:next})).statusCode).toBe(200);
+  });
+  it('serializes overlapping subscriptions and removes the previous room and spectator lease',async()=>{
+    const first=await newGame(),second=await newGame();const viewer=await connect(urlA);
+    const replies=await Promise.all([ack(viewer,'game:subscribe',{gameId:first.gameId}),ack(viewer,'game:subscribe',{gameId:second.gameId})]);expect(replies.every(reply=>reply.ok)).toBe(true);
+    const serverSocket=a.io.sockets.sockets.get(viewer.id!);expect(serverSocket?.data.game?.id).toBe(second.gameId);
+    expect(serverSocket?.rooms.has(`watch:${first.gameId}`)).toBe(false);expect(serverSocket?.rooms.has(`game:${first.gameId}:spectators`)).toBe(false);
+    expect(await a.games.spectators(first.gameId)).toBe(0);expect(await a.games.spectators(second.gameId)).toBe(1);
+  });
   it('atomically resolves two simultaneous joins and prevents a second active slot',async()=>{
     const host=await player(),one=await player(),two=await player();const seek=(await api(a,'/api/seeks',host,{minutes:15})).json().seek;
     const responses=await Promise.all([api(a,`/api/seeks/${seek.id}/join`,one,{}),api(b,`/api/seeks/${seek.id}/join`,two,{})]);expect(responses.filter(r=>r.statusCode===200)).toHaveLength(1);expect(responses.filter(r=>r.statusCode===404||r.statusCode===409)).toHaveLength(1);
@@ -91,6 +125,12 @@ describe.skipIf(!enabled)('real database, multiple gateways, and WebSocket integ
   it('keeps the game connected while another authenticated tab remains',async()=>{
     const g=await readyGame();const second=await connect(urlB,g.p0);expect((await ack(second,'game:subscribe',{gameId:g.gameId})).ok).toBe(true);g.s0.disconnect();await delay(250);const row=await a.games.read(g.gameId);expect(row.state.players[0].connected).toBe(true);expect(row.state.disconnectDeadlines[0]).toBeNull();
     second.disconnect();await eventually(()=>a.games.read(g.gameId),r=>!r.state.players[0].connected);const absent=await a.games.read(g.gameId);expect(absent.state.disconnectDeadlines[0]).toBeGreaterThan(Date.now()+20000);
+  });
+  it('cancels an overdue waiting game when both saved connections have vanished',async()=>{
+    const g=await newGame();const row=await a.games.read(g.gameId);const state=row.state;const now=Date.now();
+    state.createdAt=now-30000;state.lastTransitionAt=now-29000;state.waitingDeadlineAt=now-5000;state.startsAt=now-26000;state.players[0].connected=true;state.players[1].connected=true;
+    await a.db.pool.query('UPDATE games SET state=$2,created_at=$3,updated_at=$4,next_deadline=$5,gateways=$6 WHERE id=$1',[g.gameId,JSON.stringify(state),state.createdAt,state.lastTransitionAt,state.startsAt,JSON.stringify([[a.health.epoch],[b.health.epoch]])]);
+    const ended=await eventually(()=>a.games.read(g.gameId),r=>r.state.status==='finished');expect(ended.state.result?.reason).toBe('start-cancelled');expect(ended.state.result?.winner).toBeNull();
   });
   it('retains a committed outbox entry when broadcasting fails and retries after recovery',async()=>{
     const g=await readyGame();const row=await a.games.read(g.gameId);const p=row.state.activeSeat===0?g.p0:g.p1;const sendA=a.games.publish,sendB=b.games.publish;a.games.publish=b.games.publish=async()=>{throw new Error('injected publication outage');};

@@ -3,7 +3,10 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import type { EngineState } from '@bestword/engine';
 
 export function createDatabase(connectionString:string,max=10) {
-  const pool=new pg.Pool({connectionString,max,connectionTimeoutMillis:5000,idleTimeoutMillis:30000,statement_timeout:8000,application_name:'bestword'});
+  // The server limit cannot answer through a half-open network connection. The
+  // independent read deadline releases callers; idle transaction expiry also
+  // frees server locks if a severed client's close packet cannot reach PostgreSQL.
+  const pool=new pg.Pool({connectionString,max,connectionTimeoutMillis:5000,idleTimeoutMillis:30000,statement_timeout:5000,query_timeout:8000,idle_in_transaction_session_timeout:10000,application_name:'bestword'});
   pool.on('error',()=>{/* individual callers and health checks handle a failed connection */});
   return {pool,orm:drizzle(pool)};
 }
@@ -12,10 +15,23 @@ export type GatewaySeats=[string[],string[]];
 export interface GameRow {id:string;state:EngineState;revision:number;created_at:string;updated_at:string;status:string;next_deadline:string|null;gateways:GatewaySeats;handled_incidents:string[]}
 export async function databaseNow(client:PoolClient):Promise<number> { const result=await client.query<{now:string}>('SELECT (extract(epoch from clock_timestamp())*1000)::bigint AS now'); return Number(result.rows[0]!.now); }
 export async function transaction<T>(db:Database,fn:(client:PoolClient)=>Promise<T>):Promise<T> {
-  const client=await db.pool.connect();
+  const client=await db.pool.connect();let discard:Error|undefined;
   try { await client.query('BEGIN'); const value=await fn(client); await client.query('COMMIT'); return value; }
-  catch(error) { await client.query('ROLLBACK').catch(()=>{}); throw error; }
-  finally { client.release(); }
+  catch(error) {
+    if(uncertainConnection(error))discard=error;
+    else {
+      // A normal SQL/application error leaves a usable connection after rollback.
+      // The same client read limit bounds cleanup; failed cleanup retires it.
+      try{await client.query('ROLLBACK');}catch(rollbackError){discard=rollbackError instanceof Error?rollbackError:new Error('Rollback failed');}
+    }
+    throw error;
+  }
+  finally { client.release(discard); }
+}
+function uncertainConnection(error:unknown):error is Error {
+  if(!(error instanceof Error))return false;
+  const code='code'in error?String(error.code):'';
+  return /^E(?:CONN|PIPE|HOST|NET|TIMEDOUT|AI_)/.test(code)||/query read timeout|connection (?:terminated|closed|error)|not queryable|client was closed/i.test(error.message);
 }
 export async function migrate(db:Database):Promise<void> {
   await transaction(db,async c=>{

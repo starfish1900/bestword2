@@ -36,7 +36,7 @@ export class Health {
         const epoch=locked.rows[0];if(!epoch)throw new Error('Service epoch is missing');
         // Probe after the lock, so lock contention cannot turn an old Redis probe into a new checkpoint.
         let timeout:NodeJS.Timeout|undefined;
-        try{await Promise.race([this.kv.ping(),new Promise<never>((_,reject)=>{timeout=setTimeout(()=>reject(new Error('Key Value health probe timed out')),1000);timeout.unref();})]);}
+        try{const pong=await Promise.race([this.kv.ping(),new Promise<never>((_,reject)=>{timeout=setTimeout(()=>reject(new Error('Key Value health probe timed out')),1000);timeout.unref();})]);if(pong!=='PONG')throw new Error('Key Value health probe returned an invalid reply');}
         finally{if(timeout)clearTimeout(timeout);}
         const now=await databaseNow(c);
         const previous=Number(epoch.last_healthy);

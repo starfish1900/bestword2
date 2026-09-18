@@ -1,5 +1,5 @@
 * text=auto eol=lf
-# The supplied corpus/specification are preserved byte-for-byte, including CRLF.
+# Preserve the original corpus/specification bytes through every checkout.
 data/dictionary.txt -text
 docs/original-spec.txt -text
 *.bin binary

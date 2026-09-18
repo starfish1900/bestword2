@@ -4,9 +4,9 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import { createGame, setConnected, startIfReady, type EngineState } from '@bestword/engine';
 import { createDatabase, databaseNow, migrate, transaction, type Database } from '../src/db.js';
 import { Health } from '../src/health.js';
-import { createKeyValue, type KeyValue } from '../src/kv.js';
+import { createKeyValue,presence,type KeyValue } from '../src/kv.js';
 
-// These tests create their own PostgreSQL schema and only PING Redis. They never
+// These tests create their own PostgreSQL schema and use a private Redis client. They never
 // truncate application data, flush shared Redis keys, or stop either service.
 const integrationEnabled=process.env['BESTWORD_INTEGRATION']==='1'||Boolean(process.env['BESTWORD_TEST_DATABASE_URL']);
 const connectionString=process.env['BESTWORD_TEST_DATABASE_URL']??process.env['DATABASE_URL'];
@@ -57,6 +57,17 @@ describe.skipIf(!integrationEnabled)('health authority against real PostgreSQL a
     await health.tick();expect(health.ready).toBe(true);
     const outage=await db.pool.query<{started_at:string}>('SELECT started_at FROM incidents WHERE epoch_id=$1 AND reason=\'infrastructure\'',[health.epoch]);
     expect(outage.rows).toHaveLength(1);expect(Number(outage.rows[0]!.started_at)).toBe(before);
+  });
+  it('rejects a queued Redis reply as health evidence or presence data',async()=>{
+    const health=await startHealth();expect(health.ready).toBe(true);
+    const before=(await db.pool.query<{last_healthy:string}>('SELECT last_healthy FROM service_epochs WHERE id=$1',[health.epoch])).rows[0]!.last_healthy;
+    await kv.sendCommand(['MULTI']);
+    try{
+      await health.tick();expect(health.ready).toBe(false);
+      expect((await db.pool.query<{last_healthy:string}>('SELECT last_healthy FROM service_epochs WHERE id=$1',[health.epoch])).rows[0]!.last_healthy).toBe(before);
+      await expect(presence(kv,randomUUID(),0,await now())).rejects.toMatchObject({code:'SERVICE_RECOVERING'});
+    }finally{await kv.sendCommand(['DISCARD']);}
+    await health.tick();expect(health.ready).toBe(true);
   });
   it('serializes concurrent stale-epoch reconciliation and returning checkpoints without deadlock',async()=>{
     const health=await startHealth();

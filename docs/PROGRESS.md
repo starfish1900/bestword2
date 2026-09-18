@@ -1,29 +1,32 @@
 # BestWord progress
 
-## Milestone 1 — rules and dictionary complete
-- The original specification and exact dictionary are preserved. Implementation decisions are in DECISIONS.md.
-- Pure immutable engine:112 tests pass, including all five scoring examples and1,100 randomized property cases.
-- Rust minimal GADDAG builder and TypeScript reader:279,320 dictionary words and2,544,319 transforms exhaustively verified, independent accepted-language/minimality audit, deterministic binary, corrupted-input checks. Compressed artifact5,373,266bytes.
+## Rules and vocabulary complete
 
-## Milestone 2 — working server and client
-- Strict TypeScript server/client builds pass. npm audit reports0 vulnerabilities (2026-09-18).
-- Real portable PostgreSQL18.4 and Redis7.2.16 run locally; restart persistence verified. Production targets managed PostgreSQL18 and Valkey8.
-- Nine real multi-gateway HTTP/WebSocket tests pass: account security, competing joins, authoritative valid moves, idempotent retries, concurrent turns, private projections, permanentPASS, clocks, multiple tabs, outbox retries, gateway deployment/recovery.
-- Eleven focused health tests pass against real services: commit ambiguity, checkpoint races, lock ordering, monotonic pause time, incident handling, idempotent shutdown.
-- Real Chrome end-to-end game passes: two accounts, matching, valid keyboard move, invalid draft correction, NO_WORDS, PASS, spectator view, completed replay. Four viewport checks including320x568 have no page overflow. Client unit tests pass.
-- API instances take over deadline processing when the worker stops. Private broadcasts target currently valid session rooms. Command acknowledgements follow database commit; outbox retirement waits for Redis stream writes.
+The original specification and exact dictionary are preserved. [DECISIONS.md](DECISIONS.md) records the implementation contract.
 
-## Milestone 3 — hardening and operational verification in progress
-- Four real network-failure/revocation tests pass using isolated proxies. Both PostgreSQL and Redis were interrupted for4.2seconds with1.5seconds left on the next clock; accepted state survived and clocks resumed without an incorrect loss or duplicate draw.
-- The consolidated run passed154 tests in40.40seconds. Its machine-readable report is saved at evidence/verification-154.json.
-- An adapter retry loop discovered by these tests was corrected. Half-open connections and abrupt process termination are receiving additional checks.
-- Render/Docker/CI/operations artifacts are complete and schemas validate. No paid service or public deployment has been created.
-- Load driver and capacity measurements remain in progress. No5,000-game capacity claim has been established; a US$100 monthly deployment has not been benchmarked.
-- Compiled same-origin browser checks, a real backup/restore drill, load evidence, and a final consolidated verification run remain.
+- Pure immutable engine: 112 tests, all five scoring examples and 1,100 randomized property cases pass.
+- Rust minimal GADDAG and TypeScript reader: all 279,320 words and 2,544,319 transforms pass exhaustive verification, independent accepted-language/minimality audit, corruption checks and deterministic byte reproduction. Compressed artifact: 5,373,266 bytes.
+
+## Server and browser implemented
+
+Accounts, lobby, two-player games, scoring, clocks, live spectators, permanent PASS, public replay and outage recovery are implemented. Multiple API instances share PostgreSQL authority and Redis-compatible coordination. [ARCHITECTURE.md](ARCHITECTURE.md) describes the implementation.
+
+The consolidated run passed **168/168 tests in 110.35 seconds**. Its [JSON report](evidence/verification-168.json) includes 13 multi-gateway integration, 12 health and 13 real fault/resource cases. See [server evidence](progress/server.md).
+
+Six Chromium/WebKit browser checks passed against the compiled application: real games/replay, compression, lobby recovery and four viewport sizes including 320×568. Additional touch-input and uncertain-acknowledgement checks are in progress. [Client notes](progress/client.md) record the latest results.
+
+## Operations and capacity verification
+
+- Actual PostgreSQL 18.4 and Redis 7.2.16 run locally; restart persistence is verified.
+- A real isolated logical backup/restore drill passed, preserving application tables, tile invariants, accepted receipts and pending notifications. See [backup evidence](progress/backup.md).
+- Strict builds/type checks pass. The last dependency audit reported zero vulnerabilities.
+- Render, Docker, Compose and CI configuration is prepared; deployment schemas and references validate. No services have been purchased or publicly deployed.
+- The one-hour, 1,200-connection load test is running. That run measures commands, presence and broadcasts, excludes periodic revision sync and records exact compiled-code hashes. A sync-inclusive trial and actual 5,000-game scenario remain. Reports are under tools/load/reports.
+
+No Render capacity or US$100-for-5,000-games claim has been established. Initial admission remains 100 games and 10 spectators per game.
 
 ## Environment limitations
-- Docker and WSL are not installed here. Portable PostgreSQL and a community Redis Windows build are used for local integration; Valkey/container compatibility is also covered by prepared CI, which has not been executed remotely.
-- Native build/test subprocesses require automatic sandbox approval; routine requests have succeeded. No user approval is pending.
-- Chromium and WebKit pass full browser games. The downloaded Firefox executable is blocked by a Windows side-by-side runtime error before the application opens; Linux CI is configured to run it.
 
-Detailed evidence and exact commands are saved under progress/ and test output directories. Default tests skip service integration unless BESTWORD_INTEGRATION=1 is supplied.
+Docker and WSL are unavailable. Local integration uses PostgreSQL and a community Redis Windows build; prepared CI targets PostgreSQL 18 and Valkey 8, but no hosted CI or Linux container run has executed. Chromium/WebKit pass; Firefox cannot launch because of a Windows side-by-side runtime error and remains unverified locally.
+
+Local test subprocesses have passed automatic sandbox approval. No user approval is pending. Source and evidence are saved here; work continues through capacity verification.
