@@ -11,9 +11,9 @@ The original specification and exact dictionary are preserved. [DECISIONS.md](DE
 
 Accounts, lobby, two-player games, scoring, clocks, live spectators, permanent PASS, public replay and outage recovery are implemented. Multiple API instances share PostgreSQL authority and Redis-compatible coordination. [ARCHITECTURE.md](ARCHITECTURE.md) describes the implementation.
 
-The consolidated run passed **174/174 tests in 113.82 seconds**. Its [JSON report](evidence/verification-174.json) includes 13 multi-gateway integration, 12 health and 14 real fault/resource cases. See [server evidence](progress/server.md).
+The final consolidated run passed **175/175 tests in 113.47 seconds**. Its [JSON report](evidence/verification-175.json) includes 14 multi-gateway integration, 12 health and 14 real fault/resource cases. This includes the connection-join race found during the larger capacity setup, reproduced and fixed with a regression. See [server evidence](progress/server.md).
 
-The final combined Chromium/WebKit run passed all 11 enabled checks (one deliberate WebKit skip for the Chromium-only acknowledgement fixture). It covers real games/replay, touch-only input, compression, lobby recovery, four viewport sizes including 320×568, uncertain acknowledgements and a one-hour page-clock adjustment. The retained combined report is evidence/browser-latest.json. [Client notes](progress/client.md) record the latest results.
+The final combined Chromium/WebKit run passed all **11 enabled checks in 88.36 seconds**, with one deliberate WebKit skip for the Chromium-only acknowledgement fixture. It covers real games/replay, touch-only input, compression, lobby recovery, four viewport sizes including 320×568, uncertain acknowledgements and a one-hour page-clock adjustment. See the retained [combined browser report](evidence/browser-latest.json) and [client notes](progress/client.md).
 
 ## Operations and capacity verification
 
@@ -21,7 +21,9 @@ The final combined Chromium/WebKit run passed all 11 enabled checks (one deliber
 - A real isolated logical backup/restore drill passed, preserving application tables, tile invariants, accepted receipts and pending notifications. See [backup evidence](progress/backup.md).
 - Strict builds/type checks pass. The last dependency audit reported zero vulnerabilities.
 - Render, Docker, Compose and CI configuration is prepared; deployment schemas and references validate. No services have been purchased or publicly deployed.
-- The one-hour, 1,200-connection load test is running. That run measures commands, presence and broadcasts, excludes periodic revision sync and records exact compiled-code hashes. A sync-inclusive trial and actual 5,000-game scenario remain. Reports are under tools/load/reports.
+- The [completed hour-long local load test](../tools/load/reports/2026-09-18T04-14-00-701Z-acceptance.json) maintained **1,200 sockets** (100 simultaneous games and 1,000 spectators) for **3,600.008 seconds**, accepted **185,782 commands**, recorded **zero application errors**, and verified **5,282 snapshots** across successive game cycles. It used the report's recorded earlier compiled code, omitted eight-second periodic revision sync, and predates the stronger per-viewer final-push checks. It is historical local evidence, not a full current-client workload or a Render capacity measurement.
+- The [strict five-minute scale trial](../tools/load/reports/2026-09-18T05-24-43-476Z-scale.json) passed with **5,000 simultaneous games, 2,500 spectators and 12,500 maintained sockets**. It accepted 75,400 commands (250 baseline/second plus four 100-command bursts), performed 465,330 revision syncs, verified every receipt and final viewer push, and recorded zero errors or disconnects. Child processes shut down cleanly. See [capacity evidence](progress/capacity.md) for resource use and exact limits.
+- A full strict one-hour acceptance on final code is running, followed by a 900-second scale trial to exercise complete game cycles at 12,500 sockets. Outcomes remain pending. The [load guide](../tools/load/README.md) explains current gates and report limitations.
 
 No Render capacity or US$100-for-5,000-games claim has been established. Initial admission remains 100 games and 10 spectators per game.
 

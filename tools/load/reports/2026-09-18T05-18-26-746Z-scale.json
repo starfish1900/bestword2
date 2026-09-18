@@ -1,0 +1,239 @@
+{
+  "formatVersion": 2,
+  "runId": "352e52c3-b203-46be-a407-9c417ba83134",
+  "scenario": "scale",
+  "settings": {
+    "games": 5000,
+    "spectators": 2500,
+    "commandsPerSecond": 250,
+    "burst": 100,
+    "burstEverySeconds": 60,
+    "durationSeconds": 300,
+    "apiInstances": 2,
+    "workers": 1,
+    "templates": 16,
+    "syncIntervalSeconds": 8
+  },
+  "status": "failed",
+  "startedAt": "2026-09-18T05:19:13.552Z",
+  "finishedAt": null,
+  "elapsedSeconds": 0,
+  "timing": {
+    "offeredLoadSeconds": null,
+    "commandDrainSeconds": 0,
+    "viewerDrainSeconds": 0,
+    "totalMeasuredWallSeconds": null
+  },
+  "hardware": {
+    "os": "win32",
+    "release": "10.0.26200",
+    "arch": "x64",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-13700",
+    "logicalCpus": 24,
+    "totalMemoryBytes": 16766689280,
+    "node": "v24.14.0"
+  },
+  "environment": {
+    "kind": "local shared hardware with separate API/worker and load-client processes",
+    "databaseHost": "127.0.0.1:54329",
+    "schema": "bw_load_352e52c3b20346bea4079c417ba83134",
+    "redisDatabase": 15,
+    "versions": {
+      "postgresql": "PostgreSQL 18.4 on x86_64-windows, compiled by msvc-19.44.35226, 64-bit",
+      "redisServer": [
+        "redis_version:7.2.16",
+        "redis_mode:standalone",
+        "os:MSYS_NT-10.0-26200 3.6.10-8fbd9808.x86_64 x86_64"
+      ],
+      "redisMaxmemory": {
+        "maxmemory": "134217728"
+      },
+      "serverGamesSha256": "d0ddfac6bd373242591e962735cbaf52e5046c11687c36b0b198eed0b47760cc",
+      "compiledArtifacts": {
+        "apps/server/dist/app.js": "55cf07562103c5df9fc00146bcf2deb6f3aef8de60bcb489338fc253e646c38d",
+        "apps/server/dist/auth.js": "d296a9ddc32e7628b6981d87592e99b89e85f98e9c9ef91d9212344b58ab8901",
+        "apps/server/dist/config.js": "ee6858756f3d029320b6dd3bf7707a31a79a337f7fca75f8a6612b61c8341029",
+        "apps/server/dist/db.js": "cbc27ac3ac91532facc956469bb7339af69bf0bfe284f15eb81463496aa0cc86",
+        "apps/server/dist/errors.js": "b91d0b5ffcc08f469b9f95846674afd4bad45711a566a345c249a97b29fae0b7",
+        "apps/server/dist/games.js": "d0ddfac6bd373242591e962735cbaf52e5046c11687c36b0b198eed0b47760cc",
+        "apps/server/dist/health.js": "0c49e0a8348dfed73179a15e4dec921f88eb2e768cf560be252d808a119c1bad",
+        "apps/server/dist/index.js": "a1f1b8d471fb0de15b4315a99078ef27c13a6057ad5e860a78cfffea3e32b92c",
+        "apps/server/dist/kv.js": "4b61007968bcb57bb33f52961d50e2d289d0cc1e91b55a8b0c46a2fe9483d13d",
+        "apps/server/dist/migrate.js": "e24492668ee21b5aab5d158ca15d24c0eb221eba4608af79e835765761332b15",
+        "apps/server/dist/realtime.js": "76764110fe8b556f1f930def6ac2888b3bad36074e2d9b3572ca07bf16b5740d",
+        "apps/server/dist/worker.js": "99712d1b1ebe9b9dc6bbb4111b75ca3b07a2b762fe8f199613e9a2b3b5767551",
+        "packages/contracts/dist/index.js": "b92604e86cfd50003cbc4b27cbb22a36ae9b491b46510b6daa5e15ae445b7efc",
+        "packages/engine/dist/index.js": "a7bc39968bd64ce71083900d6bac71ee07f08402374b4f7792849f697ac957a4",
+        "packages/lexicon/dist/index.js": "39aaeeb92c3df8985f4b56dc5638b872ea3728b4b85860519f487d71b271a1fa"
+      },
+      "compiledCombinedSha256": "ee48da34f5b516986026055166d58790c8f401e867a0624d099229ccc3a6210e",
+      "packageLockSha256": "396ee9025c43d1c61a4de9c71cc5bd1c0438a53381f9d42e1521aec83384177c",
+      "harnessArtifacts": {
+        "tools/load/run.mjs": "b95242a991708b616085ef07da780896226e26f2e39fae049caf00d503bd17e1",
+        "tools/load/runner.ts": "1c4cd6028dada3037f6bab1fcd11412c162aabf011ed3d1e6244a0dba71e5436",
+        "tools/load/child.mjs": "eba0ee1f866d5cfe0f22daf9201ed9d36866778d24850e9d7da6db8738bbb085",
+        "tools/load/scenarios.json": "3820729a8446620017f647de783bf60b633526868c787c5f09172eed164fe802",
+        "tools/load/observations.ts": "c64cca92e1111ed5177ed82c2a03acd86c85170a07252801d4488e2857fd4c1a",
+        "tools/testing/moves.ts": "39a96a22468bf5e1b1b117eebd1aaa3460d829034a801b9f9183ce6fe1031233"
+      },
+      "harnessCombinedSha256": "c59e079006462d5a06b250a6bbf09d06c087345b1dfe855bd03ba5dc73bc31cb",
+      "lexiconArtifactSha256": "a2c6ef6c62da93495848e3335b814788842021514131025ea44cde34fbd207d0"
+    },
+    "apiProcesses": [
+      {
+        "pid": 6648,
+        "url": "http://127.0.0.1:54468"
+      },
+      {
+        "pid": 20728,
+        "url": "http://127.0.0.1:54474"
+      }
+    ],
+    "logDirectory": "C:\\Users\\folia\\Documents\\Codex\\2026-09-17\\p\\outputs\\bestword\\.local\\load\\2026-09-18T05-18-26-746Z-scale"
+  },
+  "startup": {
+    "phase": "client-connections",
+    "failurePhase": "client-connections",
+    "socketsAttempted": 9810,
+    "successfulConnections": 9810,
+    "connectionFailures": 0,
+    "peakConnectedSockets": 9807,
+    "tablesCreated": 3655
+  },
+  "workload": {
+    "initialReadySockets": 0,
+    "targetSockets": 12500,
+    "connectedAtMeasurementEnd": 9807,
+    "minConnectedSockets": null,
+    "minSampledSockets": null,
+    "currentConnectedSockets": 0,
+    "attempted": 0,
+    "accepted": 0,
+    "duplicates": 0,
+    "retries": 0,
+    "completedGameCycles": 0,
+    "skippedBusy": 0,
+    "traffic": {
+      "baseline": {
+        "scheduled": 0,
+        "offered": 0,
+        "attempted": 0,
+        "accepted": 0,
+        "failed": 0,
+        "skipped": 0
+      },
+      "burst": {
+        "scheduled": 0,
+        "offered": 0,
+        "attempted": 0,
+        "accepted": 0,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    "bursts": [],
+    "requiredBursts": 4,
+    "acceptedPerSecond": 0,
+    "baselineAcceptedPerSecond": 0,
+    "actionMix": {},
+    "gameUpdates": 0,
+    "revisionSync": {
+      "intervalSeconds": 8,
+      "sent": 0,
+      "unchanged": 0,
+      "changed": 0
+    },
+    "engineIoIncomingBytes": 0,
+    "engineIoIncomingAverageBytesPerSecond": 0,
+    "disconnects": 0,
+    "privacyFailures": 0
+  },
+  "latencyMs": {
+    "endToEndAcknowledgement": {
+      "count": 0,
+      "p50": null,
+      "p95": null,
+      "p99": null,
+      "max": null
+    },
+    "serviceCommandIncludingCommitAndPublish": {
+      "count": 0,
+      "p50": null,
+      "p95": null,
+      "p99": null,
+      "max": null
+    },
+    "revisionSync": {
+      "count": 0,
+      "p50": null,
+      "p95": null,
+      "p99": null,
+      "max": null
+    },
+    "gameUpdateFromAcceptedMove": {
+      "count": 0,
+      "p50": null,
+      "p95": null,
+      "p99": null,
+      "max": null,
+      "resolutionMs": 1,
+      "overflowThresholdMs": 10000
+    },
+    "loadSchedulerLag": {
+      "count": 0,
+      "p50": null,
+      "p95": null,
+      "p99": null,
+      "max": null
+    },
+    "loadClientEventLoopP99": 266.469375
+  },
+  "resources": {
+    "children": [],
+    "driver": {
+      "rss": 432508928,
+      "heapTotal": 352276480,
+      "heapUsed": 162502016,
+      "external": 15460701,
+      "arrayBuffers": 11377346
+    }
+  },
+  "errors": {},
+  "details": [],
+  "durableVerification": null,
+  "viewerFreshness": null,
+  "retiredViewerFreshness": {
+    "gamesChecked": 0,
+    "viewerChecks": 0,
+    "failures": 0,
+    "maxDrainMs": 0
+  },
+  "samples": [],
+  "gate": {
+    "fullPreset": false,
+    "throughputTolerancePercent": 5,
+    "durationMet": false,
+    "socketTargetMet": false,
+    "baseRateMet": false,
+    "burstTargetMet": false,
+    "processingP95Met": false,
+    "processingP99Met": false,
+    "noDisconnects": true,
+    "noPrivacyFailure": true,
+    "noApplicationErrors": true,
+    "viewerFreshness": false,
+    "durable": false
+  },
+  "limitations": [
+    "This is local hardware evidence, not Render capacity or a promise that US$100 supports the workload.",
+    "Accounts, sessions and deterministic starting fixtures are seeded directly; signup, login, lobby/admission and the initial countdown are excluded.",
+    "Full legal action sequences are precomputed using the engine and lexicon. Completed games are replaced by fresh active fixtures; replacement subscription/DB work remains inside measurement.",
+    "Service timing wraps Games.command through commit and publication. Authentication and transport add to the separately measured end-to-end acknowledgement.",
+    "The driver and local PostgreSQL/Redis share hardware with the child servers; CPU, network and storage contention affect results.",
+    "Engine.IO incoming byte counts are an application-level approximation, not a billable egress measurement.",
+    "A one-hour configured preset is not evidence of an executed one-hour run."
+  ],
+  "stopReason": null,
+  "error": "Error: socket has been disconnected\n    at file:///C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/node_modules/socket.io-client/build/esm-debug/socket.js:481:36\n    at Array.forEach (<anonymous>)\n    at Socket._clearAcks (file:///C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/node_modules/socket.io-client/build/esm-debug/socket.js:474:32)\n    at Socket.onclose (file:///C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/node_modules/socket.io-client/build/esm-debug/socket.js:465:14)\n    at Socket.ondisconnect (file:///C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/node_modules/socket.io-client/build/esm-debug/socket.js:636:14)\n    at Socket.onpacket (file:///C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/node_modules/socket.io-client/build/esm-debug/socket.js:514:22)\n    at Emitter.emit (C:\\Users\\folia\\Documents\\Codex\\2026-09-17\\p\\outputs\\bestword\\node_modules\\@socket.io\\component-emitter\\lib\\cjs\\index.js:143:20)\n    at file:///C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/node_modules/socket.io-client/build/esm-debug/manager.js:217:18\n    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)",
+  "cleanupError": null
+}

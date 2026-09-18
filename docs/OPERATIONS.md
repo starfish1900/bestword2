@@ -60,7 +60,7 @@ The Windows portable services use the same host ports. Stop application clients,
 
 1. Run CI: strict type checking, production build, unit/property tests, real database integration tests, Chromium/Firefox/WebKit tests, lexicon reproduction, and complete container startup. Inspect failures and retained browser traces. A configured job is not evidence of a completed run.
 2. Check `data/lexicon-manifest.json` against the intended corpus. The original corpus SHA is `87222d75c77c52574868bf0cefd4faf5703d4df166336a4ec9a70cffe72100af`. Do not rebuild vocabulary during application startup or change it during active games.
-3. Validate the Blueprint using `python deployment/validate.py`; Render's authenticated CLI validation may additionally check platform semantics. Inspect the reviewed Blueprint creation preview, region, account plan and prices. Ensure the repository root is this `bestword` directory, which contains `Dockerfile` and `render.yaml`.
+3. Install the validator's Python dependencies with `python -m pip install PyYAML==6.0.2 jsonschema==4.25.1`, then validate the Blueprint using `python deployment/validate.py`; Render's authenticated CLI validation may additionally check platform semantics. Inspect the reviewed Blueprint creation preview, region, account plan and prices. Ensure the repository root is this `bestword` directory, which contains `Dockerfile` and `render.yaml`.
 4. On the separately authorized first deployment, create the Blueprint. It supplies internal connection strings and generates `METRICS_TOKEN`. Datastores reject public connections through empty `ipAllowList` settings. Preserve private credentials in Render, outside Git.
 5. Confirm `/health/ready` reports HTTP 200 and the expected corpus SHA. Create two test accounts, join a game, make an accepted move, reconnect both clients, and verify history. Exercise a controlled API restart with a running game and validate pause/recovery before opening admission to real players.
 6. Record the Git revision, image/base versions, lexicon SHA, migration version, service sizes, validation results and release time. Keep the preceding working revision available for rollback.
@@ -101,7 +101,7 @@ Paid Render PostgreSQL includes continuous point-in-time recovery, currently thr
 
 Before a schema-changing release, confirm a recent recoverable point and save an access-controlled logical export through Render's database recovery/export interface. Establish an external encrypted export retention policy appropriate to the project; no backup automation or external storage has been provisioned by this repository. Backups include accounts, password hashes, private racks and sessions. Restrict access, encrypt copies, and never attach a production dump to a public issue.
 
-For a local restore drill, use the database container's `pg_dump`/`pg_restore`, keeping the dump inside the container until copying it as a file. This avoids Windows shell text redirection corrupting a custom-format binary dump:
+For a local restore drill, use the database container's `pg_dump`/`pg_restore`, keeping the dump inside the container until copying it as a file. This avoids Windows shell text redirection corrupting a custom-format binary dump. Create the destination directory first: `New-Item -ItemType Directory -Force .local` in PowerShell, or `mkdir -p .local` on macOS/Linux. Then run:
 
 ```sh
 docker compose exec -T postgres pg_dump -U bestword -d bestword -Fc -f /tmp/bestword.dump

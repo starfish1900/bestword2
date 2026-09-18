@@ -83,6 +83,8 @@ npm run build
 
 Integration tests use real PostgreSQL and Redis-compatible services. The server integration suite runs when `BESTWORD_INTEGRATION=1`; point it at a dedicated local test database, not production.
 
+The latest recorded consolidated run passed [175 of 175 tests](docs/evidence/verification-175.json), including the real dependency and multi-instance cases. The final combined [Chromium/WebKit run](docs/evidence/browser-latest.json) passed **11 checks**, with one explicit WebKit skip for the Chromium-only acknowledgement fixture. Firefox remains unverified locally because its Windows runtime cannot launch; the configured Linux CI run has not been executed here.
+
 For the full browser workflow:
 
 ```sh
@@ -122,6 +124,10 @@ See [the implementation architecture](docs/ARCHITECTURE.md) for transaction flow
 The Render Blueprint defines the application, worker, PostgreSQL and Key Value services. PostgreSQL owns accepted game state; commands lock only their own game. Server instances share presence and broadcasts through Key Value, so players in one game can connect to different application instances.
 
 Follow [the operations and Render deployment guide](docs/OPERATIONS.md) for provisioning, configuration, backups, recovery, metrics and safe updates. [Deployment verification notes](docs/progress/deployment.md) distinguish prepared configuration from checks actually run. The [load-test guide](tools/load/README.md) describes isolated test data, scenarios and measured reports; run load tests only against a dedicated test environment.
+
+The [five-minute local scale trial](tools/load/reports/2026-09-18T05-24-43-476Z-scale.json) passed with **5,000 games, 2,500 spectators and 12,500 maintained sockets**, accepting **75,400 commands** at 250 baseline commands/second plus four 100-command bursts. It included eight-second revision sync and verified every acknowledged receipt and every final viewer update, with zero errors or disconnects. Two API instances and one worker shared an i7-13700 Windows machine with the driver and databases. This establishes that specific local workload and duration, not Render capacity or cost.
+
+The earlier [hour-long load run](tools/load/reports/2026-09-18T04-14-00-701Z-acceptance.json) maintained 1,200 sockets and accepted 185,782 commands, but used earlier code, omitted periodic revision sync and predates stronger per-viewer checks. A full strict hour on the final code and a longer 5,000-game trial covering completed game cycles are now running sequentially. Their outcomes remain pending; see [capacity evidence](docs/progress/capacity.md) for exact provenance and limitations.
 
 The initial active-game limit is configurable with `MAX_ACTIVE_GAMES`; it defaults to **100**. `MAX_SPECTATORS_PER_GAME` defaults to **10**. Increasing these limits is an operational decision that must follow capacity testing. More application instances, database resources and bandwidth can be provisioned without rewriting game rules or the browser client.
 

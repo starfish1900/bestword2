@@ -1,0 +1,251 @@
+{
+  "formatVersion": 1,
+  "runId": "7dcecef1-89ac-435f-a0bb-e3404fc806aa",
+  "scenario": "smoke",
+  "settings": {
+    "games": 4,
+    "spectators": 8,
+    "commandsPerSecond": 4,
+    "burst": 4,
+    "burstEverySeconds": 20,
+    "durationSeconds": 15,
+    "apiInstances": 2,
+    "workers": 1,
+    "templates": 4
+  },
+  "status": "completed",
+  "startedAt": "2026-09-18T04:01:11.941Z",
+  "finishedAt": "2026-09-18T04:01:26.951Z",
+  "elapsedSeconds": 15.01,
+  "hardware": {
+    "os": "win32",
+    "release": "10.0.26200",
+    "arch": "x64",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-13700",
+    "logicalCpus": 24,
+    "totalMemoryBytes": 16766689280,
+    "node": "v24.14.0"
+  },
+  "environment": {
+    "kind": "local shared hardware with separate API/worker and load-client processes",
+    "databaseHost": "127.0.0.1:54329",
+    "schema": "bw_load_7dcecef189ac435fa0bbe3404fc806aa",
+    "redisDatabase": 15,
+    "apiProcesses": [
+      {
+        "pid": 12664,
+        "url": "http://127.0.0.1:50379"
+      },
+      {
+        "pid": 16040,
+        "url": "http://127.0.0.1:50384"
+      }
+    ],
+    "logDirectory": "C:\\Users\\folia\\Documents\\Codex\\2026-09-17\\p\\outputs\\bestword\\.local\\load\\2026-09-18T04-01-05-979Z-smoke"
+  },
+  "workload": {
+    "initialReadySockets": 16,
+    "targetSockets": 16,
+    "connectedSockets": 0,
+    "attempted": 60,
+    "accepted": 60,
+    "duplicates": 0,
+    "retries": 0,
+    "completedGameCycles": 0,
+    "skippedBusy": 0,
+    "acceptedPerSecond": 3.9973351099267154,
+    "actionMix": {
+      "NO_WORDS": 12,
+      "PLACE_WORD": 48
+    },
+    "gameUpdates": 244,
+    "engineIoIncomingBytes": 1479111,
+    "engineIoIncomingAverageBytesPerSecond": 98541.7055296469,
+    "disconnects": 0,
+    "privacyFailures": 0
+  },
+  "latencyMs": {
+    "endToEndAcknowledgement": {
+      "count": 60,
+      "p50": 12.797099999999773,
+      "p95": 16.60160000000178,
+      "p99": 20.566600000000108,
+      "max": 20.566600000000108
+    },
+    "serviceCommandIncludingCommitAndPublish": {
+      "count": 60,
+      "p50": 10.535400000000664,
+      "p95": 14.481999999999971,
+      "p99": 17.91730000000007,
+      "max": 17.91730000000007
+    },
+    "loadSchedulerLag": {
+      "count": 60,
+      "p50": 9.212599999998929,
+      "p95": 10.974599999999555,
+      "p99": 12.035499999999956,
+      "max": 12.035499999999956
+    },
+    "loadClientEventLoopP99": 35.225599
+  },
+  "resources": {
+    "children": [
+      {
+        "pid": 16040,
+        "peakRss": 259809280,
+        "cpuCoreSeconds": 0.4666995210491949,
+        "samples": 16,
+        "role": "api",
+        "maxWaiting": 0,
+        "averageCpuCores": 0.03109257302126548
+      },
+      {
+        "pid": 12664,
+        "peakRss": 262787072,
+        "cpuCoreSeconds": 0.49698122457849003,
+        "samples": 16,
+        "role": "api",
+        "maxWaiting": 0,
+        "averageCpuCores": 0.03311000829969954
+      },
+      {
+        "pid": 11408,
+        "peakRss": 238993408,
+        "cpuCoreSeconds": 0.3454484399602727,
+        "samples": 16,
+        "role": "worker",
+        "maxWaiting": 0,
+        "averageCpuCores": 0.023014552962043484
+      }
+    ],
+    "driver": {
+      "rss": 120356864,
+      "heapTotal": 36454400,
+      "heapUsed": 32985000,
+      "external": 14901875,
+      "arrayBuffers": 10813608
+    }
+  },
+  "errors": {},
+  "details": [],
+  "durableVerification": {
+    "passed": true,
+    "acknowledgedReceiptsChecked": 60,
+    "successfulReceipts": 60,
+    "snapshotMoves": 60,
+    "gameInvariantsChecked": 4
+  },
+  "samples": [
+    {
+      "at": 1789704086950,
+      "elapsedSeconds": 15.009,
+      "accepted": 60,
+      "attempted": 60,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 4
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "connected": 16,
+      "driverRss": 119918592,
+      "children": [
+        {
+          "pid": 12664,
+          "role": "api",
+          "rss": 132210688,
+          "cpuCores": 0.01499744743444665,
+          "sockets": 8,
+          "waiting": 0
+        },
+        {
+          "pid": 16040,
+          "role": "api",
+          "rss": 129282048,
+          "cpuCores": 0.01599650316440823,
+          "sockets": 8,
+          "waiting": 0
+        },
+        {
+          "pid": 11408,
+          "role": "worker",
+          "rss": 102363136,
+          "cpuCores": 0,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789704088057,
+      "elapsedSeconds": 16.116,
+      "accepted": 60,
+      "attempted": 60,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 4
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "connected": 16,
+      "driverRss": 119922688,
+      "children": [
+        {
+          "pid": 12664,
+          "role": "api",
+          "rss": 134033408,
+          "cpuCores": 0,
+          "sockets": 8,
+          "waiting": 0
+        },
+        {
+          "pid": 16040,
+          "role": "api",
+          "rss": 129351680,
+          "cpuCores": 0,
+          "sockets": 8,
+          "waiting": 0
+        },
+        {
+          "pid": 11408,
+          "role": "worker",
+          "rss": 102363136,
+          "cpuCores": 0,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    }
+  ],
+  "gate": {
+    "fullPreset": false,
+    "durationMet": true,
+    "socketTargetMet": true,
+    "baseRateMet": true,
+    "processingP95Met": true,
+    "processingP99Met": true,
+    "noDisconnects": true,
+    "noPrivacyFailure": true,
+    "noApplicationErrors": true,
+    "durable": true
+  },
+  "limitations": [
+    "This is local hardware evidence, not Render capacity or a promise that US$100 supports the workload.",
+    "Accounts, sessions and deterministic starting fixtures are seeded directly; signup, login, lobby/admission and the initial countdown are excluded.",
+    "Full legal action sequences are precomputed using the engine and lexicon. Completed games are replaced by fresh active fixtures; replacement subscription/DB work remains inside measurement.",
+    "Service timing wraps Games.command through commit and publication. Authentication and transport add to the separately measured end-to-end acknowledgement.",
+    "The driver and local PostgreSQL/Redis share hardware with the child servers; CPU, network and storage contention affect results.",
+    "Engine.IO incoming byte counts are an application-level approximation, not a billable egress measurement.",
+    "A one-hour configured preset is not evidence of an executed one-hour run."
+  ],
+  "error": null,
+  "cleanupError": null
+}

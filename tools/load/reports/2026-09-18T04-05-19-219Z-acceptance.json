@@ -1,0 +1,618 @@
+{
+  "formatVersion": 1,
+  "runId": "43fd7941-c000-49f0-a89a-61175fe8fbcb",
+  "scenario": "acceptance",
+  "settings": {
+    "games": 100,
+    "spectators": 1000,
+    "commandsPerSecond": 50,
+    "burst": 100,
+    "burstEverySeconds": 60,
+    "durationSeconds": 120,
+    "apiInstances": 2,
+    "workers": 1,
+    "templates": 12
+  },
+  "status": "failed",
+  "startedAt": "2026-09-18T04:05:30.507Z",
+  "finishedAt": "2026-09-18T04:07:30.521Z",
+  "elapsedSeconds": 120.014,
+  "hardware": {
+    "os": "win32",
+    "release": "10.0.26200",
+    "arch": "x64",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-13700",
+    "logicalCpus": 24,
+    "totalMemoryBytes": 16766689280,
+    "node": "v24.14.0"
+  },
+  "environment": {
+    "kind": "local shared hardware with separate API/worker and load-client processes",
+    "databaseHost": "127.0.0.1:54329",
+    "schema": "bw_load_43fd7941c00049f0a89a61175fe8fbcb",
+    "redisDatabase": 15,
+    "versions": {
+      "postgresql": "PostgreSQL 18.4 on x86_64-windows, compiled by msvc-19.44.35226, 64-bit",
+      "redisServer": [
+        "redis_version:7.2.16",
+        "redis_mode:standalone",
+        "os:MSYS_NT-10.0-26200 3.6.10-8fbd9808.x86_64 x86_64"
+      ],
+      "redisMaxmemory": {
+        "maxmemory": "134217728"
+      },
+      "serverGamesSha256": "0cb9eb6f6994028f362b561c7921445e895d03273820424f3a6ec63578f97d35"
+    },
+    "apiProcesses": [
+      {
+        "pid": 12616,
+        "url": "http://127.0.0.1:50701"
+      },
+      {
+        "pid": 20604,
+        "url": "http://127.0.0.1:50706"
+      }
+    ],
+    "logDirectory": "C:\\Users\\folia\\Documents\\Codex\\2026-09-17\\p\\outputs\\bestword\\.local\\load\\2026-09-18T04-05-19-219Z-acceptance"
+  },
+  "workload": {
+    "initialReadySockets": 1200,
+    "targetSockets": 1200,
+    "connectedAtMeasurementEnd": 1200,
+    "currentConnectedSockets": 0,
+    "attempted": 2501,
+    "accepted": 97,
+    "duplicates": 0,
+    "retries": 0,
+    "completedGameCycles": 0,
+    "skippedBusy": 0,
+    "bursts": [
+      {
+        "at": 1789704390522,
+        "requested": 100,
+        "offered": 100
+      }
+    ],
+    "acceptedPerSecond": 0.8082390387788092,
+    "actionMix": {
+      "NO_WORDS": 88,
+      "PLACE_WORD": 9
+    },
+    "gameUpdates": 3390,
+    "engineIoIncomingBytes": 7978204,
+    "engineIoIncomingAverageBytesPerSecond": 66477.27765094073,
+    "disconnects": 0,
+    "privacyFailures": 0
+  },
+  "latencyMs": {
+    "endToEndAcknowledgement": {
+      "count": 2501,
+      "p50": 5.07220000000234,
+      "p95": 7.230499999997846,
+      "p99": 10.084100000000035,
+      "max": 34.31999999999971
+    },
+    "serviceCommandIncludingCommitAndPublish": {
+      "count": 2501,
+      "p50": 3.506200000003446,
+      "p95": 5.253199999999197,
+      "p99": 7.6197000000001935,
+      "max": 11.49499999999989
+    },
+    "loadSchedulerLag": {
+      "count": 6100,
+      "p50": 5.972399999998743,
+      "p95": 14.26119999999355,
+      "p99": 15.473599999997532,
+      "max": 16.71700000000419
+    },
+    "loadClientEventLoopP99": 35.127295
+  },
+  "resources": {
+    "children": [
+      {
+        "pid": 7052,
+        "peakRss": 237531136,
+        "cpuCoreSeconds": 2.0319999999999996,
+        "samples": 121,
+        "role": "worker",
+        "maxWaiting": 0,
+        "averageCpuCores": 0.01693135800823237
+      },
+      {
+        "pid": 20604,
+        "peakRss": 274165760,
+        "cpuCoreSeconds": 5.842999999999994,
+        "samples": 121,
+        "role": "api",
+        "maxWaiting": 0,
+        "averageCpuCores": 0.04868598663489255
+      },
+      {
+        "pid": 12616,
+        "peakRss": 273420288,
+        "cpuCoreSeconds": 6.889999999999996,
+        "samples": 121,
+        "role": "api",
+        "maxWaiting": 0,
+        "averageCpuCores": 0.05740996883696899
+      }
+    ],
+    "driver": {
+      "rss": 167981056,
+      "heapTotal": 76562432,
+      "heapUsed": 60456264,
+      "external": 14993072,
+      "arrayBuffers": 10910402
+    }
+  },
+  "errors": {
+    "SERVICE_RECOVERING": 2360,
+    "CONFIRMING_RESULT": 40,
+    "GAME_FINISHED": 4,
+    "GAME_NOT_ACTIVE": 3599
+  },
+  "details": [
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved.",
+    "SERVICE_RECOVERING: The service is reconnecting. Your accepted moves are saved."
+  ],
+  "durableVerification": null,
+  "samples": [
+    {
+      "at": 1789704345523,
+      "elapsedSeconds": 15.016,
+      "accepted": 97,
+      "attempted": 751,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 100
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "redisMemory": {
+        "used_memory": 6474542,
+        "used_memory_rss": 6457168,
+        "used_memory_peak": 8499387,
+        "maxmemory": 134217728
+      },
+      "connected": 1200,
+      "driverRss": 145719296,
+      "children": [
+        {
+          "pid": 12616,
+          "role": "api",
+          "rss": 155213824,
+          "cpuCores": 0.15559802805432454,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 20604,
+          "role": "api",
+          "rss": 145387520,
+          "cpuCores": 0.07806656736198982,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 7052,
+          "role": "worker",
+          "rss": 101474304,
+          "cpuCores": 0,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789704360530,
+      "elapsedSeconds": 30.023,
+      "accepted": 97,
+      "attempted": 1501,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 100
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "redisMemory": {
+        "used_memory": 9446606,
+        "used_memory_rss": 9429232,
+        "used_memory_peak": 9450627,
+        "maxmemory": 134217728
+      },
+      "connected": 1200,
+      "driverRss": 148979712,
+      "children": [
+        {
+          "pid": 12616,
+          "role": "api",
+          "rss": 169959424,
+          "cpuCores": 0.13908539221636668,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 20604,
+          "role": "api",
+          "rss": 166002688,
+          "cpuCores": 0.15592839767978525,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 7052,
+          "role": "worker",
+          "rss": 110505984,
+          "cpuCores": 0.04701285331409616,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789704375524,
+      "elapsedSeconds": 45.017,
+      "accepted": 97,
+      "attempted": 2251,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 100
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "redisMemory": {
+        "used_memory": 11762228,
+        "used_memory_rss": 11744120,
+        "used_memory_peak": 11762228,
+        "maxmemory": 134217728
+      },
+      "connected": 1200,
+      "driverRss": 148725760,
+      "children": [
+        {
+          "pid": 12616,
+          "role": "api",
+          "rss": 200929280,
+          "cpuCores": 0.10841334895536872,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 20604,
+          "role": "api",
+          "rss": 186281984,
+          "cpuCores": 0.06136468527686012,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 7052,
+          "role": "worker",
+          "rss": 112168960,
+          "cpuCores": 0.01597497201134977,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789704390531,
+      "elapsedSeconds": 60.024,
+      "accepted": 97,
+      "attempted": 2496,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 99
+        },
+        {
+          "status": "active",
+          "count": 1
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "redisMemory": {
+        "used_memory": 14297178,
+        "used_memory_rss": 14279804,
+        "used_memory_peak": 14301898,
+        "maxmemory": 134217728
+      },
+      "connected": 1200,
+      "driverRss": 153772032,
+      "children": [
+        {
+          "pid": 12616,
+          "role": "api",
+          "rss": 202301440,
+          "cpuCores": 0.031992987137219535,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 20604,
+          "role": "api",
+          "rss": 198496256,
+          "cpuCores": 0.04625987439164593,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 7052,
+          "role": "worker",
+          "rss": 121094144,
+          "cpuCores": 0.014980309880692773,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789704405542,
+      "elapsedSeconds": 75.035,
+      "accepted": 97,
+      "attempted": 2501,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 100
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "redisMemory": {
+        "used_memory": 16513358,
+        "used_memory_rss": 16447560,
+        "used_memory_peak": 16513358,
+        "maxmemory": 134217728
+      },
+      "connected": 1200,
+      "driverRss": 153923584,
+      "children": [
+        {
+          "pid": 12616,
+          "role": "api",
+          "rss": 204320768,
+          "cpuCores": 0.03099915062327318,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 20604,
+          "role": "api",
+          "rss": 198766592,
+          "cpuCores": 0.04592562345281813,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 7052,
+          "role": "worker",
+          "rss": 122257408,
+          "cpuCores": 0.061151504529205924,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789704420549,
+      "elapsedSeconds": 90.042,
+      "accepted": 97,
+      "attempted": 2501,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 100
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "redisMemory": {
+        "used_memory": 17914910,
+        "used_memory_rss": 17898270,
+        "used_memory_peak": 17968754,
+        "maxmemory": 134217728
+      },
+      "connected": 1200,
+      "driverRss": 154116096,
+      "children": [
+        {
+          "pid": 12616,
+          "role": "api",
+          "rss": 223121408,
+          "cpuCores": 0.014932091832762957,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 20604,
+          "role": "api",
+          "rss": 199856128,
+          "cpuCores": 0.03155440447717576,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 7052,
+          "role": "worker",
+          "rss": 128368640,
+          "cpuCores": 0,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789704435544,
+      "elapsedSeconds": 105.037,
+      "accepted": 97,
+      "attempted": 2501,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 100
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "redisMemory": {
+        "used_memory": 19333590,
+        "used_memory_rss": 19316950,
+        "used_memory_peak": 19354664,
+        "maxmemory": 134217728
+      },
+      "connected": 1200,
+      "driverRss": 154320896,
+      "children": [
+        {
+          "pid": 12616,
+          "role": "api",
+          "rss": 229847040,
+          "cpuCores": 0,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 20604,
+          "role": "api",
+          "rss": 200646656,
+          "cpuCores": 0.030993934487020997,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 7052,
+          "role": "worker",
+          "rss": 128237568,
+          "cpuCores": 0.03201010559033461,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789704451623,
+      "elapsedSeconds": 121.116,
+      "accepted": 97,
+      "attempted": 2501,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 100
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "redisMemory": {
+        "used_memory": 20816144,
+        "used_memory_rss": 20799504,
+        "used_memory_peak": 20837120,
+        "maxmemory": 134217728
+      },
+      "connected": 1200,
+      "driverRss": 154419200,
+      "children": [
+        {
+          "pid": 12616,
+          "role": "api",
+          "rss": 247111680,
+          "cpuCores": 0.014806909022205135,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 20604,
+          "role": "api",
+          "rss": 205156352,
+          "cpuCores": 0,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 7052,
+          "role": "worker",
+          "rss": 128258048,
+          "cpuCores": 0.03094392033318002,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    }
+  ],
+  "gate": {
+    "fullPreset": false,
+    "durationMet": true,
+    "socketTargetMet": true,
+    "baseRateMet": false,
+    "burstTargetMet": true,
+    "processingP95Met": true,
+    "processingP99Met": true,
+    "noDisconnects": true,
+    "noPrivacyFailure": true,
+    "noApplicationErrors": false,
+    "durable": false
+  },
+  "limitations": [
+    "This is local hardware evidence, not Render capacity or a promise that US$100 supports the workload.",
+    "Accounts, sessions and deterministic starting fixtures are seeded directly; signup, login, lobby/admission and the initial countdown are excluded.",
+    "Full legal action sequences are precomputed using the engine and lexicon. Completed games are replaced by fresh active fixtures; replacement subscription/DB work remains inside measurement.",
+    "Service timing wraps Games.command through commit and publication. Authentication and transport add to the separately measured end-to-end acknowledgement.",
+    "The driver and local PostgreSQL/Redis share hardware with the child servers; CPU, network and storage contention affect results.",
+    "Engine.IO incoming byte counts are an application-level approximation, not a billable egress measurement.",
+    "A one-hour configured preset is not evidence of an executed one-hour run."
+  ],
+  "error": "AssertionError [ERR_ASSERTION]: False forfeit detected\n    at verifyDurable (C:\\Users\\folia\\Documents\\Codex\\2026-09-17\\p\\outputs\\bestword\\tools\\load\\runner.ts:195:205)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async <anonymous> (C:\\Users\\folia\\Documents\\Codex\\2026-09-17\\p\\outputs\\bestword\\tools\\load\\runner.ts:223:229)",
+  "cleanupError": null
+}

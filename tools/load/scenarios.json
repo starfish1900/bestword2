@@ -1,0 +1,5 @@
+{
+  "smoke": {"games":4,"spectators":8,"commandsPerSecond":4,"burst":4,"burstEverySeconds":20,"durationSeconds":45,"apiInstances":2,"workers":1,"templates":4,"syncIntervalSeconds":8},
+  "acceptance": {"games":100,"spectators":1000,"commandsPerSecond":50,"burst":100,"burstEverySeconds":60,"durationSeconds":3600,"apiInstances":2,"workers":1,"templates":12,"syncIntervalSeconds":8},
+  "scale": {"games":5000,"spectators":2500,"commandsPerSecond":250,"burst":100,"burstEverySeconds":60,"durationSeconds":3600,"apiInstances":2,"workers":1,"templates":16,"syncIntervalSeconds":8}
+}

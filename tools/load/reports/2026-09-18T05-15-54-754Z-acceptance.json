@@ -1,0 +1,775 @@
+{
+  "formatVersion": 2,
+  "runId": "64008907-33d4-4f9f-94c2-2d6ffa10a075",
+  "scenario": "acceptance",
+  "settings": {
+    "games": 100,
+    "spectators": 1000,
+    "commandsPerSecond": 50,
+    "burst": 100,
+    "burstEverySeconds": 60,
+    "durationSeconds": 120,
+    "apiInstances": 2,
+    "workers": 1,
+    "templates": 12,
+    "syncIntervalSeconds": 8
+  },
+  "status": "completed",
+  "startedAt": "2026-09-18T05:16:06.614Z",
+  "finishedAt": "2026-09-18T05:18:06.622Z",
+  "elapsedSeconds": 120.00000000000001,
+  "timing": {
+    "offeredLoadSeconds": 120.00000000000001,
+    "commandDrainSeconds": 0.0005940999999875203,
+    "viewerDrainSeconds": 0.0031560999999928753,
+    "totalMeasuredWallSeconds": 120.008
+  },
+  "hardware": {
+    "os": "win32",
+    "release": "10.0.26200",
+    "arch": "x64",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-13700",
+    "logicalCpus": 24,
+    "totalMemoryBytes": 16766689280,
+    "node": "v24.14.0"
+  },
+  "environment": {
+    "kind": "local shared hardware with separate API/worker and load-client processes",
+    "databaseHost": "127.0.0.1:54329",
+    "schema": "bw_load_6400890733d44f9f94c22d6ffa10a075",
+    "redisDatabase": 15,
+    "versions": {
+      "postgresql": "PostgreSQL 18.4 on x86_64-windows, compiled by msvc-19.44.35226, 64-bit",
+      "redisServer": [
+        "redis_version:7.2.16",
+        "redis_mode:standalone",
+        "os:MSYS_NT-10.0-26200 3.6.10-8fbd9808.x86_64 x86_64"
+      ],
+      "redisMaxmemory": {
+        "maxmemory": "134217728"
+      },
+      "serverGamesSha256": "d0ddfac6bd373242591e962735cbaf52e5046c11687c36b0b198eed0b47760cc",
+      "compiledArtifacts": {
+        "apps/server/dist/app.js": "55cf07562103c5df9fc00146bcf2deb6f3aef8de60bcb489338fc253e646c38d",
+        "apps/server/dist/auth.js": "d296a9ddc32e7628b6981d87592e99b89e85f98e9c9ef91d9212344b58ab8901",
+        "apps/server/dist/config.js": "ee6858756f3d029320b6dd3bf7707a31a79a337f7fca75f8a6612b61c8341029",
+        "apps/server/dist/db.js": "cbc27ac3ac91532facc956469bb7339af69bf0bfe284f15eb81463496aa0cc86",
+        "apps/server/dist/errors.js": "b91d0b5ffcc08f469b9f95846674afd4bad45711a566a345c249a97b29fae0b7",
+        "apps/server/dist/games.js": "d0ddfac6bd373242591e962735cbaf52e5046c11687c36b0b198eed0b47760cc",
+        "apps/server/dist/health.js": "0c49e0a8348dfed73179a15e4dec921f88eb2e768cf560be252d808a119c1bad",
+        "apps/server/dist/index.js": "a1f1b8d471fb0de15b4315a99078ef27c13a6057ad5e860a78cfffea3e32b92c",
+        "apps/server/dist/kv.js": "4b61007968bcb57bb33f52961d50e2d289d0cc1e91b55a8b0c46a2fe9483d13d",
+        "apps/server/dist/migrate.js": "e24492668ee21b5aab5d158ca15d24c0eb221eba4608af79e835765761332b15",
+        "apps/server/dist/realtime.js": "76764110fe8b556f1f930def6ac2888b3bad36074e2d9b3572ca07bf16b5740d",
+        "apps/server/dist/worker.js": "99712d1b1ebe9b9dc6bbb4111b75ca3b07a2b762fe8f199613e9a2b3b5767551",
+        "packages/contracts/dist/index.js": "b92604e86cfd50003cbc4b27cbb22a36ae9b491b46510b6daa5e15ae445b7efc",
+        "packages/engine/dist/index.js": "a7bc39968bd64ce71083900d6bac71ee07f08402374b4f7792849f697ac957a4",
+        "packages/lexicon/dist/index.js": "39aaeeb92c3df8985f4b56dc5638b872ea3728b4b85860519f487d71b271a1fa"
+      },
+      "compiledCombinedSha256": "ee48da34f5b516986026055166d58790c8f401e867a0624d099229ccc3a6210e",
+      "packageLockSha256": "396ee9025c43d1c61a4de9c71cc5bd1c0438a53381f9d42e1521aec83384177c",
+      "harnessArtifacts": {
+        "tools/load/run.mjs": "b95242a991708b616085ef07da780896226e26f2e39fae049caf00d503bd17e1",
+        "tools/load/runner.ts": "1c4cd6028dada3037f6bab1fcd11412c162aabf011ed3d1e6244a0dba71e5436",
+        "tools/load/child.mjs": "eba0ee1f866d5cfe0f22daf9201ed9d36866778d24850e9d7da6db8738bbb085",
+        "tools/load/scenarios.json": "3820729a8446620017f647de783bf60b633526868c787c5f09172eed164fe802",
+        "tools/load/observations.ts": "c64cca92e1111ed5177ed82c2a03acd86c85170a07252801d4488e2857fd4c1a",
+        "tools/testing/moves.ts": "39a96a22468bf5e1b1b117eebd1aaa3460d829034a801b9f9183ce6fe1031233"
+      },
+      "harnessCombinedSha256": "c59e079006462d5a06b250a6bbf09d06c087345b1dfe855bd03ba5dc73bc31cb",
+      "lexiconArtifactSha256": "a2c6ef6c62da93495848e3335b814788842021514131025ea44cde34fbd207d0"
+    },
+    "apiProcesses": [
+      {
+        "pid": 3024,
+        "url": "http://127.0.0.1:55406"
+      },
+      {
+        "pid": 10132,
+        "url": "http://127.0.0.1:55412"
+      }
+    ],
+    "logDirectory": "C:\\Users\\folia\\Documents\\Codex\\2026-09-17\\p\\outputs\\bestword\\.local\\load\\2026-09-18T05-15-54-754Z-acceptance"
+  },
+  "startup": {
+    "phase": "complete",
+    "failurePhase": null,
+    "socketsAttempted": 1200,
+    "successfulConnections": 1200,
+    "connectionFailures": 0,
+    "peakConnectedSockets": 1200,
+    "tablesCreated": 100
+  },
+  "workload": {
+    "initialReadySockets": 1200,
+    "targetSockets": 1200,
+    "connectedAtMeasurementEnd": 1200,
+    "minConnectedSockets": 1200,
+    "minSampledSockets": 1200,
+    "currentConnectedSockets": 0,
+    "attempted": 6099,
+    "accepted": 6099,
+    "duplicates": 60,
+    "retries": 0,
+    "completedGameCycles": 150,
+    "skippedBusy": 1,
+    "traffic": {
+      "baseline": {
+        "scheduled": 6000,
+        "offered": 5999,
+        "attempted": 5999,
+        "accepted": 5999,
+        "failed": 0,
+        "skipped": 1
+      },
+      "burst": {
+        "scheduled": 100,
+        "offered": 100,
+        "attempted": 100,
+        "accepted": 100,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    "bursts": [
+      {
+        "at": 1789708626622,
+        "requested": 100,
+        "offered": 100,
+        "accepted": 100,
+        "failed": 0
+      }
+    ],
+    "requiredBursts": 1,
+    "acceptedPerSecond": 50.824999999999996,
+    "baselineAcceptedPerSecond": 49.99166666666666,
+    "actionMix": {
+      "NO_WORDS": 1515,
+      "PLACE_WORD": 4284,
+      "PASS": 300
+    },
+    "gameUpdates": 76172,
+    "revisionSync": {
+      "intervalSeconds": 8,
+      "sent": 17842,
+      "unchanged": 17797,
+      "changed": 45
+    },
+    "engineIoIncomingBytes": 754581060,
+    "engineIoIncomingAverageBytesPerSecond": 6288175.499999999,
+    "disconnects": 0,
+    "privacyFailures": 0
+  },
+  "latencyMs": {
+    "endToEndAcknowledgement": {
+      "count": 6099,
+      "p50": 5.4593000000022585,
+      "p95": 9.143600000010338,
+      "p99": 48.61009999999078,
+      "max": 102.40669999999227
+    },
+    "serviceCommandIncludingCommitAndPublish": {
+      "count": 6159,
+      "p50": 4.534799999993993,
+      "p95": 7.615900000004331,
+      "p99": 39.08899999999994,
+      "max": 58.659700000003795
+    },
+    "revisionSync": {
+      "count": 17842,
+      "p50": 1.5802000000003318,
+      "p95": 3.1013999999995576,
+      "p99": 4.325100000001839,
+      "max": 95.43189999999595
+    },
+    "gameUpdateFromAcceptedMove": {
+      "count": 73182,
+      "p50": 4,
+      "p95": 7,
+      "p99": 147,
+      "max": 194,
+      "resolutionMs": 1,
+      "overflowThresholdMs": 10000
+    },
+    "loadSchedulerLag": {
+      "count": 6099,
+      "p50": 4.195800000001327,
+      "p95": 14.679799999998068,
+      "p99": 15.591400000004796,
+      "max": 20.16950000000361
+    },
+    "loadClientEventLoopP99": 34.603007
+  },
+  "resources": {
+    "children": [
+      {
+        "pid": 3024,
+        "peakRss": 287506432,
+        "cpuCoreSeconds": 17.608999999999995,
+        "samples": 121,
+        "role": "api",
+        "maxWaiting": 0,
+        "averageCpuCores": 0.1467416666666666
+      },
+      {
+        "pid": 4588,
+        "peakRss": 237318144,
+        "cpuCoreSeconds": 1.6249999999999996,
+        "samples": 120,
+        "role": "worker",
+        "maxWaiting": 0,
+        "averageCpuCores": 0.013541666666666662
+      },
+      {
+        "pid": 10132,
+        "peakRss": 288051200,
+        "cpuCoreSeconds": 17.750000000000007,
+        "samples": 120,
+        "role": "api",
+        "maxWaiting": 0,
+        "averageCpuCores": 0.1479166666666667
+      }
+    ],
+    "driver": {
+      "rss": 303165440,
+      "heapTotal": 196046848,
+      "heapUsed": 56771776,
+      "external": 14974342,
+      "arrayBuffers": 10891672
+    }
+  },
+  "errors": {},
+  "details": [],
+  "durableVerification": {
+    "passed": true,
+    "acknowledgedReceiptsChecked": 6099,
+    "successfulReceipts": 6099,
+    "snapshotMoves": 6099,
+    "gameInvariantsChecked": 250
+  },
+  "viewerFreshness": {
+    "passed": true,
+    "timeoutMs": 10000,
+    "expectedViewers": 1200,
+    "confirmedViewers": 1200,
+    "broadcastViewers": 1200,
+    "initializationOnlyViewers": 0,
+    "staleExamples": [],
+    "acknowledgementsCountAsBroadcast": false
+  },
+  "retiredViewerFreshness": {
+    "gamesChecked": 150,
+    "viewerChecks": 1800,
+    "failures": 0,
+    "maxDrainMs": 21.799400000003516
+  },
+  "samples": [
+    {
+      "at": 1789708581621,
+      "elapsedSeconds": 15.007,
+      "accepted": 750,
+      "attempted": 751,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 100
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 3840944,
+        "used_memory_rss": 3833362,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 4692226048,
+      "connected": 1200,
+      "driverRss": 298442752,
+      "children": [
+        {
+          "pid": 3024,
+          "role": "api",
+          "rss": 280436736,
+          "cpuCores": 0.17199262151653688,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 10132,
+          "role": "api",
+          "rss": 283664384,
+          "cpuCores": 0.09365631877263185,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 4588,
+          "role": "worker",
+          "rss": 108462080,
+          "cpuCores": 0,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789708596632,
+      "elapsedSeconds": 30.018,
+      "accepted": 1500,
+      "attempted": 1501,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 100
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 3894626,
+        "used_memory_rss": 3879086,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 4735365120,
+      "connected": 1200,
+      "driverRss": 297050112,
+      "children": [
+        {
+          "pid": 3024,
+          "role": "api",
+          "rss": 283693056,
+          "cpuCores": 0.15700200962572386,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 10132,
+          "role": "api",
+          "rss": 280313856,
+          "cpuCores": 0.21891530166978446,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 4588,
+          "role": "worker",
+          "rss": 109092864,
+          "cpuCores": 0,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789708611637,
+      "elapsedSeconds": 45.023,
+      "accepted": 2251,
+      "attempted": 2251,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 8
+        },
+        {
+          "status": "active",
+          "count": 100
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 3979810,
+        "used_memory_rss": 3975498,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 4762611712,
+      "connected": 1200,
+      "driverRss": 300462080,
+      "children": [
+        {
+          "pid": 3024,
+          "role": "api",
+          "rss": 284274688,
+          "cpuCores": 0.12495853310582891,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 10132,
+          "role": "api",
+          "rss": 285458432,
+          "cpuCores": 0.14095534534659412,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 4588,
+          "role": "worker",
+          "rss": 114446336,
+          "cpuCores": 0.015977908943095323,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789708626643,
+      "elapsedSeconds": 60.029,
+      "accepted": 3007,
+      "attempted": 3101,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 42
+        },
+        {
+          "status": "active",
+          "count": 100
+        }
+      ],
+      "outbox": {
+        "count": 21,
+        "oldest_ms": "16"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 4064770,
+        "used_memory_rss": 4065708,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 4755128320,
+      "connected": 1200,
+      "driverRss": 299675648,
+      "children": [
+        {
+          "pid": 3024,
+          "role": "api",
+          "rss": 282677248,
+          "cpuCores": 0.06300279102364198,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 10132,
+          "role": "api",
+          "rss": 281411584,
+          "cpuCores": 0.15603808760514873,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 4588,
+          "role": "worker",
+          "rss": 115089408,
+          "cpuCores": 0.03099949160833761,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789708641649,
+      "elapsedSeconds": 75.035,
+      "accepted": 3850,
+      "attempted": 3851,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 50
+        },
+        {
+          "status": "active",
+          "count": 100
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 4090437,
+        "used_memory_rss": 4073817,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 4749385728,
+      "connected": 1200,
+      "driverRss": 303157248,
+      "children": [
+        {
+          "pid": 3024,
+          "role": "api",
+          "rss": 282234880,
+          "cpuCores": 0.1088614955192512,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 10132,
+          "role": "api",
+          "rss": 284192768,
+          "cpuCores": 0.10753871269190818,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 4588,
+          "role": "worker",
+          "rss": 116256768,
+          "cpuCores": 0.045895102154515505,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789708656652,
+      "elapsedSeconds": 90.038,
+      "accepted": 4601,
+      "attempted": 4601,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 58
+        },
+        {
+          "status": "active",
+          "count": 100
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 1,
+        "oldest_check_lag_ms": 16,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 4112472,
+        "used_memory_rss": 4111778,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 4706320384,
+      "connected": 1200,
+      "driverRss": 305463296,
+      "children": [
+        {
+          "pid": 3024,
+          "role": "api",
+          "rss": 283570176,
+          "cpuCores": 0.2642345126169494,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 10132,
+          "role": "api",
+          "rss": 287145984,
+          "cpuCores": 0.1395653098858295,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 4588,
+          "role": "worker",
+          "rss": 121925632,
+          "cpuCores": 0,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789708671651,
+      "elapsedSeconds": 105.037,
+      "accepted": 5350,
+      "attempted": 5351,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 106
+        },
+        {
+          "status": "active",
+          "count": 100
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 4215128,
+        "used_memory_rss": 4208869,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 4678524928,
+      "connected": 1200,
+      "driverRss": 306991104,
+      "children": [
+        {
+          "pid": 3024,
+          "role": "api",
+          "rss": 285630464,
+          "cpuCores": 0.17045768886288418,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 10132,
+          "role": "api",
+          "rss": 281788416,
+          "cpuCores": 0.12500145001681995,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 4588,
+          "role": "worker",
+          "rss": 129671168,
+          "cpuCores": 0.015974713625801815,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789708687732,
+      "elapsedSeconds": 121.118,
+      "accepted": 6099,
+      "attempted": 6099,
+      "statuses": [
+        {
+          "status": "finished",
+          "count": 150
+        },
+        {
+          "status": "active",
+          "count": 100
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 3,
+        "oldest_check_lag_ms": 52,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 4168377,
+        "used_memory_rss": 4154609,
+        "used_memory_peak": 21118963,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 4684623872,
+      "connected": 1200,
+      "driverRss": 304914432,
+      "children": [
+        {
+          "pid": 3024,
+          "role": "api",
+          "rss": 287494144,
+          "cpuCores": 0.04639677694423748,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 10132,
+          "role": "api",
+          "rss": 287145984,
+          "cpuCores": 0.06294316861305921,
+          "sockets": 600,
+          "waiting": 0
+        },
+        {
+          "pid": 4588,
+          "role": "worker",
+          "rss": 133201920,
+          "cpuCores": 0,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    }
+  ],
+  "gate": {
+    "fullPreset": false,
+    "throughputTolerancePercent": 5,
+    "durationMet": true,
+    "socketTargetMet": true,
+    "baseRateMet": true,
+    "burstTargetMet": true,
+    "processingP95Met": true,
+    "processingP99Met": true,
+    "noDisconnects": true,
+    "noPrivacyFailure": true,
+    "noApplicationErrors": true,
+    "viewerFreshness": true,
+    "durable": true
+  },
+  "limitations": [
+    "This is local hardware evidence, not Render capacity or a promise that US$100 supports the workload.",
+    "Accounts, sessions and deterministic starting fixtures are seeded directly; signup, login, lobby/admission and the initial countdown are excluded.",
+    "Full legal action sequences are precomputed using the engine and lexicon. Completed games are replaced by fresh active fixtures; replacement subscription/DB work remains inside measurement.",
+    "Service timing wraps Games.command through commit and publication. Authentication and transport add to the separately measured end-to-end acknowledgement.",
+    "The driver and local PostgreSQL/Redis share hardware with the child servers; CPU, network and storage contention affect results.",
+    "Engine.IO incoming byte counts are an application-level approximation, not a billable egress measurement.",
+    "A one-hour configured preset is not evidence of an executed one-hour run."
+  ],
+  "stopReason": null,
+  "error": null,
+  "cleanupError": null
+}
