@@ -1,0 +1,158 @@
+[
+  {
+    "letter": "A",
+    "isVowel": true,
+    "value": 1,
+    "count": 16
+  },
+  {
+    "letter": "B",
+    "isVowel": false,
+    "value": 8,
+    "count": 8
+  },
+  {
+    "letter": "C",
+    "isVowel": false,
+    "value": 6,
+    "count": 10
+  },
+  {
+    "letter": "D",
+    "isVowel": false,
+    "value": 4,
+    "count": 10
+  },
+  {
+    "letter": "E",
+    "isVowel": true,
+    "value": 1,
+    "count": 24
+  },
+  {
+    "letter": "F",
+    "isVowel": false,
+    "value": 9,
+    "count": 7
+  },
+  {
+    "letter": "G",
+    "isVowel": false,
+    "value": 6,
+    "count": 10
+  },
+  {
+    "letter": "H",
+    "isVowel": false,
+    "value": 6,
+    "count": 10
+  },
+  {
+    "letter": "I",
+    "isVowel": true,
+    "value": 1,
+    "count": 16
+  },
+  {
+    "letter": "J",
+    "isVowel": false,
+    "value": 11,
+    "count": 4
+  },
+  {
+    "letter": "K",
+    "isVowel": false,
+    "value": 7,
+    "count": 5
+  },
+  {
+    "letter": "L",
+    "isVowel": false,
+    "value": 5,
+    "count": 8
+  },
+  {
+    "letter": "M",
+    "isVowel": false,
+    "value": 5,
+    "count": 8
+  },
+  {
+    "letter": "N",
+    "isVowel": false,
+    "value": 3,
+    "count": 16
+  },
+  {
+    "letter": "O",
+    "isVowel": true,
+    "value": 1,
+    "count": 13
+  },
+  {
+    "letter": "P",
+    "isVowel": false,
+    "value": 8,
+    "count": 9
+  },
+  {
+    "letter": "Q",
+    "isVowel": false,
+    "value": 11,
+    "count": 4
+  },
+  {
+    "letter": "R",
+    "isVowel": false,
+    "value": 3,
+    "count": 16
+  },
+  {
+    "letter": "S",
+    "isVowel": false,
+    "value": 2,
+    "count": 16
+  },
+  {
+    "letter": "T",
+    "isVowel": false,
+    "value": 4,
+    "count": 16
+  },
+  {
+    "letter": "U",
+    "isVowel": true,
+    "value": 2,
+    "count": 13
+  },
+  {
+    "letter": "V",
+    "isVowel": false,
+    "value": 9,
+    "count": 7
+  },
+  {
+    "letter": "W",
+    "isVowel": false,
+    "value": 7,
+    "count": 5
+  },
+  {
+    "letter": "X",
+    "isVowel": false,
+    "value": 10,
+    "count": 4
+  },
+  {
+    "letter": "Y",
+    "isVowel": true,
+    "value": 2,
+    "count": 8
+  },
+  {
+    "letter": "Z",
+    "isVowel": false,
+    "value": 10,
+    "count": 4
+  }
+]

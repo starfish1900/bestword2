@@ -1,0 +1,12 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext", "moduleResolution": "Bundler", "jsx": "react-jsx",
+    "noEmit": true, "composite": false, "declaration": false, "declarationMap": false,
+    "types": ["vite/client", "node"],
+    "baseUrl": "../../..",
+    "paths": { "@bestword/contracts": ["packages/contracts/src/index.ts"], "@bestword/engine": ["packages/engine/src/index.ts"] }
+  },
+  "include": ["*.ts", "*.tsx"]
+}

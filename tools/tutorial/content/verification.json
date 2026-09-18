@@ -1,0 +1,240 @@
+{
+  "verifiedAt": "2026-09-18T12:08:27.090Z",
+  "status": "passed",
+  "dictionarySha256": "87222d75c77c52574868bf0cefd4faf5703d4df166336a4ec9a70cffe72100af",
+  "engineSource": "C:\\Users\\folia\\Documents\\Codex\\2026-09-17\\p\\outputs\\bestword\\packages\\engine\\src\\index.ts",
+  "sourceMethod": "production evaluatePlacement + exact shipped GADDAG; visual pillars and spans independently derived from pre-move board",
+  "scenes": 32,
+  "narrationWordCount": 998,
+  "coverageRules": 44,
+  "examples": [
+    {
+      "id": "boomerangs",
+      "word": "BOOMERANGS",
+      "score": 186,
+      "newTiles": 6,
+      "words": [
+        {
+          "word": "BOOMERANGS",
+          "score": 186,
+          "spans": 0,
+          "pillars": [
+            5,
+            8
+          ],
+          "spanIndices": []
+        }
+      ]
+    },
+    {
+      "id": "roommate",
+      "word": "ROOMMATE",
+      "score": 147,
+      "newTiles": 6,
+      "words": [
+        {
+          "word": "ROOMMATE",
+          "score": 147,
+          "spans": 3,
+          "pillars": [
+            16,
+            76
+          ],
+          "spanIndices": [
+            31,
+            46,
+            61
+          ]
+        }
+      ]
+    },
+    {
+      "id": "boomerang",
+      "word": "BOOMERANG",
+      "score": 261,
+      "newTiles": 2,
+      "words": [
+        {
+          "word": "BOOMERANG",
+          "score": 203,
+          "spans": 2,
+          "pillars": [
+            60,
+            68
+          ],
+          "spanIndices": [
+            63,
+            64
+          ]
+        },
+        {
+          "word": "BOOMERANG",
+          "score": 58,
+          "spans": 1,
+          "pillars": [
+            4,
+            124
+          ],
+          "spanIndices": [
+            64
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sos",
+      "word": "SOS",
+      "score": 42,
+      "newTiles": 3,
+      "words": [
+        {
+          "word": "SOS",
+          "score": 10,
+          "spans": 0,
+          "pillars": [],
+          "spanIndices": []
+        },
+        {
+          "word": "BOOMS",
+          "score": 17,
+          "spans": 0,
+          "pillars": [
+            0,
+            45
+          ],
+          "spanIndices": []
+        },
+        {
+          "word": "RANGS",
+          "score": 15,
+          "spans": 0,
+          "pillars": [
+            2,
+            47
+          ],
+          "spanIndices": []
+        }
+      ]
+    },
+    {
+      "id": "anopias",
+      "word": "ANOPIAS",
+      "score": 171,
+      "newTiles": 6,
+      "words": [
+        {
+          "word": "ANOPIAS",
+          "score": 51,
+          "spans": 0,
+          "pillars": [
+            50
+          ],
+          "spanIndices": []
+        },
+        {
+          "word": "HAY",
+          "score": 18,
+          "spans": 1,
+          "pillars": [
+            32,
+            62
+          ],
+          "spanIndices": [
+            47
+          ]
+        },
+        {
+          "word": "ING",
+          "score": 20,
+          "spans": 1,
+          "pillars": [
+            33,
+            63
+          ],
+          "spanIndices": [
+            48
+          ]
+        },
+        {
+          "word": "ZOA",
+          "score": 24,
+          "spans": 1,
+          "pillars": [
+            34,
+            64
+          ],
+          "spanIndices": [
+            49
+          ]
+        },
+        {
+          "word": "GIO",
+          "score": 16,
+          "spans": 1,
+          "pillars": [
+            36,
+            66
+          ],
+          "spanIndices": [
+            51
+          ]
+        },
+        {
+          "word": "NAP",
+          "score": 24,
+          "spans": 1,
+          "pillars": [
+            37,
+            67
+          ],
+          "spanIndices": [
+            52
+          ]
+        },
+        {
+          "word": "ASH",
+          "score": 18,
+          "spans": 1,
+          "pillars": [
+            38,
+            68
+          ],
+          "spanIndices": [
+            53
+          ]
+        }
+      ]
+    }
+  ],
+  "masterpiece": {
+    "productionDraftFunctions": true,
+    "inferred": {
+      "type": "PLACE_WORD",
+      "row": 7,
+      "column": 2,
+      "direction": "H",
+      "word": "MASTERPIECE"
+    }
+  },
+  "letterInventory": {
+    "total": 267,
+    "vowels": 90,
+    "consonants": 177
+  },
+  "checks": [
+    "Five published scores match production engine",
+    "Every formed word exists in exact production lexicon",
+    "No input state mutation",
+    "Tile conservation valid in source positions",
+    "Visual span counts match engine",
+    "Six new tiles / six secondary bridges for ANOPIAS",
+    "MASTERPIECE inferred by production draft functions",
+    "All 26 values and quantities imported from engine",
+    "Rule coverage references real scenes",
+    "Narration has 900–1000 words"
+  ],
+  "limitations": [
+    "Constructed score positions illustrate the specifications; not claims of reachable complete game histories.",
+    "Narration, footage, visual layout, timing, captions and full-video playback require separate production QA."
+  ]
+}

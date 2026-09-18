@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-09-18T12:09:09.364Z",
+  "timelineCreatedAt": "2026-09-18T12:08:23.153Z",
+  "timelinePath": "C:\\Users\\folia\\Documents\\Codex\\2026-09-17\\p\\work\\tutorial\\timeline.json",
+  "duration": 450.2,
+  "sceneCount": 32,
+  "captionCount": 119,
+  "spokenWords": 998,
+  "captionTextExact": true,
+  "maxCaptionLines": 2,
+  "maxCaptionLineCharacters": 44,
+  "status": "passed",
+  "findingsByType": {},
+  "findings": []
+}
