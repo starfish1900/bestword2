@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="A complete narrated BestWord tutorial with real application footage, bridge examples, scoring and chapter navigation. Works offline.">
+  <title>BestWord · Learn to play</title>
+  <style>
+    :root{--navy:#102536;--deep:#0b1b29;--panel:#193346;--ivory:#f5f0e5;--muted:#bbcad4;--gold:#dfbd79;--line:#3b5263;--focus:#91ddd5}
+    *{box-sizing:border-box}body{margin:0;background:var(--deep);color:var(--ivory);font:17px/1.6 "Segoe UI",Arial,sans-serif}a{color:var(--gold);text-underline-offset:4px}a:hover{color:#fff}button{font:inherit}button,a{touch-action:manipulation}button:focus-visible,a:focus-visible,video:focus-visible{outline:3px solid var(--focus);outline-offset:5px}button{cursor:pointer}.wrap{max-width:1360px;margin:auto;padding:32px 36px 50px}.masthead{display:flex;align-items:center;gap:18px;margin-bottom:35px}.mark{width:62px;height:62px;display:grid;place-items:center;border:1px solid var(--gold);border-radius:8px;color:var(--gold);font:30px Georgia,serif;flex-shrink:0}.brand{font:28px Georgia,serif;letter-spacing:.3px}.eyebrow{margin:2px 0 0;color:var(--muted);font-size:13px;letter-spacing:1.6px;text-transform:uppercase}.intro{max-width:880px;margin-bottom:28px}h1{font:clamp(34px,4.4vw,60px)/1.12 Georgia,serif;font-weight:400;margin:0 0 17px}h1 em{color:var(--gold);font-style:normal}.intro p{color:var(--muted);margin:0;font-size:19px}.facts{display:flex;flex-wrap:wrap;gap:9px;margin:19px 0 0}.facts span{font-size:13px;background:var(--panel);border:1px solid var(--line);border-radius:99px;padding:4px 13px;color:var(--ivory)}.player-shell{overflow:hidden;border:1px solid #536572;border-radius:12px;background:#071521;box-shadow:0 18px 60px #0004}video{display:block;width:100%;aspect-ratio:16/9;background:#081827;object-fit:contain}.player-footer{display:flex;gap:20px;justify-content:space-between;align-items:center;padding:17px 20px;background:var(--navy);border-top:1px solid var(--line)}.variant-controls{display:flex;flex-wrap:wrap;gap:8px}.variant{border:1px solid var(--line);border-radius:7px;color:var(--ivory);background:transparent;padding:9px 15px;min-height:46px}.variant[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#152a3a;font-weight:650}.variant:hover{border-color:var(--gold)}.player-footer p{color:var(--muted);font-size:14px;margin:0}.notice{min-height:1.5em;color:var(--muted);font-size:14px;margin:12px 2px 0}.notice a{color:var(--gold)}h2{font:29px Georgia,serif;font-weight:400;margin:0 0 8px}.section-intro{margin:0 0 20px;color:var(--muted);font-size:15px}.chapters{margin:32px 0 42px}.chapter-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}.chapter{display:flex;gap:16px;align-items:center;text-align:left;padding:16px 18px;min-height:76px;color:var(--ivory);border:1px solid var(--line);border-radius:9px;background:var(--navy);line-height:1.35}.chapter:hover,.chapter[aria-current="true"]{background:var(--panel);border-color:var(--gold)}.chapter time{font-variant-numeric:tabular-nums;color:var(--gold);font-size:15px;min-width:40px}.chapter span{font-size:16px}.resources{display:grid;grid-template-columns:1.25fr 1fr;gap:24px}.resource-card{padding:27px;border:1px solid var(--line);border-radius:10px;background:var(--navy)}.resource-card p{color:var(--muted);margin:7px 0 19px;font-size:15px}.resource-links{list-style:none;margin:0;padding:0;display:grid;gap:13px}.resource-links li{display:flex;gap:12px;align-items:baseline;justify-content:space-between}.resource-links small{font-size:12px;color:var(--muted);white-space:nowrap}.footer{border-top:1px solid var(--line);margin-top:34px;padding-top:21px;color:var(--muted);font-size:13px}.footer p{margin:0}.skip{position:absolute;left:15px;top:-100px;background:var(--ivory);color:var(--deep);padding:8px 13px;z-index:9}.skip:focus{top:15px}noscript p{padding:14px;border:1px solid var(--gold)}
+    @media(max-width:850px){.wrap{padding:24px 20px 36px}.chapter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.resources{grid-template-columns:1fr}.player-footer{align-items:flex-start;flex-direction:column;gap:10px}.intro p{font-size:17px}}
+    @media(max-width:520px){.wrap{padding:20px 13px 30px}.masthead{margin-bottom:27px;gap:12px}.mark{width:50px;height:50px;font-size:25px}.brand{font-size:25px}.eyebrow{font-size:10px;letter-spacing:1.2px}.chapter-grid{grid-template-columns:1fr}.chapter{min-height:60px}.resource-card{padding:21px}.resource-links li{align-items:flex-start;flex-direction:column;gap:1px}.variant{font-size:14px;padding:9px 12px}.player-footer{padding:13px}.facts{gap:7px}.facts span{font-size:12px}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+  </style>
+</head>
+<body>
+  <a class="skip" href="#tutorial">Skip to video</a>
+  <main class="wrap">
+    <header class="masthead"><div class="mark" aria-hidden="true">B<sub style="font-size:15px;position:absolute;margin:31px 0 0 29px">w</sub></div><div><div class="brand">BestWord</div><p class="eyebrow">Your guide to the game</p></div></header>
+    <section class="intro" aria-labelledby="page-title">
+      <h1 id="page-title">Every word starts<br>with a <em>connection.</em></h1>
+      <p>Learn the complete rules, play your first move, and see how bridges turn connected letters into points.</p>
+      <div class="facts" aria-label="Tutorial details"><span>{{DURATION_LABEL}}</span><span>English narration · Microsoft Zira</span><span>1080p · 30 fps</span><span>Works offline</span></div>
+    </section>
+    <section aria-label="Video tutorial">
+      <div class="player-shell">
+        <video id="tutorial" controls playsinline preload="metadata" poster="BestWord-Poster.png" aria-label="BestWord complete narrated tutorial with visible English captions">
+          <source src="BestWord-Tutorial.mp4" type="video/mp4">
+          Your browser cannot play this video. <a href="BestWord-Tutorial.mp4">Open the captioned MP4 file</a> in a video player.
+        </video>
+        <div class="player-footer"><div class="variant-controls" role="group" aria-label="Choose video version"><button class="variant" data-source="BestWord-Tutorial.mp4" data-label="visible English captions" aria-pressed="true">With captions</button><button class="variant" data-source="BestWord-Tutorial-Clean.mp4" data-label="no visible captions" aria-pressed="false">Without captions</button></div><p>Press Play to begin. Full-screen viewing is available.</p></div>
+      </div>
+      <p id="player-status" class="notice" role="status" aria-live="polite">Captions are built into this version, so they work without an internet connection.</p>
+      <noscript><p>The video controls and download links work without JavaScript. Chapter buttons and version switching require JavaScript; use <a href="Chapters.txt">chapter timestamps</a> or <a href="BestWord-Tutorial-Clean.mp4">open the version without captions</a> instead.</p></noscript>
+    </section>
+    <section class="chapters" aria-labelledby="chapters-heading">
+      <h2 id="chapters-heading">Find your place</h2>
+      <p class="section-intro">Choose a chapter to jump there, then press Play. You can pause at any diagram or scoring example.</p>
+      <div class="chapter-grid">
+{{CHAPTER_BUTTONS}}
+      </div>
+    </section>
+    <section class="resources" aria-label="Companion materials and source files">
+      <div class="resource-card"><h2>Keep the rules close</h2><p>Follow the narration in writing, review the five scoring examples, or look up every letter’s value and quantity.</p><ul class="resource-links"><li><a href="Transcript.md">Complete transcript</a><small>{{WORD_COUNT}} spoken words</small></li><li><a href="Rules-reference.md">Rules and letter reference</a><small>All five scoring examples</small></li><li><a href="Chapters.txt">Chapter timestamps</a><small>Plain text</small></li></ul></div>
+      <div class="resource-card"><h2>Files to keep and reuse</h2><p>Use the MP4 files in your preferred player. Separate captions and reproducible production sources are also included.</p><ul class="resource-links"><li><a href="BestWord-Tutorial.mp4">Video with visible captions</a><small>MP4</small></li><li><a href="BestWord-Tutorial-Clean.mp4">Video without visible captions</a><small>MP4</small></li><li><span><a href="BestWord-Tutorial.srt">SRT captions</a> · <a href="BestWord-Tutorial.vtt">WebVTT captions</a></span><small>English</small></li><li><a href="BestWord-Tutorial-Source.zip">Reproducible source package</a><small>ZIP</small></li><li><a href="Production-report.md">Production and review report</a><small>Read me</small></li><li><a href="Verification.json">Media verification details</a><small>JSON</small></li></ul></div>
+    </section>
+    <footer class="footer"><p>Keep this page and its companion files together in the same folder. Everything plays locally; no account, upload or external connection is required. See <a href="README.md">the package guide</a> for playback and verification details.</p></footer>
+  </main>
+  <script>
+    (()=>{
+      'use strict';
+      const video=document.getElementById('tutorial'),status=document.getElementById('player-status');
+      const chapters=[...document.querySelectorAll('.chapter')],variants=[...document.querySelectorAll('.variant')];
+      let pendingTime=null;
+      const seek=time=>{video.pause();if(video.readyState>=1){video.currentTime=Math.min(time,Math.max(0,video.duration-.05));}else pendingTime=time;};
+      video.addEventListener('loadedmetadata',()=>{if(pendingTime!==null){const time=pendingTime;pendingTime=null;seek(time);}});
+      chapters.forEach(button=>button.addEventListener('click',()=>{seek(Number(button.dataset.time));status.textContent=`${button.querySelector('span').textContent} selected. Press Play to continue.`;video.focus({preventScroll:true});video.scrollIntoView({block:'center',behavior:'auto'});}));
+      variants.forEach(button=>button.addEventListener('click',()=>{
+        if(button.getAttribute('aria-pressed')==='true')return;
+        const at=Number.isFinite(video.currentTime)?video.currentTime:0;video.pause();pendingTime=at;
+        variants.forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
+        video.src=button.dataset.source;video.setAttribute('aria-label',`BestWord complete narrated tutorial with ${button.dataset.label}`);video.load();
+        status.textContent=`Version selected: ${button.dataset.label}. Your position is kept; press Play to continue.`;
+      }));
+      video.addEventListener('timeupdate',()=>{let current=chapters[0];for(const button of chapters)if(video.currentTime+.001>=Number(button.dataset.time))current=button;chapters.forEach(button=>button.setAttribute('aria-current',String(button===current)));});
+      video.addEventListener('error',()=>{status.textContent='The video could not be opened. Keep all package files in this folder, or open the MP4 directly in a video player.';});
+    })();
+  </script>
+</body>
+</html>
+
+

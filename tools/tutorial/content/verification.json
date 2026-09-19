@@ -1,12 +1,12 @@
 {
-  "verifiedAt": "2026-09-18T12:08:27.090Z",
+  "verifiedAt": "2026-09-18T23:41:18.315Z",
   "status": "passed",
   "dictionarySha256": "87222d75c77c52574868bf0cefd4faf5703d4df166336a4ec9a70cffe72100af",
   "engineSource": "C:\\Users\\folia\\Documents\\Codex\\2026-09-17\\p\\outputs\\bestword\\packages\\engine\\src\\index.ts",
   "sourceMethod": "production evaluatePlacement + exact shipped GADDAG; visual pillars and spans independently derived from pre-move board",
   "scenes": 32,
-  "narrationWordCount": 998,
-  "coverageRules": 44,
+  "narrationWordCount": 999,
+  "coverageRules": 46,
   "examples": [
     {
       "id": "boomerangs",
@@ -224,6 +224,7 @@
   "checks": [
     "Five published scores match production engine",
     "Every formed word exists in exact production lexicon",
+    "Every completed example word contains a vowel and a consonant (Y is a vowel)",
     "No input state mutation",
     "Tile conservation valid in source positions",
     "Visual span counts match engine",

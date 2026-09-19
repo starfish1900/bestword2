@@ -1,6 +1,6 @@
 # Reproducing the BestWord tutorial
 
-The tutorial is generated locally from the actual BestWord client recordings, a 998-word script, Microsoft Zira narration, and deterministic React/SVG diagrams. It uses no paid service, public upload or Render deployment. Reusing the included narration and clips requires no running game server or database.
+The tutorial is generated locally from the actual BestWord client recordings, the included script (word count is checked against the 900–1,000-word target), Microsoft Zira narration, and deterministic React/SVG diagrams. It uses no paid service, public upload or Render deployment. Reusing the included narration and clips requires no running game server or database.
 
 ## Package and prerequisites
 
@@ -11,7 +11,7 @@ The source package uses this layout:
   bestword/                         application source, dictionary, npm lockfile
     tools/tutorial/                 script, examples, capture, renderer, pipeline
   work/tutorial/
-    audio/                          32 WAV files and speech-progress JSON records
+    audio/                          one WAV and speech-progress JSON per scene
     capture/
       clips/                        genuine application clips and two montages
       assets.json                   clip paths, dimensions and provenance
@@ -61,7 +61,7 @@ Capture assets are resolved from `work/tutorial/capture` using their relative `f
 **Reuse the included audio unless editing narration.** To regenerate all narration, use Windows PowerShell from the repository root:
 
 ```powershell
-powershell.exe -NoProfile -File tools/tutorial/audio/synthesize.ps1 `
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/tutorial/audio/synthesize.ps1 `
   -Scenes tools/tutorial/content/scenes.json `
   -OutputDirectory "$env:BESTWORD_TUTORIAL_WORK\audio" -Rate 1
 ```
@@ -82,7 +82,14 @@ node tools/tutorial/content/qa-captions.mjs "$env:BESTWORD_TUTORIAL_WORK\timelin
 node tools/tutorial/pipeline.mjs render
 node tools/tutorial/pipeline.mjs assemble
 node tools/tutorial/pipeline.mjs verify
+node tools/tutorial/finish-report.mjs --viewer
 ```
+
+`finish-report.mjs --viewer` generates the offline viewer and delivery guide from the current scene manifest. Chapter positions, duration and spoken-word totals are never manually copied from a previous export. After normal-speed playback, layout, viewer and portability checks have been refreshed, run `node tools/tutorial/finish-report.mjs` to write the final evidence-based report.
+
+The delivery checks are reproducible too. After exporting and generating the viewer, run `node tools/tutorial/verify-delivery.mjs viewer`. It opens the local HTML through `file://`, checks every chapter against the scene manifest, verifies paused navigation and version switching, and checks desktop and phone layouts without external requests. Package the source with `python tools/tutorial/package.py`, then run `node tools/tutorial/verify-delivery.mjs portability`. This extracts the archive into a fresh work directory, verifies its file hashes and current application additions, and regenerates byte-identical captions with the installed locked dependencies. Python 3 is required for archive checks; set `PYTHON_PATH` if it is not available as `python`.
+
+After finishing the production report, package once more to include the fresh evidence. The portability report records a separate hash of application and narration inputs so report-only repackaging does not obscure which inputs were verified. Fresh extraction directories are retained for inspection; no existing directory is overwritten or removed.
 
 The stages do the following:
 
@@ -94,7 +101,7 @@ The stages do the following:
 | `assemble` | Pads narration to scene boundaries, applies two-pass loudness normalization, concatenates scenes, and writes clean and captioned H.264/AAC MP4s, poster, transcript and rules reference. |
 | `verify` | Checks both exports' codecs, resolution, rate, duration, caption timing and loudness; decodes the entire media files and writes hashes and verification evidence. |
 
-The final format is H.264 `yuv420p`, 1920 × 1080, 30 fps; AAC narration at 48 kHz; fast-start MP4. Video uses CRF 20. Audio targets approximately −16 LUFS and −1.5 dB true peak. This production's measured timeline is **450.2 seconds (7:30.2)**, with **32 scenes and 119 captions**. Revisions may change those totals.
+The final format is H.264 `yuv420p`, 1920 × 1080, 30 fps; AAC narration at 48 kHz; fast-start MP4. Video uses CRF 20. Audio targets approximately −16 LUFS and −1.5 dB true peak. The measured duration, scene count and caption count are recorded in the generated Scene-manifest.json and Verification.json; regenerate them after revisions.
 
 For a scene correction, set `SCENES` to comma-separated IDs before rendering. This replaces only selected scene intermediates; assembly still requires every scene.
 
@@ -104,6 +111,7 @@ node tools/tutorial/pipeline.mjs render
 Remove-Item Env:SCENES
 node tools/tutorial/pipeline.mjs assemble
 node tools/tutorial/pipeline.mjs verify
+node tools/tutorial/finish-report.mjs --viewer
 ```
 
 `RENDER_WORKERS` controls concurrent browser encoders (default 2). `TUTORIAL_RENDER_URL` selects the renderer URL; use `BESTWORD_TUTORIAL_PORT` in the renderer's terminal to change its listening port. Keep it on loopback. `BESTWORD_TUTORIAL_WORK`, `BESTWORD_TUTORIAL_OUTPUT`, `FFMPEG_PATH` and `FFPROBE_PATH` accept absolute paths. `SCENES` filters rendering only, not preparation or assembly.
@@ -130,3 +138,11 @@ Content checks are saved under `content/`; capture evidence accompanies the foot
 
 `npm ci` installs the versions pinned by the application's `package-lock.json`; preserve the packages' own license notices. Browser binaries, Microsoft voices and Windows fonts are separately installed dependencies, not redistributed as tutorial source. FFmpeg's license depends on its build options; retain the downloaded build's license and third-party notices if redistributing that binary. The supplied game dictionary remains the original user-provided data; this guide does not add a new redistribution license for it. No third-party music, paid narration service or remote rendering service is used.
 
+
+## Updated rule and appearance
+
+Every completed principal and secondary word now needs a vowel and a consonant; Y is a vowel, and existing letters count. This applies to all future moves, with no legacy validation branch. The tutorial distinguishes grey opening tiles from green and orange player contributions in genuine app footage. Constructed diagrams retain their explicit existing/new legend rather than suggesting fabricated player histories.
+
+The current revision changes narration for `setup-board`, `secondary-words` and `score-recap`. Recapture app footage after applying the client changes so ownership colors, complete grid lines and the 900-millisecond score count-up appear in the video. If editing any narration again, regenerate that scene’s WAV and word timestamps before preparing a fresh timeline.
+
+The source packager includes tracked and non-ignored untracked source files, excluding local environment files, secrets, dependencies and build output. Commit state does not determine whether a new application component reaches the reproducible archive.

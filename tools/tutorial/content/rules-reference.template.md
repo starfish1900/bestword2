@@ -8,6 +8,8 @@ BestWord is played by two people on a 15 × 15 board. Columns are A–O; rows ar
 
 The host chooses 5, 15 or 25 minutes per player, plus 30 seconds after each completed turn. Two distinct random dictionary words, each 9–12 letters long, cross at one shared letter in a random valid position. Their tiles come from the bag, with the shared tile consumed once. They score no points and enter principal-word history. Both racks begin empty. The first player is random. Play starts after both players connect and a 3-second countdown. A pre-start no-show cancels without a winner after 25 seconds.
 
+Opening tiles have a light grey background. Player one's contributed tiles are pale green; player two's are pale orange. These colors follow the same player in live games, spectator views and replays, regardless of who moved first. Reusing a letter does not change its original color. Drafts are gold; the latest accepted move has an outline. Teaching diagrams instead label **existing** and **new** tiles, without implying ownership.
+
 ## Letters and automatic draws
 
 A, E, I, O, U and **Y** are vowels. Vowels placed on the board come directly from the shared bag. Consonants placed come from the player's private rack, which holds at most 10 consonants. Opponents cannot see its letters. The original bag contains 267 tiles: 90 vowels and 177 consonants.
@@ -27,7 +29,7 @@ If fewer consonants remain in the bag, draw only those available. A full rack or
 - Place at least **two new tiles** in one row or column. New tiles can be all vowels, all consonants, or any mixture, provided each comes from its required available source.
 - New and existing tiles must make a single continuous principal word, connected to the existing board. Do not replace existing tiles.
 - Each perpendicular word created by a new tile is a secondary word. An isolated perpendicular single tile is not a word; a two-letter crossing is invalid.
-- Every principal and secondary word must contain 3–15 letters and appear in the supplied dictionary.
+- Every principal and secondary word must contain 3–15 letters, appear in the supplied dictionary, and contain **at least one vowel and at least one consonant**. Count the whole completed word, including existing letters. Y is a vowel. Opening words satisfy the same requirement.
 - A principal word cannot repeat any earlier principal word by either player, or either seed word. Prefixes and suffixes may form different words. Secondary words may repeat freely and do not themselves enter principal history.
 - An invalid move leaves the board, draw and score unchanged, gives no increment, and preserves the draft for correction while the clock continues.
 
@@ -46,7 +48,7 @@ Always total the values of **every letter in the completed word**, old and new:
 - **Principal:** letter-value total × (number of consonants + number of spans).
 - **Secondary:** letter-value total × 2 for a bridge; otherwise the letter-value total once.
 
-Add the principal and all secondary scores. Because Y is a vowel, an all-vowel principal with zero spans scores zero.
+Add the principal and all secondary scores. Y counts as a vowel. An all-vowel or all-consonant completed word is invalid. Confirmed score increases count up quickly at first, then slow toward the final total; reduced-motion preferences show the total immediately.
 
 | Constructed example | Exact score |
 |---|---|

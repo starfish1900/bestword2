@@ -40,3 +40,13 @@ Work products and temporary media are saved outside the game source under the ta
 
 Review boundary: the agent can inspect frames and verify audio data, but cannot listen to audio through this session. No subjective pronunciation listening review is claimed.
 
+## Playtest revision — September 18, 2026
+
+- Added the vowel-and-consonant requirement (Y remains a vowel), grey opening tiles, green/orange player contributions, eased score counts and complete grid lines to the application.
+- Refreshed the three affected narration scenes, all genuine application footage, both montages and all 32 rendered scenes. The scoring examples retain totals 186, 147, 261, 42 and 171.
+- Revised export: **454.366667 seconds**, **999 words**, **120 captions**, **13,631 frames**. Both 1080p/30fps H.264/AAC editions pass full decoding, identical-audio and no-blank-frame checks. Measured audio: −16.38 LUFS / −1.69 dBTP.
+- All 48 scene-layout samples pass; independent review verifies rules, math and speech-driven cues. Real capture also records the actual intermediate score values during an accepted move.
+- Corrected fractional-density WebKit grid rendering. The fix is pixel-identical to the recording at Chromium's capture size, verified before retaining that footage.
+- Offline viewer chapters/statistics and production-report counts are generated from current manifests. A delivery verifier now checks chapter navigation, caption switching, accessibility and mobile layouts, plus source-archive extraction and exact caption/timeline reproduction.
+- Current delivery verification is recorded in the exported Production-report.md and machine-readable reports. The earlier milestone totals above describe the first edition. The audio-listening review boundary still applies.
+

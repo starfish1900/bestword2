@@ -14,14 +14,28 @@ output = Path(os.environ.get('BESTWORD_TUTORIAL_OUTPUT', task / 'outputs/bestwor
 destination = output / 'BestWord-Tutorial-Source.zip'
 files = {}
 
-tracked = subprocess.check_output(['git', 'ls-files', '-z'], cwd=repository).decode('utf-8').split('\0')
-for name in tracked:
+def include_source(path):
+    """Never package machine-local credentials or generated dependencies."""
+    relative = path.relative_to(repository)
+    excluded = {'.git', '.local', '.cache', 'node_modules', 'dist', '__pycache__', 'test-results', 'playwright-report', 'coverage'}
+    if any(part in excluded for part in relative.parts):
+        return False
+    name = path.name.lower()
+    if (name == '.env' or name.startswith('.env.')) and name != '.env.example':
+        return False
+    if name in {'.npmrc', '.netrc', 'credentials.json', 'secrets.json'} or path.suffix.lower() in {'.pem', '.key', '.pfx', '.p12'}:
+        return False
+    return path.is_file()
+
+
+sources = subprocess.check_output(['git', 'ls-files', '--cached', '--others', '--exclude-standard', '-z'], cwd=repository).decode('utf-8').split('\0')
+for name in sources:
     if name:
         path = repository / name
-        if path.is_file():
+        if include_source(path):
             files['bestword/' + name.replace('\\', '/')] = path
 for path in source.rglob('*'):
-    if path.is_file() and not any(part in ('node_modules', 'dist', '__pycache__') for part in path.relative_to(source).parts):
+    if include_source(path):
         files['bestword/' + path.relative_to(repository).as_posix()] = path
 for folder in ('audio', 'capture', 'render', 'final-review'):
     for path in (work / folder).rglob('*'):

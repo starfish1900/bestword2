@@ -13,7 +13,8 @@ const composites=[
     {id:'account',startFrame:6,endFrame:42},
     {id:'sign-in',startFrame:96,endFrame:168},
     {id:'lobby',startFrame:0,endFrame:138},
-    {id:'setup',startFrame:9,endFrame:107},
+    {id:'setup',startFrame:30,endFrame:47},
+    {id:'setup',startFrame:52,endFrame:133},
   ]},
   {id:'review',description:'Actual move-history scoring breakdown followed by manual replay of the opening and accepted moves.',posterSeconds:1.5,parts:[
     {id:'history',startFrame:24,endFrame:124},

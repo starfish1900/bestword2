@@ -1,6 +1,6 @@
 # BestWord tutorial transcript
 
-32 scenes · 998 spoken words. Narration: Microsoft Zira Desktop (US English). Constructed scoring and input positions are labeled teaching examples; application clips show the actual client. Timings are finalized after narration synthesis.
+32 scenes · 999 spoken words. Narration: Microsoft Zira Desktop (US English). Constructed scoring and input positions are labeled teaching examples; application clips show the actual client. Timings are finalized after narration synthesis.
 
 ## 01. Welcome to BestWord
 
@@ -29,13 +29,14 @@ On screen:
 
 Chapter: setup · Scene: setup-board
 
-The fifteen by fifteen board has no bonus squares or blank tiles. Two distinct random words, each nine to twelve letters long, cross at one letter. They consume tiles but score nothing.
+A fifteen by fifteen board, with no bonuses or blanks. Two distinct random nine-to-twelve-letter opening words cross, consume tiles, and score nothing. Their tiles stay grey. Player one's contributions are green; player two's, orange.
 
 On screen:
 
 - 15 × 15 · Columns A–O · Rows 1–15
 - Two distinct opening words: 9–12 letters each
-- Opening words use tiles, but score 0
+- Opening tiles: grey · Score 0
+- Player 1: green · Player 2: orange
 
 ## 04. Ready, set, play
 
@@ -102,13 +103,14 @@ On screen:
 
 Chapter: legality · Scene: secondary-words
 
-Perpendicular words created by your new tiles are secondary words. Every principal and secondary word must contain three to fifteen letters and appear in BestWord's dictionary. Two-letter crosswords are invalid.
+Perpendicular words formed by new tiles are secondary words. Every completed word must have three to fifteen letters, appear in BestWord's dictionary, and include a vowel and a consonant. Existing letters count.
 
 On screen:
 
 - Principal = word in your move direction
 - Secondary = perpendicular word made by a new tile
 - Every word: 3–15 letters and in the dictionary
+- At least 1 vowel AND 1 consonant, counting old tiles
 
 ## 10. Principal words cannot repeat
 
@@ -120,7 +122,7 @@ On screen:
 
 - No repeated principal words, including opening words
 - Prefixes and suffixes may create a new word
-- Secondary words may repeat · Any vowel/consonant mix
+- Secondary words may repeat · New tiles may be any mix
 
 ## 11. Click, choose direction, type
 
@@ -284,13 +286,13 @@ On screen:
 
 Chapter: scoring · Scene: score-recap
 
-Principal: multiply the letter sum by the sum of consonants and spans. Secondary: double the letter sum for a bridge, otherwise count it once. Y is a vowel. All-vowel principals without spans score zero.
+Principal: letter sum times the sum of consonants and spans. Secondary: double the letter sum for a bridge; otherwise count once. Y is a vowel. Every word needs both letter types.
 
 On screen:
 
 - Principal = letter sum × (consonants + spans)
 - Secondary = letter sum × (bridge ? 2 : 1)
-- Y is a vowel · All-vowel principal with 0 spans scores 0
+- Y is a vowel · Every word needs a vowel AND a consonant
 - Bridge scoring never overrides placement rules
 
 ## 25. NO WORDS skips just this turn

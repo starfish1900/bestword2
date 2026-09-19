@@ -125,8 +125,21 @@ try{
     await actor.page.keyboard.type(placement.tiles.map(tile=>tile.letter).join(''),{delay:650});await delay(800);
     await actor.page.keyboard.press('Backspace');await expect(actor.page.locator('.draft-tile')).toHaveCount(placement.tiles.length-1);await delay(950);
     await actor.page.keyboard.type(placement.tiles.at(-1)!.letter);await delay(1700);
-    const before=await read(actor);await actor.page.keyboard.press('Enter');await expect.poll(async()=>(await read(actor)).game.moves.length).toBe(1);await delay(2200);
-    const after=await read(actor);checks.keyboard={word:placement.action.word,tiles:placement.tiles,acceptedMove:after.game.moves[0],clockBeforeMs:before.game.clocksMs[before.you!.seat],clockAfterMs:after.game.clocksMs[before.you!.seat]};
+    const before=await read(actor);
+    // Retain actual displayed intermediate values as evidence the recording shows a count-up.
+    const sampled=actor.page.locator('.player-card.you .score-value').evaluate(async element=>{
+      const values:{value:number;at:number}[]=[],start=performance.now();
+      values.push({value:Number(element.textContent),at:performance.now()-start});
+      const observer=new MutationObserver(()=>values.push({value:Number(element.textContent),at:performance.now()-start}));observer.observe(element,{childList:true,subtree:true,characterData:true});
+      await new Promise(resolve=>setTimeout(resolve,2600));observer.disconnect();values.push({value:Number(element.textContent),at:performance.now()-start});return values;
+    }).then(samples=>({samples,error:null}),error=>({samples:[],error}));
+    await actor.page.keyboard.press('Enter');await expect.poll(async()=>(await read(actor)).game.moves.length).toBe(1);await delay(2200);
+    const after=await read(actor),sampleResult=await sampled,scoreSamples=sampleResult.samples,oldScore=before.game.players[before.you!.seat].score,newScore=after.game.players[before.you!.seat].score;
+    if(sampleResult.error)throw sampleResult.error;
+    expect(scoreSamples.some(sample=>sample.value>oldScore&&sample.value<newScore)).toBe(true);
+    expect(scoreSamples.at(-1)!.value).toBe(newScore);
+    expect(scoreSamples.every((sample,index)=>index===0||sample.value>=scoreSamples[index-1]!.value)).toBe(true);
+    checks.keyboard={word:placement.action.word,tiles:placement.tiles,acceptedMove:after.game.moves[0],clockBeforeMs:before.game.clocksMs[before.you!.seat],clockAfterMs:after.game.clocksMs[before.you!.seat],scoreSamples};
   });
   const spectator=await record('spectator');await spectator.page.goto(`/game/${gameId}`);await expect(spectator.page.locator('.game-format')).toContainText('Spectating');
   await clip(spectator,'spectator','Unauthenticated real spectator; both clocks and public counts, private rack letters hidden.',async()=>{
