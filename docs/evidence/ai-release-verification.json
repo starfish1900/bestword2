@@ -1,0 +1,142 @@
+{
+  "checkedAt": "2026-09-19T15:51:36.560Z",
+  "report": "tools/ai-load/reports/2026-09-19T14-51-25.445Z-10games/report.json",
+  "runtimeArtifactsVerified": 29,
+  "runtimeDifferences": [],
+  "fullTestsPassed": 245,
+  "chromiumPassed": 15,
+  "webkitPassed": 13,
+  "webkitExplicitSkips": 2,
+  "durationSeconds": 3600.063,
+  "simultaneousAiGames": 10,
+  "additionalHumanGames": 1,
+  "completedGameCycles": 1055,
+  "aiTurns": {
+    "count": 22820,
+    "within5Seconds": 1,
+    "p50": 209,
+    "p95": 557,
+    "p99": 750,
+    "max": 1294,
+    "strategicWaits": 2322,
+    "incomplete": 0,
+    "retries": 0
+  },
+  "api": {
+    "serviceP95": 8.157700000097975,
+    "serviceP99": 11.473900000099093,
+    "ackP95": 9.420699999667704,
+    "count": 23559
+  },
+  "memory": [
+    {
+      "role": "api",
+      "peakMiB": 251.3515625,
+      "finalMiB": 208.72265625,
+      "windows": [
+        {
+          "minutes": "0–10",
+          "samples": 60,
+          "meanMiB": 212.27643229166668,
+          "peakMiB": 243.40234375
+        },
+        {
+          "minutes": "10–20",
+          "samples": 60,
+          "meanMiB": 205.646875,
+          "peakMiB": 210.734375
+        },
+        {
+          "minutes": "20–30",
+          "samples": 60,
+          "meanMiB": 207.98014322916666,
+          "peakMiB": 212.125
+        },
+        {
+          "minutes": "30–40",
+          "samples": 59,
+          "meanMiB": 209.10560116525423,
+          "peakMiB": 212.8671875
+        },
+        {
+          "minutes": "40–50",
+          "samples": 60,
+          "meanMiB": 211.00813802083334,
+          "peakMiB": 214.62109375
+        },
+        {
+          "minutes": "50–60",
+          "samples": 60,
+          "meanMiB": 207.57076822916667,
+          "peakMiB": 214.140625
+        }
+      ]
+    },
+    {
+      "role": "ai",
+      "peakMiB": 312.984375,
+      "finalMiB": 222.71484375,
+      "windows": [
+        {
+          "minutes": "0–10",
+          "samples": 60,
+          "meanMiB": 212.479296875,
+          "peakMiB": 300.53515625
+        },
+        {
+          "minutes": "10–20",
+          "samples": 60,
+          "meanMiB": 231.32278645833333,
+          "peakMiB": 236.0234375
+        },
+        {
+          "minutes": "20–30",
+          "samples": 59,
+          "meanMiB": 232.8288532838983,
+          "peakMiB": 236.57421875
+        },
+        {
+          "minutes": "30–40",
+          "samples": 60,
+          "meanMiB": 233.33157552083333,
+          "peakMiB": 237.421875
+        },
+        {
+          "minutes": "40–50",
+          "samples": 60,
+          "meanMiB": 234.258203125,
+          "peakMiB": 237.41015625
+        },
+        {
+          "minutes": "50–60",
+          "samples": 59,
+          "meanMiB": 229.71484375,
+          "peakMiB": 237.5078125
+        }
+      ]
+    }
+  ],
+  "gates": {
+    "durationMet": true,
+    "turnsSampled": true,
+    "ai95Within5Seconds": true,
+    "noStalledAiTurnsAtEnd": true,
+    "memoryBelow70Percent2GiB": true,
+    "apiLatencyMet": true,
+    "noErrors": true,
+    "noDisconnects": true,
+    "noUnexpectedForfeits": true,
+    "noDuplicateAcceptedTurns": true,
+    "allFinalStatesValid": true,
+    "cleanProcessExits": true
+  },
+  "limitations": [
+    "Local shared hardware and single logical CPU affinity on Windows do not establish Render capacity or equivalent cloud CPU speed.",
+    "Accounts are fixture-seeded. Games use real admission, countdown, presence, clocks, commands and durable jobs.",
+    "Humans use a bounded legal-move helper and fast 1.5-second minimum think time. One human-versus-human table runs alongside AI tables.",
+    "Healthy soak only; fault/recovery semantics are covered by separate integration tests.",
+    "Memory samples include worker threads through process RSS; stable memory requires reviewing the saved time series.",
+    "Firefox installed Windows runtime could not launch (spawn UNKNOWN).",
+    "Docker/WSL unavailable; prepared hosted Linux CI not executed."
+  ]
+}

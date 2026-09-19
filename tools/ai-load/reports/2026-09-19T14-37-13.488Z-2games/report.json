@@ -1,0 +1,239 @@
+{
+  "runId": "f986b71e-71e6-422d-8f03-50eb9debfbbe",
+  "phase": "completed",
+  "games": 2,
+  "durationSeconds": 120,
+  "elapsedSeconds": 120.24,
+  "schema": "bw_ai_load_f986b71e71e6422d8f0350eb9debfbbe",
+  "redisDb": 15,
+  "completedCycles": 7,
+  "humanCommands": 215,
+  "environment": {
+    "kind": "local shared Windows hardware, separate API and AI processes, one AI search thread",
+    "node": "v24.14.0",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-13700",
+    "logicalCpus": 24,
+    "totalMemory": 16766689280
+  },
+  "aiTurns": {
+    "count": 157,
+    "within5Seconds": 1,
+    "p50": 103,
+    "p95": 213,
+    "p99": 308,
+    "max": 325,
+    "strategicWaits": 13,
+    "incomplete": 0,
+    "retries": 0
+  },
+  "api": {
+    "serviceP95": 11.49309999999241,
+    "serviceP99": 28.299299999998766,
+    "ackP95": 13.379400000001624,
+    "count": 215
+  },
+  "processes": [
+    {
+      "role": "api",
+      "pid": 24712,
+      "peakRss": 261341184,
+      "samples": [
+        {
+          "at": 1789828635533,
+          "rss": 257273856,
+          "cpuCores": 0.3038554819697222
+        },
+        {
+          "at": 1789828645597,
+          "rss": 129036288,
+          "cpuCores": 0.06211788258477837
+        },
+        {
+          "at": 1789828655665,
+          "rss": 137289728,
+          "cpuCores": 0.09364580671820925
+        },
+        {
+          "at": 1789828665712,
+          "rss": 143433728,
+          "cpuCores": 0.04657238632052099
+        },
+        {
+          "at": 1789828675771,
+          "rss": 157769728,
+          "cpuCores": 0.03099090107144551
+        },
+        {
+          "at": 1789828685829,
+          "rss": 158846976,
+          "cpuCores": 0.03168057741020383
+        },
+        {
+          "at": 1789828695900,
+          "rss": 160694272,
+          "cpuCores": 0.04676609935408064
+        },
+        {
+          "at": 1789828705936,
+          "rss": 175108096,
+          "cpuCores": 0.015935285213220723
+        },
+        {
+          "at": 1789828716003,
+          "rss": 188190720,
+          "cpuCores": 0.015957758218220517
+        },
+        {
+          "at": 1789828726077,
+          "rss": 191492096,
+          "cpuCores": 0.015859142270184628
+        },
+        {
+          "at": 1789828736153,
+          "rss": 190365696,
+          "cpuCores": 0.015841453976170275
+        },
+        {
+          "at": 1789828746235,
+          "rss": 190406656,
+          "cpuCores": 0
+        }
+      ]
+    },
+    {
+      "role": "ai",
+      "pid": 21392,
+      "peakRss": 285335552,
+      "samples": [
+        {
+          "at": 1789828636698,
+          "rss": 282537984,
+          "cpuCores": 0.41322199303644913
+        },
+        {
+          "at": 1789828646747,
+          "rss": 165998592,
+          "cpuCores": 0.015978867947139905
+        },
+        {
+          "at": 1789828656811,
+          "rss": 167485440,
+          "cpuCores": 0.07803319532128969
+        },
+        {
+          "at": 1789828666877,
+          "rss": 169164800,
+          "cpuCores": 0.03095563747593318
+        },
+        {
+          "at": 1789828676936,
+          "rss": 171495424,
+          "cpuCores": 0.015910128457382815
+        },
+        {
+          "at": 1789828686979,
+          "rss": 173916160,
+          "cpuCores": 0.13838051894869172
+        },
+        {
+          "at": 1789828697039,
+          "rss": 174964736,
+          "cpuCores": 0
+        },
+        {
+          "at": 1789828707112,
+          "rss": 176332800,
+          "cpuCores": 0.045488450531853956
+        },
+        {
+          "at": 1789828717186,
+          "rss": 176185344,
+          "cpuCores": 0.17138438728088634
+        },
+        {
+          "at": 1789828727265,
+          "rss": 176062464,
+          "cpuCores": 0
+        },
+        {
+          "at": 1789828737366,
+          "rss": 176218112,
+          "cpuCores": 0.07690114417071586
+        },
+        {
+          "at": 1789828747413,
+          "rss": 136495104,
+          "cpuCores": 0
+        }
+      ]
+    }
+  ],
+  "samples": [
+    {
+      "at": 1789828635992,
+      "jobs": 0,
+      "completed": 0,
+      "activeGames": 3
+    },
+    {
+      "at": 1789828651068,
+      "jobs": 17,
+      "completed": 17,
+      "activeGames": 3
+    },
+    {
+      "at": 1789828666085,
+      "jobs": 37,
+      "completed": 36,
+      "activeGames": 3
+    },
+    {
+      "at": 1789828681096,
+      "jobs": 54,
+      "completed": 54,
+      "activeGames": 3
+    },
+    {
+      "at": 1789828696136,
+      "jobs": 83,
+      "completed": 82,
+      "activeGames": 3
+    },
+    {
+      "at": 1789828711225,
+      "jobs": 103,
+      "completed": 103,
+      "activeGames": 3
+    },
+    {
+      "at": 1789828726277,
+      "jobs": 120,
+      "completed": 120,
+      "activeGames": 3
+    },
+    {
+      "at": 1789828741385,
+      "jobs": 140,
+      "completed": 139,
+      "activeGames": 3
+    }
+  ],
+  "errors": [],
+  "gate": {
+    "durationMet": true,
+    "turnsSampled": true,
+    "ai95Within5Seconds": true,
+    "memoryBelow70Percent2GiB": true,
+    "apiLatencyMet": true,
+    "noErrors": true,
+    "noDuplicateAcceptedTurns": true,
+    "allFinalStatesValid": true
+  },
+  "limitations": [
+    "Local shared hardware evidence is not a Render capacity guarantee or single-vCPU benchmark.",
+    "Accounts are fixture-seeded. Games use real admission, countdown, presence, clocks, commands and durable jobs.",
+    "Humans use a bounded legal-move helper and fast 1.5-second minimum think time. One human-versus-human table runs alongside AI tables.",
+    "Healthy soak only; fault/recovery semantics are covered by separate integration tests.",
+    "Memory samples include worker threads through process RSS; stable memory requires reviewing the saved time series."
+  ]
+}

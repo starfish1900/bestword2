@@ -4,6 +4,8 @@
 
 The current update adds Easy/Medium/Hard server opponents, strategic NO WORDS, durable AI replay, stable Recent games pagination, signed-in replay access and the unchanged tutorial in shared help. The consolidated suite passes **245/245 tests**, Chromium **15/15**, and WebKit **13 with two explicit skips**. See [the current release record](progress/2026-09-19-ai-release.md) and [AI architecture/operation](AI.md). The older results below describe earlier human-only releases; they are not new AI capacity measurements.
 
+The current [one-hour mixed AI test](progress/ai-capacity.md) also passed: ten AI games and one human table, 22,820 AI turns, 557 ms p95 completion, 313 MiB peak AI memory, zero errors or disconnections and every state/receipt/durability gate passed. Runtime hashes remained unchanged throughout. No Render deployment or purchase was performed.
+
 ## Rules and vocabulary complete
 
 The original specification and exact dictionary are preserved. [DECISIONS.md](DECISIONS.md) records the implementation contract.

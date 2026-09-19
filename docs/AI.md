@@ -43,6 +43,8 @@ SELECT kind,status,count(*) FROM service_epochs GROUP BY kind,status;
 
 Jobs retain compact search and strategy summaries for diagnostics. They do not store hypothetical opponent racks or all candidate moves. See [operations](OPERATIONS.md) for deployment and scaling, and [AI load runner](../tools/ai-load/README.md) for local reproducible capacity checks.
 
+The [completed one-hour mixed run](progress/ai-capacity.md) passed with ten AI games plus one human table: 22,820 AI turns, 557 ms p95 completion time and 313 MiB peak AI RSS, with no errors or duplicate moves. The AI process used one logical CPU. These measurements support the initial local admission choice but do not establish Render capacity.
+
 ## Tutorial integration
 
 Every help/Rules entry opens one shared Rules / Video dialog. The local captioned MP4 is byte-for-byte identical to the supplied tutorial: SHA256 `9fbe34a89b81a63adf2653614849032775ee1c19a90a555736e5c9af326b78be`, 16,544,578 bytes, approximately 7:34. It is public, has native playback controls and chapter buttons, and is not downloaded until the viewer requests playback. Closing help or switching back to rules pauses it. Versioned asset URLs support byte ranges and immutable caching. The game stays mounted and connected while help is open; its clock continues.

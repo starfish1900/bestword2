@@ -140,4 +140,6 @@ The [full strict hour on the prior human-only release](tools/load/reports/2026-0
 
 The initial active-game limit is configurable with `MAX_ACTIVE_GAMES`; it defaults to **100**. `MAX_SPECTATORS_PER_GAME` defaults to **10**. Increasing these limits is an operational decision that must follow capacity testing. More application instances, database resources and bandwidth can be provisioned without rewriting game rules or the browser client.
 
+The AI release separately passed a [full one-hour mixed test](docs/progress/ai-capacity.md) with **10 AI games plus one human game** and one CPU assigned to the AI process: 22,820 AI turns, 557 ms p95 completion time, 313 MiB peak AI memory, zero errors and every durability gate passed. `AI_MAX_GAMES=10` remains the initial AI admission limit within the overall cap. This is local evidence; validate the chosen Render services before raising it.
+
 **5,000 simultaneous games is a capacity target, not a promise that the initial US$100/month configuration supports that load.** Only a measured load-test report establishes capacity on a particular configuration. The two large human-only reports above predate the AI update and are not AI capacity measurements. The game ships with no rating system, chat or tournament mode.

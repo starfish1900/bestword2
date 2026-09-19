@@ -1,0 +1,132 @@
+{
+  "runId": "f630e081-46a5-48dc-97de-86e4a38b4a4f",
+  "phase": "completed",
+  "games": 10,
+  "durationSeconds": 30,
+  "elapsedSeconds": 30.042,
+  "schema": "bw_ai_load_f630e08146a548dc97de86e4a38b4a4f",
+  "redisDb": 15,
+  "completedCycles": 2,
+  "humanCommands": 183,
+  "disconnects": 0,
+  "environment": {
+    "kind": "local shared hardware, separate API and AI processes, one AI search thread",
+    "singleCpuAffinity": true,
+    "node": "v24.14.0",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-13700",
+    "logicalCpus": 24,
+    "totalMemory": 16766689280
+  },
+  "aiTurns": {
+    "count": 185,
+    "within5Seconds": 1,
+    "p50": 436,
+    "p95": 927,
+    "p99": 1187,
+    "max": 1263,
+    "strategicWaits": 21,
+    "incomplete": 0,
+    "retries": 0
+  },
+  "api": {
+    "serviceP95": 9.056700000001001,
+    "serviceP99": 12.033400000000256,
+    "ackP95": 10.186200000000099,
+    "count": 183
+  },
+  "processes": [
+    {
+      "role": "api",
+      "pid": 10856,
+      "exitCode": 0,
+      "signalCode": null,
+      "peakRss": 262991872,
+      "samples": [
+        {
+          "at": 1789829420731,
+          "rss": 255852544,
+          "cpuCores": 0.2752789720314964
+        },
+        {
+          "at": 1789829430780,
+          "rss": 131805184,
+          "cpuCores": 0.04659085772381256
+        },
+        {
+          "at": 1789829440867,
+          "rss": 151179264,
+          "cpuCores": 0.031548562159491284
+        },
+        {
+          "at": 1789829450919,
+          "rss": 169775104,
+          "cpuCores": 0.07891661670279183
+        }
+      ]
+    },
+    {
+      "role": "ai",
+      "pid": 21968,
+      "exitCode": 0,
+      "signalCode": null,
+      "peakRss": 326561792,
+      "samples": [
+        {
+          "at": 1789829422050,
+          "rss": 314851328,
+          "cpuCores": 0.3023028474480203
+        },
+        {
+          "at": 1789829432117,
+          "rss": 177917952,
+          "cpuCores": 0.4924540284315384
+        },
+        {
+          "at": 1789829442185,
+          "rss": 191430656,
+          "cpuCores": 0.18429506447962005
+        }
+      ]
+    }
+  ],
+  "samples": [
+    {
+      "at": 1789829421431,
+      "jobs": 0,
+      "completed": 0,
+      "pending": 0,
+      "oldestPendingAgeMs": 0,
+      "activeGames": 11
+    },
+    {
+      "at": 1789829436551,
+      "jobs": 85,
+      "completed": 81,
+      "pending": 4,
+      "oldestPendingAgeMs": 601,
+      "activeGames": 11
+    }
+  ],
+  "errors": [],
+  "gate": {
+    "durationMet": true,
+    "turnsSampled": true,
+    "ai95Within5Seconds": true,
+    "noStalledAiTurnsAtEnd": true,
+    "memoryBelow70Percent2GiB": true,
+    "apiLatencyMet": true,
+    "noErrors": true,
+    "noDisconnects": true,
+    "noUnexpectedForfeits": true,
+    "noDuplicateAcceptedTurns": true,
+    "allFinalStatesValid": true,
+    "cleanProcessExits": true
+  },
+  "limitations": [
+    "Local shared hardware and single logical CPU affinity on Windows do not establish Render capacity or equivalent cloud CPU speed.",
+    "Accounts are fixture-seeded. Games use real admission, countdown, presence, clocks, commands and durable jobs.",
+    "Humans use a bounded legal-move helper and fast 1.5-second minimum think time. One human-versus-human table runs alongside AI tables.",
+    "Healthy soak only; fault/recovery semantics are covered by separate integration tests.",
+    "Memory samples include worker threads through process RSS; stable memory requires reviewing the saved time series."
+  ]
+}

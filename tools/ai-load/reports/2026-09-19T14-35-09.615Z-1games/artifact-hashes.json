@@ -1,0 +1,8 @@
+{
+  "apps/server/dist/games.js": "dbeb629dfe13c95b24382ab786fde0310e22bd4b4e5f3d25f35e2bce3feb57e3",
+  "apps/server/dist/ai-coordinator.js": "98a7abf7bfe202dead57c0c9442dce5d31efb35ed7c7a8ce0ead0b55c4345d73",
+  "packages/ai/dist/search.js": "33c97455bae05ddf547792e62506ae2fdd7b92e1081904be829e970027634684",
+  "packages/ai/dist/strategy.js": "8b721f0fe28708155bf7b1def47e85f60527cdfcf716e15cb3367f855919eec6",
+  "data/easy.gaddag": "097195fcedf8cb78440b3de24abc5ab3a8a958acabb262d84dce5c48749356fb",
+  "data/medium.gaddag": "fa56791745f418c7dff8a9468f7c5e30928a6b1c83ff0d10dc2fb7fbe1bdde92"
+}
