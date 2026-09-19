@@ -230,7 +230,77 @@
   "initialFailureResolution": "Consolidated board case failed at fixture Bob account registration HTTP429 after prior test runs consumed the local five/hour signup allowance. Root verified isolated Redis ownership and reset only test registration rate keys. The same board case and run ID passed on targeted rerun. Production rate limits unchanged.",
   "limitations": [
     "Mocked client presentation fixtures do not prove AI search, server privacy or persistence; server/integration suites cover these.",
-    "Firefox was not rerun for this client milestone; prior installed runtime could not launch.",
-    "Cross-browser CI is configured separately and has not been run on GitHub by this milestone."
-  ]
+    "Cross-browser CI is configured separately and has not been run on GitHub by this milestone.",
+    "Final Firefox launch probe failed spawn UNKNOWN before loading the application; recorded in ai-browser-firefox-runtime.json."
+  ],
+  "finalVerification": {
+    "environment": "Fresh isolated final bundle/API/AI worker on3016; runID Final0919A reused across browsers; no rate resets or application source changes during final run.",
+    "runs": [
+      {
+        "report": "ai-browser-final.json",
+        "stats": {
+          "startTime": "2026-09-19T14:53:02.690Z",
+          "duration": 77955.106,
+          "expected": 15,
+          "skipped": 0,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "skipped": [],
+        "realAiGames": [
+          {
+            "gameId": "739e495a-5540-4cae-b587-ba77d8ea673e",
+            "difficulty": "easy",
+            "firstAiWord": "CAPITA",
+            "score": 63,
+            "position": 2,
+            "revision": 4
+          }
+        ]
+      },
+      {
+        "report": "ai-browser-webkit-final.json",
+        "stats": {
+          "startTime": "2026-09-19T14:54:39.902Z",
+          "duration": 92652.77299999999,
+          "expected": 13,
+          "skipped": 2,
+          "unexpected": 0,
+          "flaky": 0
+        },
+        "skipped": [
+          {
+            "test": "ack fixture preserves a committed command through SERVICE_RECOVERING and retry",
+            "reason": [
+              "Focused Chromium wire-acknowledgement fixture"
+            ]
+          },
+          {
+            "test": "tutorial loads only on user request, chapter jumps work, and help preserves the live connection",
+            "reason": [
+              "Native H.264 playback is verified in the installed Chromium runtime."
+            ]
+          }
+        ],
+        "realAiGames": [
+          {
+            "gameId": "7bf128ae-659b-43ea-81c9-4d592656efea",
+            "difficulty": "easy",
+            "firstAiWord": "REMOVING",
+            "score": 145,
+            "position": 3,
+            "revision": 5
+          }
+        ]
+      }
+    ],
+    "firefox": {
+      "checkedAt": "2026-09-19T14:53:38.519Z",
+      "browser": "firefox",
+      "status": "runtime-unavailable",
+      "error": "Error: browserType.launch: spawn UNKNOWN\nCall log:\n\u001b[2m  - <launching> C:\\Users\\folia\\AppData\\Local\\ms-playwright\\firefox-1543\\firefox\\firefox.exe -no-remote -headless -profile C:\\Users\\folia\\AppData\\Local\\Temp\\playwright_firefoxdev_profile-gG7ARw -juggler-pipe -silent\u001b[22m\n"
+    },
+    "visualReview": "Final Chromium390px tutorial including current-rule note and actual AI replay; WebKit320px tutorial and actual AI replay inspected.",
+    "supersedesInitialSetupFailure": true
+  }
 }

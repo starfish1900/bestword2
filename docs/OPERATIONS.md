@@ -129,7 +129,7 @@ Use a unique new drill database name if that name already exists. Compare accoun
 
 For production disaster recovery, first stop public admission and all API/worker processes. Restore into a new isolated database; retain the failed database for investigation. Validate the recovery point and data integrity before updating connection strings. Invalidate restored sessions before reopening because an old backup can resurrect previously revoked sessions. Historical active games require an explicit no-winner reconciliation: do not silently resume older clocks or accept old commands against a rewound board. There is currently no one-click disaster-restore/admin reconciliation command; this requires a reviewed maintenance change and verification of snapshots, events, receipts and playing slots before production cutover. Rehearse that procedure in isolation before claiming a recovery-time objective.
 
-Keep the same vocabulary artifact when restoring historical data. Restart both roles against the validated database and healthy Key Value, verify history and private/public projections, then reopen admission. Document any acknowledged actions absent from the recovery point. The starter configuration has no automatic PostgreSQL high-availability replica and no measured disaster-recovery time guarantee.
+Keep the same vocabulary artifact when restoring historical data. Restart all three roles against the validated database and healthy Key Value, verify history and private/public projections, then reopen admission. Document any acknowledged actions absent from the recovery point. The starter configuration has no automatic PostgreSQL high-availability replica and no measured disaster-recovery time guarantee.
 
 ## Capacity and scaling gate
 

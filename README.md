@@ -89,7 +89,7 @@ npm run build
 
 Integration tests use real PostgreSQL and Redis-compatible services. The server integration suite runs when `BESTWORD_INTEGRATION=1`; point it at a dedicated local test database, not production.
 
-The latest recorded consolidated run passed [175 of 175 tests](docs/evidence/verification-175.json), including the real dependency and multi-instance cases. The final release [Chromium/WebKit run](docs/evidence/browser-release.json) passed **11 checks in 88.83 seconds**, with one explicit WebKit skip for the Chromium-only acknowledgement fixture. Firefox remains unverified locally because its Windows runtime cannot launch; the configured Linux CI run has not been executed here.
+The AI release's consolidated run passed [245 of 245 tests](docs/evidence/ai-full-tests.json), including real dependency, multi-instance, worker-recovery and replay-access cases. [Chromium passed all 15 browser checks](docs/evidence/ai-browser-final.json); [WebKit passed 13 with two explicit skips](docs/evidence/ai-browser-webkit-final.json) for a Chromium-specific fault fixture and native H.264 playback. Chromium verified native tutorial playback. Firefox remains unverified locally because its installed Windows runtime cannot launch; the configured Linux CI run has not been executed here. See [the release record](docs/progress/2026-09-19-ai-release.md) for current capacity evidence.
 
 For the full browser workflow:
 
@@ -99,6 +99,8 @@ npm run test:e2e
 ```
 
 By default the browser tests use the compiled application at `http://127.0.0.1:3000`, starting `npm start` if necessary. Set `APP_ORIGIN` to that origin. For an already running development preview set `BESTWORD_BASE_URL=http://localhost:5173`. Set `BESTWORD_CROSS_BROWSER=1` to run Chromium, Firefox and WebKit; otherwise the suite runs Chromium. `PLAYWRIGHT_CHANNEL=chrome` uses an installed Chrome for the Chromium project.
+
+For the real computer-game browser check, also start `npm run worker:ai` against those same test services and set `BESTWORD_AI_E2E=1`. The current CI workflow includes this setup. Without that flag, the AI integration browser case is explicitly skipped.
 
 The browser suite creates two isolated accounts for each run, then reuses that pair across browser engines. It plays genuine legal words found from the supplied dictionary and verifies matchmaking, invalid drafts, revision-aware synchronization, scoring updates, NO WORDS, PASS, private/public views, replay and full-game layouts at **1280×800, 390×844, 320×568 and 568×320**. A separate 320×568 touch workflow taps rack/vowels, erases, submits and verifies the actual server score without keyboard input. Set `BESTWORD_E2E_RUN_ID` to reuse the same test pair across manual reruns when testing repeatedly against the account registration rate limit. Additional checks verify production HTTP compression, lobby recovery from an explicitly labeled missed-notification fixture, retained command IDs when a real commit's acknowledgement is replaced by a recovery-error fixture, and preserved clocks/input/drafts when only the page's wall clock jumps forward one hour during a real game.
 
@@ -119,6 +121,7 @@ See [the implementation architecture](docs/ARCHITECTURE.md) for transaction flow
 | `packages/contracts` | Public types and validated network inputs |
 | `packages/engine` | Deterministic game rules, draws, scoring, clocks and state transitions |
 | `packages/lexicon` | Compact GADDAG loader and traversal API |
+| `packages/ai` | Exact move generation and bounded strategic NO WORDS evaluation |
 | `tools/lexicon-builder` | Rust offline compiler using Daciuk's incremental minimization, plus independent audits |
 | `data` | Original dictionary, prebuilt lexicon and build/audit metadata |
 | `tools/e2e` | Real browser-to-server acceptance tests |
@@ -127,14 +130,14 @@ See [the implementation architecture](docs/ARCHITECTURE.md) for transaction flow
 
 ## Render and growth
 
-The Render Blueprint defines the application, worker, PostgreSQL and Key Value services. PostgreSQL owns accepted game state; commands lock only their own game. Server instances share presence and broadcasts through Key Value, so players in one game can connect to different application instances.
+The Render Blueprint defines the application, clock/notification worker, AI worker, PostgreSQL and Key Value services. PostgreSQL owns accepted game state; commands lock only their own game. Server instances share presence and broadcasts through Key Value, so players in one game can connect to different application instances.
 
 Follow [the operations and Render deployment guide](docs/OPERATIONS.md) for provisioning, configuration, backups, recovery, metrics and safe updates. [Deployment verification notes](docs/progress/deployment.md) distinguish prepared configuration from checks actually run. The [load-test guide](tools/load/README.md) describes isolated test data, scenarios and measured reports; run load tests only against a dedicated test environment.
 
 The [fifteen-minute local scale trial](tools/load/reports/2026-09-18T06-31-39-890Z-scale.json) passed with **5,000 games, 2,500 spectators and 12,500 maintained sockets**, accepting **226,400 commands** at 250 baseline commands/second plus fourteen 100-command bursts. It included eight-second revision sync and 1,964 completed-game cycles. All durability, privacy and viewer-delivery gates passed, with zero errors or disconnects. Two API instances and one worker shared an i7-13700 Windows machine with the driver and databases. This establishes that specific local workload and duration, not Render capacity or cost.
 
-The [full strict hour on final code](tools/load/reports/2026-09-18T05-30-44-454Z-acceptance.json) also passed: **100 simultaneous games, 1,000 spectators and 1,200 maintained sockets**, 185,805 accepted commands, 536,126 revision syncs and 5,183 completed-game cycles. All receipts, saved-state invariants and final viewer updates verified, with zero errors and clean child shutdown. See [capacity evidence](docs/progress/capacity.md) for exact workloads, hardware, provenance and the distinction between pushed revisions and fresh initialization views in the scale trial.
+The [full strict hour on the prior human-only release](tools/load/reports/2026-09-18T05-30-44-454Z-acceptance.json) also passed: **100 simultaneous games, 1,000 spectators and 1,200 maintained sockets**, 185,805 accepted commands, 536,126 revision syncs and 5,183 completed-game cycles. All receipts, saved-state invariants and final viewer updates verified, with zero errors and clean child shutdown. See [capacity evidence](docs/progress/capacity.md) for exact workloads, hardware, provenance and the distinction between pushed revisions and fresh initialization views in the scale trial.
 
 The initial active-game limit is configurable with `MAX_ACTIVE_GAMES`; it defaults to **100**. `MAX_SPECTATORS_PER_GAME` defaults to **10**. Increasing these limits is an operational decision that must follow capacity testing. More application instances, database resources and bandwidth can be provisioned without rewriting game rules or the browser client.
 
-**5,000 simultaneous games is a capacity target, not a promise that the initial US$100/month configuration supports that load.** Only a measured load-test report establishes capacity on a particular configuration. The game ships with no rating system, chat, tournament mode or playing AI.
+**5,000 simultaneous games is a capacity target, not a promise that the initial US$100/month configuration supports that load.** Only a measured load-test report establishes capacity on a particular configuration. The two large human-only reports above predate the AI update and are not AI capacity measurements. The game ships with no rating system, chat or tournament mode.

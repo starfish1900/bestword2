@@ -27,3 +27,13 @@ Structured results: [client evidence](../evidence/ai-client-tests.json). Detaile
 Run the ordinary production build and local API. Start a compatible AI worker before running the real AI browser test. Set `BESTWORD_AI_E2E=1`, set `BESTWORD_BASE_URL` to the local application origin, then run `npx playwright test`. The real-AI case is explicitly skipped without that flag. Use one fixed `BESTWORD_E2E_RUN_ID` for repeated checks to reuse test accounts without changing signup protections.
 
 For the focused client tests, run `npx playwright test tools/e2e/client-features.spec.ts tools/e2e/ai-game.spec.ts`. Set `BESTWORD_CROSS_BROWSER=1` and select the installed browser project for cross-browser checks. No public deployment or paid service was used.
+
+## Final consolidated verification
+
+Repeated the complete browser suite against the final production bundle and a fresh isolated API/AI environment on port 3016, using run ID `Final0919A`. The same five accounts were reused between browsers. No registration-limit resets or application source changes were needed in this final run.
+
+- **Chromium: all 15 passed**, including native tutorial playback, real computer and human games, signed-in replay, guest restrictions, list refresh races, clocks, score animation, touch input and screenshot grid checks. See [final Chromium report](../evidence/ai-browser-final.json).
+- **WebKit: 13 passed, 2 explicit skips**, with no failures. The skips are the Chromium-only acknowledgement response fault fixture and native H.264 playback. WebKit passed the real AI game, human games, replay, score animation, touch, board raster checks, mobile help layouts and media HTTP tests. See [final WebKit report](../evidence/ai-browser-webkit-final.json).
+- **Firefox runtime unavailable**: a fresh headless launch probe failed with `spawn UNKNOWN` before opening any application page. See [runtime evidence](../evidence/ai-browser-firefox-runtime.json). This is an environment limitation, not a passing or failing application test.
+
+Visually inspected the final Chromium mobile tutorial note and real AI replay, and the final WebKit small-phone tutorial and real AI replay. The new written note identifies the current vowel/consonant rule while preserving the video itself unchanged. These clean consolidated runs supersede the earlier local signup-limit setup failure described above.

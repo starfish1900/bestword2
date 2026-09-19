@@ -1,0 +1,36 @@
+{
+  "verifiedAt": "2026-09-19T14:57:15.229Z",
+  "sourceRevision": "2b1d0029aacd2b6897d69871b461a08133077dd7",
+  "files": [
+    {
+      "path": "data/dictionary.txt",
+      "sha256": "87222d75c77c52574868bf0cefd4faf5703d4df166336a4ec9a70cffe72100af",
+      "committedBytesMatch": true
+    },
+    {
+      "path": "data/ai/EnEasy.txt",
+      "sha256": "a3379b708bd5b4a5d1a2bf233eff7d8ba3f42a867aa1a85d6dcdcefcf7fdc862",
+      "committedBytesMatch": true
+    },
+    {
+      "path": "data/ai/EnMedium.txt",
+      "sha256": "aef7bacf38c3ab64c467c9086155f1ec6f2dbeab61f57dbb808e0db612291c1d",
+      "committedBytesMatch": true
+    },
+    {
+      "path": "data/easy.gaddag",
+      "sha256": "097195fcedf8cb78440b3de24abc5ab3a8a958acabb262d84dce5c48749356fb",
+      "committedBytesMatch": true
+    },
+    {
+      "path": "data/medium.gaddag",
+      "sha256": "fa56791745f418c7dff8a9468f7c5e30928a6b1c83ff0d10dc2fb7fbe1bdde92",
+      "committedBytesMatch": true
+    },
+    {
+      "path": "apps/web/public/tutorial/bestword-9fbe34a89b81/BestWord-Tutorial.mp4",
+      "sha256": "9fbe34a89b81a63adf2653614849032775ee1c19a90a555736e5c9af326b78be",
+      "committedBytesMatch": true
+    }
+  ]
+}

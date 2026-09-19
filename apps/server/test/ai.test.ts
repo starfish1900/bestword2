@@ -3,8 +3,8 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { afterAll,afterEach,beforeAll,beforeEach,describe,expect,it,vi } from 'vitest';
 import type { Worker } from 'node:worker_threads';
 import { AI_POLICY_VERSION,findBestMove } from '@bestword/ai';
-import { VOWELS,type GameAction,type User } from '@bestword/contracts';
-import { assertStateInvariants,type EngineState } from '@bestword/engine';
+import { VOWELS,type GameAction,type Letter,type PlaceWordAction,type User } from '@bestword/contracts';
+import { assertStateInvariants,createGame,evaluatePlacement,type EngineState } from '@bestword/engine';
 import { Gaddag } from '@bestword/lexicon';
 import { readConfig } from '../src/config.js';
 import { AI_USERS,createDatabase,databaseNow,migrate,transaction,type AiCapabilities,type Database } from '../src/db.js';
@@ -53,6 +53,29 @@ describe.skipIf(!enabled)('durable server AI against real PostgreSQL and Redis',
     const found=findBestMove({board:state.board,rack:state.players[1].rack,vowels:Object.fromEntries(VOWELS.map(letter=>[letter,state.bag[letter]])) as Record<typeof VOWELS[number],number>,principalHistory:state.principalHistory},lexicon);
     expect(found.complete).toBe(true);return found.move??{type:state.drawnThisTurn[1]>0&&!state.players[0].passed?'NO_WORDS':'PASS'};
   }
+  async function vocabularyTable(difficulty:'easy'|'medium'):Promise<{id:string;user:User;state:EngineState}>{
+    const user=await human(),id=await games.createAi(user,difficulty,5),original=await current(id);
+    let seed=1;const randomInt=(maximum:number)=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed%maximum;};
+    // A reproducible legal opening, with only the random seed and bag permutation
+    // fixed by this fixture. All subsequent turns use the production server paths.
+    let state=createGame({id,players:[user,AI_USERS[difficulty]],minutes:5,lexiconVersion:full.sha256,
+      seedWords:['CROSSWORD','WORDGAMES'],now:original.createdAt,randomInt,firstSeat:1},full);
+    state.ai=original.ai!;state.players[1].connected=true;
+    const draws=['ST','RN','LD','CM','GB'].flatMap(pair=>[...pair,...pair]) as Letter[];
+    const remaining=[...state.consonantDrawOrder];
+    for(const letter of draws){const index=remaining.indexOf(letter);expect(index).toBeGreaterThanOrEqual(0);remaining.splice(index,1);}
+    state.consonantDrawOrder=remaining.concat([...draws].reverse());assertStateInvariants(state);await save(state);
+    await db.pool.query("UPDATE game_events SET public_data=$2 WHERE game_id=$1 AND revision=0",[id,JSON.stringify({board:state.board,principalHistory:state.principalHistory,ai:{seat:1,difficulty}})]);
+    await games.connect(id,user,`${api.epoch}/${randomUUID()}`,true);state=await current(id);
+    state.startsAt=Math.max(state.lastTransitionAt,(await transaction(db,databaseNow))-1);await save(state);await games.tick();
+    for(let round=0;round<4;round++){
+      const claim=(await claimAiJob(db,ai.epoch,capabilities))!;expect(claim).not.toBeNull();
+      expect((await games.commitAiClaim(claim,{complete:true,action:{type:'NO_WORDS'}},difficulty==='easy'?easy:medium)).accepted).toBe(true);
+      state=await current(id);expect((await games.command({gameId:id,commandId:randomUUID(),expectedRevision:state.revision,action:{type:'NO_WORDS'}},user)).ok).toBe(true);
+    }
+    state=await current(id);expect(state.players[1].rack).toEqual([...('STRNLDCMGB')] as Letter[]);
+    expect(state.players[0].rack).toEqual([...('STRNLDCM')] as Letter[]);assertStateInvariants(state);return {id,user,state};
+  }
   it('admits only ready, authenticated human players and keeps the shared bot out of playing slots',async()=>{
     await expect(games.createAi(AI_USERS.easy,'easy',5)).rejects.toMatchObject({code:'AUTH_REQUIRED'});
     const first=await human(),second=await human();const a=await games.createAi(first,'easy',15),b=await games.createAi(second,'easy',5);
@@ -99,6 +122,33 @@ describe.skipIf(!enabled)('durable server AI against real PostgreSQL and Redis',
     await expect(games.commitAiClaim(claim,{complete:true,action:action(claim.state)},easy)).rejects.toThrow('dictionary version');
     expect((await current(table.id)).moves).toHaveLength(table.state.moves.length);await releaseAiClaim(db,claim);
   });
+  for(const difficulty of ['easy','medium'] as const)for(const restriction of ['principal','secondary'] as const)
+    it(`${difficulty}: restricts the AI ${restriction} vocabulary while accepting the identical human placement`,async()=>{
+      const table=await vocabularyTable(difficulty),vocabulary=difficulty==='easy'?easy:medium;
+      const placement:PlaceWordAction=restriction==='principal'
+        ?{type:'PLACE_WORD',row:6,column:8,direction:'H',word:'AWAITER'}
+        :{type:'PLACE_WORD',row:8,column:11,direction:'V',word:'SACRED'};
+      const evaluated=evaluatePlacement(table.state,1,placement,full);
+      expect(evaluated.words.every(word=>full.has(word.word))).toBe(true);
+      if(restriction==='principal')expect(vocabulary.has(placement.word)).toBe(false);
+      else{
+        expect(vocabulary.has(placement.word)).toBe(true);
+        expect(evaluated.words.filter(word=>!word.isPrincipal).map(word=>word.word)).toContain('CROSSWORDS');
+        expect(vocabulary.has('CROSSWORDS')).toBe(false);
+      }
+      const claim=(await claimAiJob(db,ai.epoch,capabilities))!;
+      expect(claim.state.ai?.vocabularyHash).toBe(vocabulary.sha256);
+      await expect(games.commitAiClaim(claim,{complete:true,action:placement},vocabulary)).rejects.toMatchObject({code:'AI_VOCABULARY_MISMATCH',message:'AI generated a word outside its difficulty vocabulary'});
+      expect(await current(table.id)).toEqual(table.state);
+      // The legal skip draws the human's matching final pair; board, available
+      // vowels and principal history stay unchanged, so it is the same placement.
+      expect((await games.commitAiClaim(claim,{complete:true,action:{type:'NO_WORDS'}},vocabulary)).accepted).toBe(true);
+      const humanTurn=await current(table.id);expect(humanTurn.players[0].rack).toEqual(table.state.players[1].rack);
+      expect(humanTurn.board).toEqual(table.state.board);expect(humanTurn.principalHistory).toEqual(table.state.principalHistory);
+      const accepted=await games.command({gameId:table.id,commandId:randomUUID(),expectedRevision:humanTurn.revision,action:placement},table.user);
+      expect(accepted.ok).toBe(true);const saved=await current(table.id);
+      expect(saved.moves.at(-1)).toMatchObject({seat:0,word:placement.word,score:evaluated.score});assertStateInvariants(saved);
+    });
   it('charges the AI clock and applies its deadline before a late search result',async()=>{
     const table=await active();const state=await current(table.id),now=await transaction(db,databaseNow);
     state.clocksMs[1]=50;state.turnStartedAt=now;state.turnDeadlineAt=now+50;state.lastTransitionAt=now;await save(state);

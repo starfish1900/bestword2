@@ -10,3 +10,4 @@ playwright-report/
 coverage/
 .local/
 *.log
+/tools/ai-load/reports/

@@ -119,7 +119,7 @@ The browser first loads a projected view over HTTP and subscribes over WebSocket
 
 Every eight seconds a connected game sends `game:sync {gameId, revision}`. An already subscribed socket with the same valid identity, the same revision, and a game that is not paused receives `{ok:true, unchanged:true, serverTime}`. The client refreshes its server-time anchor without replacing the snapshot, revision, projected remaining times or draft. It ignores a stale clock timestamp and does not apply an unchanged reply if its game or revision has since changed. Otherwise the server performs a full subscription and returns a current personalized view. Paused games deliberately use the full path so recovery presence can be reconciled.
 
-Changed-state `game:update` messages still contain complete public history plus the receiver's private projection. There is no client delta protocol or history pagination yet. Revision-aware polling saves unchanged downloads but does not make changed-game bandwidth independent of game length or spectator count.
+Changed-state `game:update` messages contain the receiver's authorized projection. Signed-in accounts receive complete public history, while guests receive the current board, tile origins and three recent move summaries without replay history. Only a participant receives their own rack letters. There is no client delta protocol or authenticated history pagination yet. Revision-aware polling saves unchanged downloads but does not make authenticated changed-game bandwidth independent of game length or spectator count.
 
 The client ignores older revisions and older timestamps within the same revision. A pending command is saved per tab in `sessionStorage`, with its UUID and expected revision, before transmission. An acknowledgement timeout or `SERVICE_RECOVERING` reply preserves that command for safe retry using the same ID: either can follow an ambiguous commit. Editing and creating another action waits for resolution. Success and definitive rejections clear the pending receipt; an ordinary invalid placement preserves the local draft. The draft helper independently handles input placement/inference, while final legality remains on the server.
 
@@ -141,7 +141,12 @@ Functional integration tests exercise multiple real gateways and durable retries
 
 ## Saved interface evidence
 
-These are actual WebKit screenshots from the final successful local browser run, using the compiled application, PostgreSQL and Redis. Both show the same live game after setup, with valid seed words REDEMPTIONS and POLYTYPES and the participant's own rack. They are not generated mockups. Viewports were 1280×800 and 320×568 CSS pixels; WebKit captured them at device scale factor 2.
+The AI release's successful Chromium run captured the new computer setup and tutorial on desktop and the smallest supported portrait viewport. Both were visually reviewed:
+
+- [Computer game setup](evidence/ai-desktop-computer.png)
+- [Tutorial on a small phone](evidence/ai-small-phone-tutorial.png)
+
+The prior human-game release also includes actual WebKit screenshots using the compiled application, PostgreSQL and Redis. Both show the same live game after setup, with valid seed words REDEMPTIONS and POLYTYPES and the participant's own rack. Viewports were 1280×800 and 320×568 CSS pixels; WebKit captured them at device scale factor 2.
 
 - [Desktop live game](evidence/desktop-game.png)
 - [Smallest supported portrait live game](evidence/small-phone-game.png)

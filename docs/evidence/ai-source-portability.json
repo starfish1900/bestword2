@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-09-19T15:02:59.279Z",
+  "sourceRevision": "2b1d002",
+  "freshOfflineNpmCiPassed": true,
+  "standaloneProductionBuildPassed": true,
+  "compiledAndVocabularyArtifactsCompared": 25,
+  "differences": [],
+  "limitations": [
+    "Windows local build; not a Docker or Linux execution."
+  ]
+}

@@ -1,5 +1,11 @@
 # Deployment preparation
 
+## Current AI release — 19 September 2026
+
+The current Blueprint, Compose, image and CI also include the dedicated AI worker and restricted vocabulary graphs. The three application roles follow commits automatically. Initial AI admission is ten games with one search thread; the indicative base is now US$89/month before usage and tax. See [current operations and installation steps](../OPERATIONS.md) and [AI release verification](2026-09-19-ai-release.md). Cached official deployment schemas validate, and local builds pass. No Docker/WSL or hosted Linux CI execution, purchase or public deployment was performed.
+
+## Historical human-only release
+
 Updated 18 September 2026. Scope: Dockerfile, Docker ignore rules, Compose, Render Blueprint, deployment validator, CI and operations documentation. No remote resources created, no purchase, no public deployment.
 
 ## Delivered
