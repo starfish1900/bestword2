@@ -1,5 +1,4 @@
 import { randomUUID } from 'node:crypto';
-import type { PoolClient } from 'pg';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createGame, setConnected, startIfReady, type EngineState } from '@bestword/engine';
 import { createDatabase, databaseNow, migrate, transaction, type Database } from '../src/db.js';
@@ -48,11 +47,15 @@ describe.skipIf(!integrationEnabled)('health authority against real PostgreSQL a
     const before=Number((await db.pool.query<{last_healthy:string}>('SELECT last_healthy FROM service_epochs WHERE id=$1',[health.epoch])).rows[0]!.last_healthy);
     await db.pool.query('SELECT pg_sleep(0.005)');
     const realConnect=db.pool.connect.bind(db.pool);
+    let rejectedCommits=0;
     const replacement=vi.spyOn(db.pool,'connect').mockImplementationOnce(async()=>{
       const client=await realConnect();
-      return {query:async(text:string,values?:unknown[])=>{if(text==='COMMIT')throw new Error('Injected COMMIT transport failure');return client.query(text,values);},release:()=>client.release()} as PoolClient;
+      return new Proxy(client,{get(target,key){
+        if(key==='query')return async(text:string,values?:unknown[])=>{if(text==='COMMIT'){rejectedCommits++;throw new Error('Injected COMMIT transport failure');}return target.query(text,values);};
+        const value=Reflect.get(target,key,target) as unknown;return typeof value==='function'?value.bind(target):value;
+      }});
     });
-    await health.tick();replacement.mockRestore();expect(health.ready).toBe(false);
+    await health.tick();replacement.mockRestore();expect(rejectedCommits).toBe(1);expect(health.ready).toBe(false);
     expect(Number((await db.pool.query<{last_healthy:string}>('SELECT last_healthy FROM service_epochs WHERE id=$1',[health.epoch])).rows[0]!.last_healthy)).toBe(before);
     await health.tick();expect(health.ready).toBe(true);
     const outage=await db.pool.query<{started_at:string}>('SELECT started_at FROM incidents WHERE epoch_id=$1 AND reason=\'infrastructure\'',[health.epoch]);

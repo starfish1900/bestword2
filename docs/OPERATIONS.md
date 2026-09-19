@@ -61,6 +61,8 @@ The Windows portable services use the same host ports. Stop application clients,
 
 ## Release procedure
 
+For the redeploy deadlock reported after configuring `bestword.net`, see [the migration fix and patch deployment instructions](progress/2026-09-19-migration-redeploy.md). Keep the custom-domain APP_ORIGIN value. Startup now checks applied migration versions and skips completed table changes; there is no database reset or manual SQL step.
+
 For a first Render installation, use these steps:
 
 1. Put this folder's contents at the root of your GitHub repository, including `render.yaml`, `Dockerfile`, all three vocabulary artifacts and `apps/web/public/tutorial`. Push the reviewed code to `main` (or your actual default branch).

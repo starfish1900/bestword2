@@ -1,0 +1,89 @@
+{
+  "sourceReport": "migration-redeploy-full-tests.json",
+  "description": "Migration assertions extracted from the final consolidated run; not a separate run.",
+  "startTime": 1789841233162,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "versioned migrations against real PostgreSQL"
+          ],
+          "fullName": "versioned migrations against real PostgreSQL initializes an empty database with concurrent API and worker starts",
+          "status": "passed",
+          "title": "initializes an empty database with concurrent API and worker starts",
+          "duration": 238.54470000000003,
+          "failureMessages": [],
+          "meta": {},
+          "tags": []
+        },
+        {
+          "ancestorTitles": [
+            "versioned migrations against real PostgreSQL"
+          ],
+          "fullName": "versioned migrations against real PostgreSQL upgrades the shipped pre-AI schema without changing accounts, sessions or saved game data",
+          "status": "passed",
+          "title": "upgrades the shipped pre-AI schema without changing accounts, sessions or saved game data",
+          "duration": 284.0707,
+          "failureMessages": [],
+          "meta": {},
+          "tags": []
+        },
+        {
+          "ancestorTitles": [
+            "versioned migrations against real PostgreSQL"
+          ],
+          "fullName": "versioned migrations against real PostgreSQL does not request exclusive game-table locks when an installed database is busy",
+          "status": "passed",
+          "title": "does not request exclusive game-table locks when an installed database is busy",
+          "duration": 535.5733,
+          "failureMessages": [],
+          "meta": {},
+          "tags": []
+        },
+        {
+          "ancestorTitles": [
+            "versioned migrations against real PostgreSQL"
+          ],
+          "fullName": "versioned migrations against real PostgreSQL retries a rolled-back deadlock and atomically completes all pending changes",
+          "status": "passed",
+          "title": "retries a rolled-back deadlock and atomically completes all pending changes",
+          "duration": 235.88889999999992,
+          "failureMessages": [],
+          "meta": {},
+          "tags": []
+        },
+        {
+          "ancestorTitles": [
+            "versioned migrations against real PostgreSQL"
+          ],
+          "fullName": "versioned migrations against real PostgreSQL bounds deadlock retries and leaves the previous schema intact on failure",
+          "status": "passed",
+          "title": "bounds deadlock retries and leaves the previous schema intact on failure",
+          "duration": 489.76319999999987,
+          "failureMessages": [],
+          "meta": {},
+          "tags": []
+        },
+        {
+          "ancestorTitles": [
+            "versioned migrations against real PostgreSQL"
+          ],
+          "fullName": "versioned migrations against real PostgreSQL does not retry non-transient migration failures",
+          "status": "passed",
+          "title": "does not retry non-transient migration failures",
+          "duration": 104.63869999999997,
+          "failureMessages": [],
+          "meta": {},
+          "tags": []
+        }
+      ],
+      "startTime": 1789841233891,
+      "endTime": 1789841235779.6387,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/folia/Documents/Codex/2026-09-17/p/outputs/bestword/apps/server/test/migrations.test.ts"
+    }
+  ]
+}

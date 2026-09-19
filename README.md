@@ -79,6 +79,8 @@ Usernames contain 3–15 ASCII letters or numbers and are unique regardless of c
 
 ## Tests and verification
 
+The deployment patch for PostgreSQL migration deadlocks is described in [the redeploy fix](docs/progress/2026-09-19-migration-redeploy.md). It skips already-applied schema changes and handles connection errors between transaction queries. The original AI-release reports below retain their original provenance.
+
 From the repository root:
 
 ```sh

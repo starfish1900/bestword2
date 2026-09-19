@@ -1,5 +1,9 @@
 # BestWord progress
 
+## Redeployment fix — 19 September 2026
+
+Fixed a migration deadlock reported during the custom-domain redeployment. Already-applied schema changes are now skipped; deadlock retries are bounded, and checked-out PostgreSQL connection failures are handled. The current consolidated suite passes **252/252 tests in 113.99 seconds**; build, type checking and the compiled pre-deploy command under conflicting table locks also pass. See [the patch record](progress/2026-09-19-migration-redeploy.md). Browser and capacity results below are historical and were not rerun for this patch. No assistant GitHub push or public deployment was performed.
+
 ## AI release — 19 September 2026
 
 The current update adds Easy/Medium/Hard server opponents, strategic NO WORDS, durable AI replay, stable Recent games pagination, signed-in replay access and the unchanged tutorial in shared help. The consolidated suite passes **245/245 tests**, Chromium **15/15**, and WebKit **13 with two explicit skips**. See [the current release record](progress/2026-09-19-ai-release.md) and [AI architecture/operation](AI.md). The older results below describe earlier human-only releases; they are not new AI capacity measurements.

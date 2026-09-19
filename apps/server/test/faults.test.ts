@@ -207,6 +207,25 @@ describe.skipIf(!enabled)('real dependency faults and durable game recovery',()=
     }finally{if(kv.isOpen)kv.destroy();}
   },12000);
 
+  it('a PostgreSQL disconnect between transaction queries is handled and the client is discarded',async()=>{
+    const proxy=await proxyFor(databaseUrl,5432),db=createDatabase(proxy.url(databaseUrl),1);
+    let previousPid=0;
+    try{
+      await expect(transaction(db,async c=>{
+        previousPid=Number((await c.query<{pid:number}>('SELECT pg_backend_pid() AS pid')).rows[0]!.pid);
+        proxy.cut();
+        // No query is pending while the TCP socket closes. A checked-out
+        // client's error event must not escape as an uncaught exception.
+        await delay(100);
+        await c.query('SELECT 1');
+      })).rejects.toThrow(/not queryable|terminated|connection/i);
+      expect(db.pool.totalCount).toBe(0);
+      proxy.recover();
+      const fresh=await db.pool.query<{pid:number}>('SELECT pg_backend_pid() AS pid');
+      expect(fresh.rows[0]!.pid).not.toBe(previousPid);
+    }finally{proxy.recover();await db.pool.end();}
+  });
+
   it('a half-open PostgreSQL connection bounds transaction cleanup and retires the uncertain client',async()=>{
     const proxy=await proxyFor(databaseUrl,5432),db=createDatabase(proxy.url(databaseUrl),1);
     let previousPid=0;const started=Date.now();
