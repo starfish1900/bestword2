@@ -49,6 +49,11 @@ export interface PlacementEvaluation {
 }
 
 function fail(code: string, message: string): never { throw new EngineError(code, message); }
+function requireWordComposition(word: string): void {
+  const letters = [...word] as Letter[];
+  if (!letters.some(isVowel) || !letters.some(letter => !isVowel(letter)))
+    fail('INVALID_WORD_COMPOSITION', `${word} must contain at least one vowel (A, E, I, O, U or Y) and at least one consonant.`);
+}
 function checkSeat(seat: Seat): void { if(seat!==0 && seat!==1)fail('INVALID_SEAT','Player seat must be 0 or 1.'); }
 function checkTime(now: number): void {
   if (!Number.isSafeInteger(now) || now < 0) fail('INVALID_TIME', 'Time must be a nonnegative integer in milliseconds.');
@@ -133,7 +138,11 @@ function crossings(horizontal: string, vertical: string): SeedPair[] {
 function pickSeeds(options: CreateGameOptions, lexicon: Lexicon): SeedPair {
   const candidates = options.seedWords;
   if (candidates.length < 2) fail('INVALID_SETUP', 'At least two setup candidates are required.');
-  const valid = (word: string): boolean => /^[A-Z]{9,12}$/.test(word) && lexicon.has(word);
+  const valid = (word: string): boolean => {
+    if (!/^[A-Z]{9,12}$/.test(word) || !lexicon.has(word)) return false;
+    requireWordComposition(word);
+    return true;
+  };
   // A fixed attempt limit keeps malformed candidate sources from blocking the server.
   for (let attempt = 0; attempt < Math.min(2_000, candidates.length * candidates.length * 2); attempt++) {
     const h = checkedRandom(options.randomInt, candidates.length);
@@ -211,6 +220,7 @@ export function evaluatePlacement(state: EngineState, seat: Seat, action: PlaceW
   if(cell(state.board,row-dr,column-dc)!==null || cell(state.board,row+dr*word.length,column+dc*word.length)!==null)
     fail('NON_MAXIMAL_WORD','Include all existing letters directly before and after the word.');
   if(!lexicon.has(word)) fail('INVALID_WORD',`${word} is not in the dictionary.`);
+  requireWordComposition(word);
   if(state.principalHistory.includes(word)) fail('REPEATED_PRINCIPAL','That principal word has already been played.');
   const board=[...state.board]; const tiles:PlacedTile[]=[]; let connected=false;
   for(let i=0;i<word.length;i++) {
@@ -237,6 +247,7 @@ export function evaluatePlacement(state: EngineState, seat: Seat, action: PlaceW
     if(secondary.word.length===1) continue;
     if(secondary.word.length<3 || secondary.word.length>15 || !lexicon.has(secondary.word))
       fail('INVALID_SECONDARY',`${secondary.word} is not a valid 3–15 letter crossword.`);
+    requireWordComposition(secondary.word);
     words.push(secondary);
   }
   return {board,rack,bag,words,tiles,score:words.reduce((sum,scored)=>sum+scored.score,0)};

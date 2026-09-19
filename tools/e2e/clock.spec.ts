@@ -42,9 +42,13 @@ test('one-hour page wall-clock jump preserves the turn and draft through real pe
       const originalNow=Date.now;
       (window as unknown as {restoreDateNow:()=>void}).restoreDateNow=()=>{Date.now=originalNow;};
       Date.now=()=>originalNow()+60*60*1000;
-      return {wallClockShiftMs:Date.now()-new Date().getTime(),performanceAtInjection:performance.now()};
+      // Bracket the shifted read with native reads: task scheduling can delay any
+      // pair of calls, so their raw difference need not be exactly one hour.
+      const nativeBefore=originalNow(),shiftedNow=Date.now(),nativeAfter=originalNow();
+      return {nativeBefore,shiftedNow,nativeAfter,wallClockShiftMs:shiftedNow-nativeBefore,performanceAtInjection:performance.now()};
     });
-    expect(injection.wallClockShiftMs).toBeGreaterThanOrEqual(3599999);
+    expect(injection.shiftedNow).toBeGreaterThanOrEqual(injection.nativeBefore+60*60*1000);
+    expect(injection.shiftedNow).toBeLessThanOrEqual(injection.nativeAfter+60*60*1000);
     // Two display ticks expose the former expiry/input bug before the next sync can repair it.
     await expect.poll(()=>actor.page.evaluate(start=>performance.now()-start,injection.performanceAtInjection),{intervals:[100,100,100]}).toBeGreaterThanOrEqual(450);
     const clockAfterJump=await clockSeconds(actor.page);

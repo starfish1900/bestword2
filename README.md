@@ -4,6 +4,8 @@ A live, two-player crossword game for the browser. Build connected words, find v
 
 BestWord includes accounts, an open game lobby, live spectating, permanent PASS, server-controlled clocks, completed games and move-by-move replay. It uses the supplied English dictionary of **279,320 words**. Racks remain private; vowel counts, total remaining consonants and rack sizes are public.
 
+Every completed word must contain at least one vowel and one consonant; **Y is a vowel**. Opening tiles stay grey, and contributed tiles retain each player's green or orange color through later crossings and replay. Confirmed scores count up with a slowing animation, with immediate updates when reduced motion is preferred. See the [playtest update and verification notes](docs/progress/2026-09-18-playtest-improvements.md).
+
 The source rules are in [docs/original-spec.txt](docs/original-spec.txt), with the agreed clarifications in [docs/DECISIONS.md](docs/DECISIONS.md). The delivery does not provision paid services or publish a live website automatically.
 
 ## Start the complete game locally
@@ -46,7 +48,7 @@ To serve the compiled browser application directly, set `APP_ORIGIN=http://local
 - Choose **5, 15 or 25 minutes**, with **30 seconds added after each completed turn**.
 - The game begins after both players connect and a shared three-second countdown.
 - Each turn automatically draws up to two consonants, with a maximum of ten on the rack. Take vowels directly from the shared bag; **Y is a vowel**.
-- Place at least two new tiles in one line. Every resulting word must be in the dictionary and contain 3–15 letters. Your principal word cannot repeat an earlier principal word or either opening word.
+- Place at least two new tiles in one line. Every resulting word must be in the dictionary, contain 3–15 letters, and include at least one vowel and one consonant. Your principal word cannot repeat an earlier principal word or either opening word.
 - **No words** skips one turn, but only if a consonant was drawn this turn and the opponent has not passed.
 - **Pass forever** ends all your future turns and fixes your score. The opponent continues until passing or losing. A passed player may leave or start another game.
 - Losing on time or after the 25-second detected-disconnection allowance overrides the score. Confirmed infrastructure interruptions pause affected games and allow reconnection before resuming.

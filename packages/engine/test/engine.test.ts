@@ -124,19 +124,48 @@ describe('setup and mandatory draws',()=>{
     const impossible=['JJJJAAAAA','JJJJAAAAB'];
     errorCode(()=>createGame({...options,seedWords:impossible},dictionary(impossible)),'SETUP_UNAVAILABLE');
   });
+  it.each(['AEIOUYAEI','BCDFGHJKL'])('rejects an opening candidate without both letter types: %s',word=>{
+    const options={id:'game',players:[{id:'one',username:'Alice'},{id:'two',username:'Bob'}] as [{id:string;username:string},{id:string;username:string}],minutes:5 as const,lexiconVersion:'test',seedWords:[word,'CROSSWORD'],now:0,randomInt:()=>0};
+    errorCode(()=>createGame(options,dictionary([word])),'INVALID_WORD_COMPOSITION');
+    expect(()=>createGame(options,dictionary([word]))).toThrow(`${word} must contain at least one vowel`);
+  });
+  it('accepts Y as the only vowel in an opening word',()=>{
+    const word='RHYTHMYYZ';
+    const state=createGame({id:'game',players:[{id:'one',username:'Alice'},{id:'two',username:'Bob'}],minutes:5,lexiconVersion:'test',seedWords:[word,'CROSSWORD'],now:0,randomInt:()=>0},dictionary([word]));
+    expect(state.principalHistory).toContain(word);assertStateInvariants(state);
+  });
   it('all randomized setup placements conserve every tile and fit the board',()=>{
     fc.assert(fc.property(fc.integer(),seed=>{const state=waiting(seed);assertStateInvariants(state);expect(state.board.filter(Boolean)).toHaveLength(17);}),{numRuns:300});
   });
 });
 
 describe('word validation',()=>{
-  it('permits new all-vowel tiles and an all-vowel zero-score principal',()=>{
-    const state=fixture([['1B','A']],'');const result=evaluatePlacement(state,0,placement('1A','EAI'),dictionary(['EAI']));
-    expect(result.score).toBe(0);expect(result.rack).toEqual([]);expect(result.bag.E).toBe(state.bag.E-1);
+  it('permits all-vowel new tiles when an existing tile supplies the consonant',()=>{
+    const state=fixture([['1B','C']],'');const result=evaluatePlacement(state,0,placement('1A','ACE'),dictionary(['ACE']));
+    expect(result.score).toBe(8);expect(result.rack).toEqual([]);expect(result.tiles.map(tile=>tile.letter)).toEqual(['A','E']);
+    expect(result.bag.A).toBe(state.bag.A-1);expect(result.bag.E).toBe(state.bag.E-1);
   });
-  it('permits all-consonant new tiles and treats Y as a bag vowel',()=>{
+  it('permits all-consonant new tiles when an existing Y supplies the vowel',()=>{
+    const state=fixture([['1C','Y']],'CR');const result=evaluatePlacement(state,0,placement('1A','CRY'),dictionary(['CRY']));
+    expect(result.rack).toEqual([]);expect(result.bag.Y).toBe(state.bag.Y);expect(result.words[0]?.consonants).toBe(2);
+    expect(result.tiles.map(tile=>tile.letter)).toEqual(['C','R']);expect(result.score).toBe(22);
+  });
+  it('takes a newly placed Y from the bag and counts it as a vowel',()=>{
     const state=fixture([['1A','A']],'RS');const result=evaluatePlacement(state,0,placement('1A','ARYS'),dictionary(['ARYS']));
     expect(result.rack).toEqual([]);expect(result.bag.Y).toBe(state.bag.Y-1);expect(result.words[0]?.consonants).toBe(2);
+  });
+  const badCompositionCases:[string,[string,string][],string,string,string,string[]][]=[
+    ['all-vowel principal',[['1B','A']],'','1A','EAI',['EAI']],
+    ['Y does not supply a consonant',[['1B','A']],'','1A','EAY',['EAY']],
+    ['all-consonant principal',[['1B','R']],'BR','1A','BRR',['BRR']],
+    ['all-vowel secondary',[['2A','C'],['1B','E'],['3B','Y']],'T','2A','CAT',['CAT','EAY']],
+    ['all-consonant secondary',[['2B','A'],['1A','B'],['3A','R']],'CT','2A','CAT',['CAT','BCR']],
+  ];
+  for(const [name,existing,rack,notation,word,words]of badCompositionCases)it(`rejects ${name}, names the word, and preserves the entire turn`,()=>{
+    const state=fixture(existing,rack),before=JSON.stringify(state),action=placement(notation,word),lexicon=dictionary(words),offending=words.at(-1)!;
+    errorCode(()=>applyAction(state,0,action,4000,lexicon),'INVALID_WORD_COMPOSITION');
+    expect(()=>applyAction(state,0,action,4000,lexicon)).toThrow(`${offending} must contain at least one vowel`);
+    expect(JSON.stringify(state)).toBe(before);expect(projectGame(state,0,5000).game.clocksMs[0]).toBe(298000);
   });
   const invalidCases:[string,()=>[EngineState,PlaceWordAction,Lexicon],string][]=[
     ['one new tile',()=>[fixture([['1A','CA']],'T'),placement('1A','CAT'),dictionary(['CAT'])],'TOO_FEW_TILES'],
@@ -154,8 +183,8 @@ describe('word validation',()=>{
   ];
   for(const [name,build,code]of invalidCases)it(`rejects ${name} without mutation`,()=>{const [state,action,lexicon]=build(),before=JSON.stringify(state);errorCode(()=>applyAction(state,0,action,3100,lexicon),code);expect(JSON.stringify(state)).toBe(before);});
   it('checks each vowel copy against the remaining bag',()=>{
-    const state=fixture([['1A','A']],'');state.bag.E=1;
-    errorCode(()=>evaluatePlacement(state,0,placement('1A','AEE'),dictionary(['AEE'])),'VOWEL_UNAVAILABLE');
+    const state=fixture([['1A','B']],'');state.bag.E=1;
+    errorCode(()=>evaluatePlacement(state,0,placement('1A','BEE'),dictionary(['BEE'])),'VOWEL_UNAVAILABLE');
   });
   it('checks repeated consonant letters individually',()=>{
     const state=fixture([['1B','A']],'L');errorCode(()=>evaluatePlacement(state,0,placement('1A','LALL'),dictionary(['LALL'])),'CONSONANT_UNAVAILABLE');
@@ -166,18 +195,19 @@ describe('word validation',()=>{
     expect(next.principalHistory).toEqual(['BOOMS','RANGS','SOS']);
   });
   it('accepts a fifteen-letter maximal word',()=>{
-    const word='AEAEAEAEAEAEAEA',state=fixture([['1H','E']],'');
+    const word='AEAEAEANAEAEAEA',state=fixture([['1H','N']],'');
     const result=evaluatePlacement(state,0,placement('1A',word),dictionary([word]));expect(result.words[0]?.word).toHaveLength(15);
   });
   it('rejects malformed runtime actions before changing state',()=>{
     const state=active();errorCode(()=>applyAction(state,0,{type:'PLACE_WORD',row:-1,column:0,direction:'H',word:'ABC'},3100,seeds),'INVALID_ACTION');
   });
   it('bridge spans count preexisting interior pillars, excluding extensions',()=>{
-    const state=fixture([['1C','A'],['1F','A']],'');const result=evaluatePlacement(state,0,placement('1A','EEAEEAEE'),dictionary(['EEAEEAEE']));
-    expect(result.words[0]?.spans).toBe(2);expect(result.words[0]?.score).toBe(16);
+    const state=fixture([['1C','A'],['1F','A']],'N');const result=evaluatePlacement(state,0,placement('1A','EEAEEANE'),dictionary(['EEAEEANE']));
+    expect(result.words[0]?.spans).toBe(2);expect(result.words[0]?.score).toBe(30);
   });
   it('random valid principal placements agree with an independent span oracle and conserve tiles',()=>{
     fc.assert(fc.property(fc.array(fc.constantFrom<Letter>('A','E','I','N','S'),{minLength:3,maxLength:12}),fc.array(fc.boolean(),{minLength:12,maxLength:12}),fc.boolean(),fc.integer({min:0,max:14}),fc.integer({min:0,max:3}),(letters,mask,vertical,line,offset)=>{
+      fc.pre(letters.some(isVowel)&&letters.some(letter=>!isVowel(letter)));
       const occupied=mask.slice(0,letters.length);fc.pre(occupied.some(Boolean)&&occupied.filter(value=>!value).length>=2);
       const board:Board=Array<Letter|null>(225).fill(null),rack:Letter[]=[];
       const row=vertical?offset:line,column=vertical?line:offset;
