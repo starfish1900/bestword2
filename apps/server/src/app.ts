@@ -6,7 +6,7 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { randomUUID,timingSafeEqual } from 'node:crypto';
 import { z } from 'zod';
-import { seekSchema,type Seek,type SeekPage,type GamePage } from '@bestword/contracts';
+import { aiGameSchema,seekSchema,type Seek,type SeekPage,type GamePage } from '@bestword/contracts';
 import { Gaddag } from '@bestword/lexicon';
 import { EngineError } from '@bestword/engine';
 import type { Config } from './config.js';
@@ -46,6 +46,17 @@ export async function buildApp(config:Config){
   app.get('/health/ready',async(_request,reply)=>reply.code(health.ready&&kv.isReady?200:503).send({ok:health.ready&&kv.isReady,lexicon:lexicon.sha256}));
   auth.register(app);
   const realtime=attachRealtime(app,auth,games,config);
+  app.post('/api/games/ai',async(request,reply)=>{
+    const session=await auth.require(request);const input=aiGameSchema.parse(request.body);
+    await rateLimit(kv,`ai-create:${session.user.id}`,10,60000);
+    const gameId=await games.createAi(session.user,input.difficulty,input.minutes);
+    realtime.io.to('lobby').emit('lobby:changed');
+    return reply.code(201).send({gameId});
+  });
+  app.get('/api/games/:id/replay',async request=>{
+    const session=await auth.require(request);const {id}=idSchema.parse(request.params);
+    return games.view(id,session.user.id);
+  });
   app.get('/api/seeks',async request=>{
     const query=pageSchema.parse(request.query);const cursor=cursorParts(query.cursor);
     const rows=await db.pool.query<{id:string;user_id:string;username:string;minutes:5|15|25;created_at:string}>(`SELECT s.*,u.username FROM seeks s JOIN users u ON u.id=s.user_id WHERE s.expires_at>(extract(epoch from clock_timestamp())*1000)::bigint AND ($1::int IS NULL OR s.minutes=$1) AND ($2::bigint IS NULL OR (s.created_at,s.id)<($2,$3::uuid)) ORDER BY s.created_at DESC,s.id DESC LIMIT 51`,[query.minutes??null,cursor?.[0]??null,cursor?.[1]??null]);
@@ -80,10 +91,10 @@ export async function buildApp(config:Config){
   const webRoot=resolve('apps/web/dist');
   if(existsSync(resolve(webRoot,'index.html'))){
     await app.register(staticFiles,{root:webRoot,index:false,redirect:false,list:false,preCompressed:true,
-      setHeaders:(response,path)=>response.header('Cache-Control',/[\\/]assets[\\/]/.test(path)?'public, max-age=31536000, immutable':'no-cache')});
+      setHeaders:(response,path)=>response.header('Cache-Control',/[\\/](?:assets|tutorial)[\\/]/.test(path)?'public, max-age=31536000, immutable':'no-cache')});
     app.get('/',async(_request,reply)=>reply.header('Cache-Control','no-cache').sendFile('index.html'));
     app.setNotFoundHandler((request,reply)=>{
-      if(request.method==='GET'&&!request.url.startsWith('/api/')&&!request.url.startsWith('/assets/')&&request.headers.accept?.includes('text/html'))return reply.header('Cache-Control','no-cache').sendFile('index.html');
+      if(request.method==='GET'&&!request.url.startsWith('/api/')&&!request.url.startsWith('/assets/')&&!request.url.startsWith('/tutorial/')&&request.headers.accept?.includes('text/html'))return reply.header('Cache-Control','no-cache').sendFile('index.html');
       return reply.code(404).send({error:{code:'NOT_FOUND',message:'This page was not found.'}});
     });
   }

@@ -1,0 +1,447 @@
+{
+  "formatVersion": 2,
+  "runId": "01e06273-5e1e-4998-9059-c08ff769a93a",
+  "scenario": "smoke",
+  "settings": {
+    "games": 4,
+    "spectators": 8,
+    "commandsPerSecond": 4,
+    "burst": 0,
+    "burstEverySeconds": 20,
+    "durationSeconds": 20,
+    "apiInstances": 2,
+    "workers": 1,
+    "templates": 4,
+    "syncIntervalSeconds": 8
+  },
+  "status": "completed",
+  "startedAt": "2026-09-19T14:39:32.728Z",
+  "finishedAt": "2026-09-19T14:39:52.736Z",
+  "elapsedSeconds": 20,
+  "timing": {
+    "offeredLoadSeconds": 20,
+    "commandDrainSeconds": 0.0046397000000033585,
+    "viewerDrainSeconds": 0.0013957999999984168,
+    "totalMeasuredWallSeconds": 20.008
+  },
+  "hardware": {
+    "os": "win32",
+    "release": "10.0.26200",
+    "arch": "x64",
+    "cpu": "13th Gen Intel(R) Core(TM) i7-13700",
+    "logicalCpus": 24,
+    "totalMemoryBytes": 16766689280,
+    "node": "v24.14.0"
+  },
+  "environment": {
+    "kind": "local shared hardware with separate API/worker and load-client processes",
+    "databaseHost": "127.0.0.1:54329",
+    "schema": "bw_load_01e062735e1e49989059c08ff769a93a",
+    "redisDatabase": 14,
+    "versions": {
+      "postgresql": "PostgreSQL 18.4 on x86_64-windows, compiled by msvc-19.44.35226, 64-bit",
+      "redisServer": [
+        "redis_version:7.2.16",
+        "redis_mode:standalone",
+        "os:MSYS_NT-10.0-26200 3.6.10-8fbd9808.x86_64 x86_64"
+      ],
+      "redisMaxmemory": {
+        "maxmemory": "134217728"
+      },
+      "serverGamesSha256": "dbeb629dfe13c95b24382ab786fde0310e22bd4b4e5f3d25f35e2bce3feb57e3",
+      "compiledArtifacts": {
+        "apps/server/dist/ai-coordinator.js": "abe7641f2c21aa39e8f5acd0c4423542bff1c05e50a99cc5f99dd1636f18c0d5",
+        "apps/server/dist/ai-jobs.js": "76e155e2ef381d9f654822f50d24e3b633826a08c64869f84774ffbb0dfaf0da",
+        "apps/server/dist/ai-search-thread.js": "1980ccbda692c7db759622d7f11ff6126e73772ca2c04c3a4b0c3e81e9ef2463",
+        "apps/server/dist/ai-worker.js": "3737c86c22e5d98d1c2659041f3745566e305da5fa3a83407c9bc817250acb3a",
+        "apps/server/dist/app.js": "70cea29fc45781625bf3824b2a1ad7758c6956200b97ab4ceb36e306f1c53594",
+        "apps/server/dist/auth.js": "96ff296c5ccddaeb62787dd6fb3532142df84ae9452c7e9106d5962ec34acfea",
+        "apps/server/dist/config.js": "b65e6f2cfddb70c98ec1390669c18a25363ee9700715fcdfb72c78d82a5cde63",
+        "apps/server/dist/db.js": "b01239606360eafc60e4ab57a539161a8345b8499cfec789687cf485279fdb03",
+        "apps/server/dist/errors.js": "b91d0b5ffcc08f469b9f95846674afd4bad45711a566a345c249a97b29fae0b7",
+        "apps/server/dist/games.js": "dbeb629dfe13c95b24382ab786fde0310e22bd4b4e5f3d25f35e2bce3feb57e3",
+        "apps/server/dist/health.js": "fa2356bdf16132c196b7f9ec685028b09dc132961fc2702450aa168b12b5fc96",
+        "apps/server/dist/index.js": "a1f1b8d471fb0de15b4315a99078ef27c13a6057ad5e860a78cfffea3e32b92c",
+        "apps/server/dist/kv.js": "4b61007968bcb57bb33f52961d50e2d289d0cc1e91b55a8b0c46a2fe9483d13d",
+        "apps/server/dist/migrate.js": "e24492668ee21b5aab5d158ca15d24c0eb221eba4608af79e835765761332b15",
+        "apps/server/dist/realtime.js": "24894c105bec9a3809a4f3021957f323e448a73b7c8de9cfa68bc3bce2b109d7",
+        "apps/server/dist/worker.js": "a1f09107cc79ea5cef96e51382b8f6e0217c3e0520a67ca41af1ea0235259b97",
+        "packages/contracts/dist/index.js": "fe728039adfad960cb24c5e7a70e41dc5d4bbbdc702cb337b48e0c08e2995817",
+        "packages/engine/dist/index.js": "fd6600b794af7f2d98bc265019874d4f55d1c05bd4ea33cb35d99d3eed1dacde",
+        "packages/lexicon/dist/index.js": "a3e8ed706d931b8f13154896d804ae2210bbe0bc7b173dca39ea1a0ae3901b9b"
+      },
+      "compiledCombinedSha256": "63cc2d96c053510df1cb0791bdb8472cc03999f11e08da16293290455592f2e6",
+      "packageLockSha256": "4aa84ac120ed812e9b0e4dcd72f681215d6334386fff3031cbd1ae14a13bec7d",
+      "harnessArtifacts": {
+        "tools/load/run.mjs": "b95242a991708b616085ef07da780896226e26f2e39fae049caf00d503bd17e1",
+        "tools/load/runner.ts": "b74b8af444619fdc1eddf63393351814f9526a50a18e07ebc7196f41547e8850",
+        "tools/load/child.mjs": "eba0ee1f866d5cfe0f22daf9201ed9d36866778d24850e9d7da6db8738bbb085",
+        "tools/load/scenarios.json": "3820729a8446620017f647de783bf60b633526868c787c5f09172eed164fe802",
+        "tools/load/observations.ts": "2e6d5fad63858311803d302e30d26872ccc0d36201959195be480f7670e57a32",
+        "tools/testing/moves.ts": "39a96a22468bf5e1b1b117eebd1aaa3460d829034a801b9f9183ce6fe1031233"
+      },
+      "harnessCombinedSha256": "c8db55aae70841a14d498c2e4d42255c33bd1e5e393c6c51d4cff74105c1e825",
+      "lexiconArtifactSha256": "a2c6ef6c62da93495848e3335b814788842021514131025ea44cde34fbd207d0"
+    },
+    "apiProcesses": [
+      {
+        "pid": 21432,
+        "url": "http://127.0.0.1:60627"
+      },
+      {
+        "pid": 24088,
+        "url": "http://127.0.0.1:60633"
+      }
+    ],
+    "logDirectory": "C:\\Users\\folia\\Documents\\Codex\\2026-09-17\\p\\outputs\\bestword\\.local\\load\\2026-09-19T14-39-26-684Z-smoke"
+  },
+  "startup": {
+    "phase": "complete",
+    "failurePhase": null,
+    "socketsAttempted": 16,
+    "successfulConnections": 16,
+    "connectionFailures": 0,
+    "disconnects": 0,
+    "disconnectReasons": {},
+    "peakConnectedSockets": 16,
+    "tablesCreated": 4,
+    "childProcesses": [
+      {
+        "pid": 21432,
+        "role": "api",
+        "peakRssIncludingStartup": 260743168,
+        "latestSample": {
+          "rss": 134627328,
+          "cpuCores": 0.02100417899145205,
+          "sockets": 8,
+          "waiting": 0
+        },
+        "exitCode": 0,
+        "signalCode": null
+      },
+      {
+        "pid": 24088,
+        "role": "api",
+        "peakRssIncludingStartup": 259244032,
+        "latestSample": {
+          "rss": 133836800,
+          "cpuCores": 0.034585132922380184,
+          "sockets": 8,
+          "waiting": 0
+        },
+        "exitCode": 0,
+        "signalCode": null
+      },
+      {
+        "pid": 22856,
+        "role": "worker",
+        "peakRssIncludingStartup": 234127360,
+        "latestSample": {
+          "rss": 100683776,
+          "cpuCores": 0,
+          "sockets": null,
+          "waiting": null
+        },
+        "exitCode": 0,
+        "signalCode": null
+      }
+    ]
+  },
+  "workload": {
+    "initialReadySockets": 16,
+    "targetSockets": 16,
+    "connectedAtMeasurementEnd": 16,
+    "minConnectedSockets": 16,
+    "minSampledSockets": 16,
+    "currentConnectedSockets": 0,
+    "attempted": 80,
+    "accepted": 80,
+    "duplicates": 0,
+    "retries": 0,
+    "completedGameCycles": 0,
+    "skippedBusy": 0,
+    "traffic": {
+      "baseline": {
+        "scheduled": 80,
+        "offered": 80,
+        "attempted": 80,
+        "accepted": 80,
+        "failed": 0,
+        "skipped": 0
+      },
+      "burst": {
+        "scheduled": 0,
+        "offered": 0,
+        "attempted": 0,
+        "accepted": 0,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    "bursts": [],
+    "requiredBursts": 0,
+    "acceptedPerSecond": 4,
+    "baselineAcceptedPerSecond": 4,
+    "actionMix": {
+      "NO_WORDS": 17,
+      "PLACE_WORD": 63
+    },
+    "gameUpdates": 320,
+    "revisionSync": {
+      "intervalSeconds": 8,
+      "sent": 48,
+      "unchanged": 47,
+      "changed": 1
+    },
+    "engineIoIncomingBytes": 2374653,
+    "engineIoIncomingAverageBytesPerSecond": 118732.65,
+    "disconnects": 0,
+    "privacyFailures": 0
+  },
+  "latencyMs": {
+    "endToEndAcknowledgement": {
+      "count": 80,
+      "p50": 8.65520000000106,
+      "p95": 15.284100000000763,
+      "p99": 22.446200000000317,
+      "max": 22.446200000000317
+    },
+    "serviceCommandIncludingCommitAndPublish": {
+      "count": 80,
+      "p50": 7.17529999999897,
+      "p95": 12.848400000002584,
+      "p99": 18.886099999999715,
+      "max": 18.886099999999715
+    },
+    "revisionSync": {
+      "count": 48,
+      "p50": 2.061100000000806,
+      "p95": 5.309999999997672,
+      "p99": 5.555299999999988,
+      "max": 5.555299999999988
+    },
+    "gameUpdateFromAcceptedMove": {
+      "count": 320,
+      "p50": 6,
+      "p95": 11,
+      "p99": 14,
+      "max": 14,
+      "resolutionMs": 1,
+      "overflowThresholdMs": 10000
+    },
+    "loadSchedulerLag": {
+      "count": 80,
+      "p50": 4.688100000003033,
+      "p95": 13.902299999999741,
+      "p99": 15.652000000001863,
+      "max": 15.652000000001863
+    },
+    "loadClientEventLoopP99": 35.028991
+  },
+  "resources": {
+    "children": [
+      {
+        "pid": 24088,
+        "peakRss": 259244032,
+        "cpuCoreSeconds": 0.7500000000000002,
+        "samples": 21,
+        "role": "api",
+        "maxWaiting": 0,
+        "averageCpuCores": 0.03750000000000001
+      },
+      {
+        "pid": 21432,
+        "peakRss": 260743168,
+        "cpuCoreSeconds": 0.43799999999999994,
+        "samples": 21,
+        "role": "api",
+        "maxWaiting": 0,
+        "averageCpuCores": 0.021899999999999996
+      },
+      {
+        "pid": 22856,
+        "peakRss": 234127360,
+        "cpuCoreSeconds": 0.219,
+        "samples": 21,
+        "role": "worker",
+        "maxWaiting": 0,
+        "averageCpuCores": 0.01095
+      }
+    ],
+    "driver": {
+      "rss": 122187776,
+      "heapTotal": 40124416,
+      "heapUsed": 36432048,
+      "external": 16220048,
+      "arrayBuffers": 12131781
+    }
+  },
+  "errors": {},
+  "details": [],
+  "durableVerification": {
+    "passed": true,
+    "acknowledgedReceiptsChecked": 80,
+    "successfulReceipts": 80,
+    "snapshotMoves": 80,
+    "gameInvariantsChecked": 4
+  },
+  "viewerFreshness": {
+    "passed": true,
+    "timeoutMs": 10000,
+    "expectedViewers": 16,
+    "confirmedViewers": 16,
+    "broadcastViewers": 16,
+    "initializationOnlyViewers": 0,
+    "staleExamples": [],
+    "acknowledgementsCountAsBroadcast": false
+  },
+  "retiredViewerFreshness": {
+    "gamesChecked": 0,
+    "viewerChecks": 0,
+    "failures": 0,
+    "maxDrainMs": 0
+  },
+  "samples": [
+    {
+      "at": 1789828787750,
+      "elapsedSeconds": 15.022,
+      "accepted": 61,
+      "attempted": 61,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 4
+        }
+      ],
+      "outbox": {
+        "count": 1,
+        "oldest_ms": "6"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 3721214,
+        "used_memory_rss": 3705073,
+        "used_memory_peak": 8859279,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 5815586816,
+      "connected": 16,
+      "driverRss": 121016320,
+      "children": [
+        {
+          "pid": 21432,
+          "role": "api",
+          "rss": 131776512,
+          "cpuCores": 0.01596625691264085,
+          "sockets": 8,
+          "waiting": 0
+        },
+        {
+          "pid": 24088,
+          "role": "api",
+          "rss": 129671168,
+          "cpuCores": 0.06185681384730625,
+          "sockets": 8,
+          "waiting": 0
+        },
+        {
+          "pid": 22856,
+          "role": "worker",
+          "rss": 99696640,
+          "cpuCores": 0.014898058544602702,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    },
+    {
+      "at": 1789828793840,
+      "elapsedSeconds": 21.112,
+      "accepted": 80,
+      "attempted": 80,
+      "statuses": [
+        {
+          "status": "active",
+          "count": 4
+        }
+      ],
+      "outbox": {
+        "count": 0,
+        "oldest_ms": "0"
+      },
+      "deadlines": {
+        "checks_due": 0,
+        "oldest_check_lag_ms": 0,
+        "deadlines_due": 0,
+        "oldest_deadline_lag_ms": 0
+      },
+      "redisMemory": {
+        "used_memory": 3715617,
+        "used_memory_rss": 3714337,
+        "used_memory_peak": 8859279,
+        "maxmemory": 134217728
+      },
+      "hostFreeMemoryBytes": 5813714944,
+      "connected": 16,
+      "driverRss": 121933824,
+      "children": [
+        {
+          "pid": 21432,
+          "role": "api",
+          "rss": 134627328,
+          "cpuCores": 0.09371647953446462,
+          "sockets": 8,
+          "waiting": 0
+        },
+        {
+          "pid": 24088,
+          "role": "api",
+          "rss": 133992448,
+          "cpuCores": 0.0938324527723298,
+          "sockets": 8,
+          "waiting": 0
+        },
+        {
+          "pid": 22856,
+          "role": "worker",
+          "rss": 100683776,
+          "cpuCores": 0,
+          "sockets": null,
+          "waiting": null
+        }
+      ]
+    }
+  ],
+  "gate": {
+    "fullPreset": false,
+    "throughputTolerancePercent": 5,
+    "durationMet": true,
+    "socketTargetMet": true,
+    "baseRateMet": true,
+    "burstTargetMet": true,
+    "processingP95Met": true,
+    "processingP99Met": true,
+    "noDisconnects": true,
+    "noPrivacyFailure": true,
+    "noApplicationErrors": true,
+    "viewerFreshness": true,
+    "durable": true
+  },
+  "limitations": [
+    "This is local hardware evidence, not Render capacity or a promise that US$100 supports the workload.",
+    "Accounts, sessions and deterministic starting fixtures are seeded directly; signup, login, lobby/admission and the initial countdown are excluded.",
+    "Full legal action sequences are precomputed using the engine and lexicon. Completed games are replaced by fresh active fixtures; replacement subscription/DB work remains inside measurement.",
+    "Service timing wraps Games.command through commit and publication. Authentication and transport add to the separately measured end-to-end acknowledgement.",
+    "The driver and local PostgreSQL/Redis share hardware with the child servers; CPU, network and storage contention affect results.",
+    "Engine.IO incoming byte counts are an application-level approximation, not a billable egress measurement.",
+    "A one-hour configured preset is not evidence of an executed one-hour run."
+  ],
+  "stopReason": null,
+  "error": null,
+  "cleanupError": null
+}

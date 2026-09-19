@@ -86,7 +86,7 @@ test('opening and player tiles retain colors for both players, spectator, reload
     for(const [label,width,height] of [['desktop',1280,800],['portrait',390,844],['small-phone',320,568],['landscape',568,320]] as const){await watch.setViewportSize({width,height});await expectUniformGrid(watch);await watch.screenshot({path:testInfo.outputPath(`board-${label}-125percent.png`)});}
     const playing=await read(),first=playing.you!.seat===playing.game.activeSeat?alice:bob,second=first===alice?bob:alice;
     for(const player of [first,second]){await expect(player.page.getByRole('heading',{name:'Your move',exact:true})).toBeVisible();await player.page.getByRole('button',{name:'Pass forever',exact:true}).click();await player.page.getByRole('dialog').getByRole('button',{name:'Pass forever',exact:true}).click();}
-    await expect(watch.getByRole('button',{name:'Explore the replay',exact:true})).toBeVisible();await watch.getByRole('button',{name:'Explore the replay',exact:true}).click();const final=(await read()).game;await expectOrigins(watch,final,0);
+    await expect(watch.getByRole('link',{name:'Sign in to replay',exact:true})).toBeVisible();await spectator.addCookies(await alice.context.cookies());await watch.reload();await watch.getByRole('button',{name:'Explore the replay',exact:true}).click();const final=(await read()).game;await expectOrigins(watch,final,0);
     await watch.getByRole('button',{name:'Next move',exact:true}).click();await expectOrigins(watch,final,1);
     await watch.getByRole('button',{name:'Next move',exact:true}).click();await expectOrigins(watch,final,2);
     await watch.getByRole('button',{name:'Previous move',exact:true}).click();await expectOrigins(watch,final,1);

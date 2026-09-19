@@ -122,6 +122,9 @@ test('real scores count up for players and spectators, with immediate reduced-mo
     }
     await expect.poll(async () => (await read()).game.status).toBe('finished');
     await expect(watch.locator('.result-card')).toBeVisible();
+    await expect(watch.getByRole('link', { name: 'Sign in to replay', exact: true })).toBeVisible();
+    await spectator.addCookies(await alice.context.cookies());
+    await watch.reload();
     await watch.getByRole('button', { name: 'Explore the replay', exact: true }).click();
     const slider = watch.getByRole('slider', { name: 'Replay move' });
     await expect(slider).toHaveValue('0');

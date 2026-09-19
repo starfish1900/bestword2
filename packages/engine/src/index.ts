@@ -2,7 +2,7 @@ import {
   BOARD_SIZE, DISCONNECT_GRACE_MS, INCREMENT_MS, LETTERS, OUTAGE_RECOVERY_MS,
   RULES_VERSION, VOWELS, actionSchema, boardIndex, formatNotation, isVowel,
   type Board, type GameAction, type GamePause, type GameResult, type GameView,
-  type Letter, type LetterCounts, type PlaceWordAction, type PlacedTile,
+  type Letter, type LetterCounts, type PlaceWordAction, type PlacedTile, type AiOpponent, type TileOrigin,
   type PublicMove, type ScoredWord, type Seat, type TimeControl, type User, type Vowel,
 } from '@bestword/contracts';
 
@@ -21,6 +21,7 @@ export const LETTER_VALUES: Readonly<LetterCounts> = Object.freeze({
   O:1,P:8,Q:11,R:3,S:2,T:4,U:2,V:9,W:7,X:10,Y:2,Z:10,
 });
 export interface EnginePlayer extends User { score: number; rack: Letter[]; passed: boolean; connected: boolean }
+export interface AiConfiguration extends AiOpponent { vocabularyHash: string; policyVersion: string }
 export interface PauseMetadata {
   previousStatus: 'waiting' | 'active';
   waitingRemainingMs: number | null;
@@ -28,6 +29,7 @@ export interface PauseMetadata {
 }
 /** Private persistence snapshot. Never send this object directly over the wire. */
 export interface EngineState {
+  ai?: AiConfiguration;
   id: string; revision: number; rulesVersion: string; lexiconVersion: string;
   createdAt: number; lastTransitionAt: number;
   status: 'waiting' | 'active' | 'paused' | 'finished';
@@ -197,6 +199,9 @@ export function createGame(options: CreateGameOptions, lexicon: Lexicon): Engine
   };
 }
 
+export function calculateWordScore(letterSum:number,consonants:number,spans:number,isPrincipal:boolean):number {
+  return letterSum * (isPrincipal ? consonants + spans : spans > 0 ? 2 : 1);
+}
 function scoreWord(before: Board, after: Board, row: number, column: number, direction: 'H' | 'V', isPrincipal: boolean): ScoredWord {
   const dr = direction === 'V' ? 1 : 0; const dc = direction === 'H' ? 1 : 0;
   let word=''; const occupied: boolean[]=[];
@@ -207,7 +212,7 @@ function scoreWord(before: Board, after: Board, row: number, column: number, dir
   let spans=0; if (first>=0 && last>first) for(let i=first+1;i<last;i++) if(!occupied[i]) spans++;
   let letterSum=0,consonants=0;
   for(const value of word) { const letter=value as Letter; letterSum+=LETTER_VALUES[letter]; if(!isVowel(letter)) consonants++; }
-  return {word,row,column,direction,letterSum,consonants,spans,isPrincipal,score:letterSum*(isPrincipal?consonants+spans:spans>0?2:1)};
+  return {word,row,column,direction,letterSum,consonants,spans,isPrincipal,score:calculateWordScore(letterSum,consonants,spans,isPrincipal)};
 }
 /** Validate and score without changing clocks, drawing tiles, or mutating the input. */
 export function evaluatePlacement(state: EngineState, seat: Seat, action: PlaceWordAction, lexicon: Lexicon): PlacementEvaluation {
@@ -383,19 +388,25 @@ export function nextDeadline(state: EngineState): number | null {
   return deadlines.length?Math.min(...deadlines):null;
 }
 
-export function projectGame(state: EngineState, viewerSeat: Seat|null, now: number, spectatorCount=0): GameView {
+export function projectGame(state: EngineState, viewerSeat: Seat|null, now: number, spectatorCount=0, historyAccess:'full'|'recent'='full'): GameView {
   if(viewerSeat!==null)checkSeat(viewerSeat);
   checkTime(now);
   const vowelsRemaining=Object.fromEntries(VOWELS.map(letter=>[letter,state.bag[letter]])) as Record<Vowel,number>;
+  const tileOrigins:TileOrigin[]=state.board.map(letter=>letter?'opening':null);
+  for(const move of state.moves)for(const tile of move.tiles)tileOrigins[boardIndex(tile.row,tile.column)]=move.seat;
   return {
     game:{
+      ai:state.ai?{seat:state.ai.seat,difficulty:state.ai.difficulty}:null,
+      historyAccess,moveCount:state.moves.length,tileOrigins,
+      lastMoveTiles:state.moves.at(-1)?.tiles.map(tile=>({...tile}))??[],
+      recentMoves:state.moves.slice(-3).map(({revision,seat,action,at,score,word})=>({revision,seat,action,at,score,word})),
       id:state.id,revision:state.revision,rulesVersion:state.rulesVersion,lexiconVersion:state.lexiconVersion,
       status:state.status,board:[...state.board],
       players:state.players.map(({id,username,score,rack,passed,connected})=>({id,username,score,rackSize:rack.length,passed,connected})) as GameView['game']['players'],
       activeSeat:state.activeSeat,minutes:state.minutes,clocksMs:[clockAt(state,0,now),clockAt(state,1,now)],
       turnStartedAt:state.turnStartedAt,turnDeadlineAt:state.turnDeadlineAt,startsAt:state.startsAt,serverTime:now,
       vowelsRemaining,consonantsRemaining:LETTERS.reduce((sum,letter)=>sum+(isVowel(letter)?0:state.bag[letter]),0),
-      principalHistory:[...state.principalHistory],moves:state.moves.map(copyMove),
+      principalHistory:historyAccess==='full'?[...state.principalHistory]:state.principalHistory.slice(0,2),moves:historyAccess==='full'?state.moves.map(copyMove):[],
       disconnectDeadlines:[...state.disconnectDeadlines],pause:state.pause?{...state.pause}:null,result:state.result?{...state.result}:null,spectatorCount,
     },
     you:viewerSeat===null?null:{seat:viewerSeat,rack:[...state.players[viewerSeat].rack],drawnThisTurn:state.drawnThisTurn[viewerSeat],canNoWords:state.status==='active' && state.turnStartedAt!==null && state.activeSeat===viewerSeat && !state.players[viewerSeat].passed && state.drawnThisTurn[viewerSeat]>0 && !state.players[other(viewerSeat)].passed && dueOutcome(state,now)===null},

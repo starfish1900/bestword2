@@ -4,7 +4,7 @@ This repository contains deployment configuration for review. No Render resource
 
 ## Runtime and deployment shape
 
-The same Node 24 container runs two roles: the API serves the React application, HTTP endpoints and Socket.IO WebSockets; a continuous worker processes deadlines, presence and durable notification retries. PostgreSQL 18 owns accounts, sessions, game snapshots, events and accepted-command receipts. Render Key Value provides Valkey 8 transport/presence. Game notifications contain only a game ID, revision and finished flag; each gateway fetches the current database view and sends the appropriate local player/spectator projection. Full private game payloads are not retained in the notification stream. The compressed GADDAG is built offline and included in the image; startup verifies it once per process.
+The same Node 24 container runs three roles: the API serves the React application, HTTP endpoints and Socket.IO WebSockets; a continuous worker processes deadlines, presence and durable notification retries; a dedicated AI worker runs computer search threads. PostgreSQL 18 owns accounts, sessions, game snapshots, events and accepted-command receipts. Render Key Value provides Valkey 8 transport/presence. Game notifications contain only a game ID, revision and finished flag; each gateway fetches the current database view and sends the appropriate local player/spectator projection. Full private game payloads are not retained in the notification stream. The compressed GADDAG is built offline and included in the image; startup verifies it once per process.
 
 The image runs as the unprivileged `node` user. Its direct Node entry point receives termination signals. It needs no persistent application disk: PostgreSQL and Key Value own persistence. Keep all services in Virginia so internal connections use Render's private network. A new or reconnected WebSocket can reach any API instance; websocket-only transport and the shared Streams adapter avoid a sticky-session dependency. Deployments and maintenance still disconnect sockets. [Render regions](https://render.com/docs/regions), [WebSockets](https://render.com/docs/websocket), [Docker services](https://render.com/docs/docker).
 
@@ -18,13 +18,14 @@ Prices checked on 18 September 2026. Recheck the creation preview before provisi
 |---|---|---:|
 | API, 1 CPU / 2 GB | `1c-2g` | US$25 |
 | Worker, fractional CPU / 512 MB | `0.5c-512mb` | US$7 |
+| AI worker, 1 CPU / 2 GB | `1c-2g` | US$25 |
 | PostgreSQL, fractional CPU / 1 GB | `0.5c-1g` | US$19 |
 | PostgreSQL storage, 10 GB | $0.30/GB | US$3 |
 | Key Value, 256 MB | `256mb` | US$10 |
 | Hobby workspace | Hobby | US$0 |
-| **Total before usage and tax** | | **US$64** |
+| **Total before usage and tax** | | **US$89** |
 
-The Blueprint uses one API and one worker, manual deployment, no preview resources, and fixed database storage. A Pro workspace would add $25/month. The $100 target leaves $36 for usage and tax on Hobby; it is not a hard billing ceiling. [Render pricing](https://render.com/pricing), [current compute-plan identifiers](https://render.com/docs/compute-plans).
+The Blueprint uses one API, one clock worker and one AI worker, automatic deployment from the selected GitHub branch, no preview resources, and fixed database storage. A Pro workspace would add $25/month. The $100 target leaves $11 for usage and tax on Hobby; it is not a hard billing ceiling. [Render pricing](https://render.com/pricing), [current compute-plan identifiers](https://render.com/docs/compute-plans).
 
 Hobby currently includes 5 GB outbound bandwidth per month, then charges $0.15/GB. WebSocket messages and downloaded application assets count. A hypothetical 12,500 connected people receiving an average of just 100 bytes/second continuously for 30 days produces about 3.24 TB outbound and approximately $485 excess bandwidth alone, before protocol overhead. Short peaks and sustained concurrency have different costs. [Outbound bandwidth](https://render.com/docs/outbound-bandwidth).
 
@@ -34,13 +35,15 @@ Set the workspace's additional build-pipeline spending limit to zero if avoiding
 
 ## Local canonical environment
 
+The AI cap is `AI_MAX_GAMES=10`, inside the overall game cap. Keep `AI_WORKERS=1` on the initial one-CPU AI service. The configured 1,500 ms lookahead is optional; exact current-move search still obeys the game clock. Read [AI operation and evidence](AI.md) before raising these limits. New AI games are refused while no healthy compatible worker is available. Existing AI games pause and recover through infrastructure handling. The original 16.54 MB tutorial is bundled in the API image; repeated full downloads add about 16.54 GB per thousand uncached views, so include video traffic in bandwidth monitoring.
+
 With Docker and Compose already available:
 
 ```sh
 docker compose config --quiet
 docker compose up --build -d
 docker compose ps
-docker compose logs -f api worker
+docker compose logs -f api worker ai
 ```
 
 Open `http://localhost:3000`. Containers use their internal PostgreSQL and Valkey hostnames; host tooling can use `postgresql://bestword:bestword-local@127.0.0.1:54329/bestword` and `redis://127.0.0.1:6389`. These credentials are local fixtures. All published ports bind to loopback.
@@ -58,6 +61,17 @@ The Windows portable services use the same host ports. Stop application clients,
 
 ## Release procedure
 
+For a first Render installation, use these steps:
+
+1. Put this folder's contents at the root of your GitHub repository, including `render.yaml`, `Dockerfile`, all three vocabulary artifacts and `apps/web/public/tutorial`. Push the reviewed code to `main` (or your actual default branch).
+2. In Render, choose **New → Blueprint**, connect that repository, and select that branch. `main` is supported without renaming it. Keep the root directory at the repository root.
+3. Review the five resources: `bestword-api`, `bestword-worker`, `bestword-ai`, `bestword-db` and `bestword-keyvalue`. Confirm the private Virginia datastore connections, listed plans, one instance per application role, and the current price preview. Applying the Blueprint creates billable resources; this implementation has not applied it.
+4. After you choose to create the Blueprint, allow database creation, migrations and builds to finish. The API's `/health/ready` should be healthy. The AI worker logs should contain `AI worker ready` with all three vocabulary hashes.
+5. Open the API's Render HTTPS URL. Register, choose Computer and Easy, and verify the countdown, a computer move, and the normal clock. Finish a game and open it from Recent games while signed in. Open help and play the video. Repeat a human game using two browser profiles.
+6. Keep all three application services on the same reviewed Git revision. Automatic deployments follow commits on the linked branch. For a custom domain, set the API's `APP_ORIGIN` to the exact HTTPS origin and use that address consistently.
+
+To scale later, first inspect API, AI worker, database and Key Value metrics separately. Change the service size or instance count for the measured bottleneck. Raise `AI_MAX_GAMES` on the API only after a sustained passing test, and keep the documented worker settings consistent. Additional AI instances claim durable jobs automatically; no rewrite or game assignment is required. Increasing search threads on a one-CPU instance is not a substitute for CPU capacity. Recheck total pool connections, monthly cost and video/WebSocket bandwidth before increasing resources.
+
 1. Run CI: strict type checking, production build, unit/property tests, real database integration tests, Chromium/Firefox/WebKit tests, lexicon reproduction, and complete container startup. Inspect failures and retained browser traces. A configured job is not evidence of a completed run.
 2. Check `data/lexicon-manifest.json` against the intended corpus. The original corpus SHA is `87222d75c77c52574868bf0cefd4faf5703d4df166336a4ec9a70cffe72100af`. Do not rebuild vocabulary during application startup or change it during active games.
 3. Install the validator's Python dependencies with `python -m pip install PyYAML==6.0.2 jsonschema==4.25.1`, then validate the Blueprint using `python deployment/validate.py`; Render's authenticated CLI validation may additionally check platform semantics. Inspect the reviewed Blueprint creation preview, region, account plan and prices. Ensure the repository root is this `bestword` directory, which contains `Dockerfile` and `render.yaml`.
@@ -65,9 +79,9 @@ The Windows portable services use the same host ports. Stop application clients,
 5. Confirm `/health/ready` reports HTTP 200 and the expected corpus SHA. Create two test accounts, join a game, make an accepted move, reconnect both clients, and verify history. Exercise a controlled API restart with a running game and validate pause/recovery before opening admission to real players.
 6. Record the Git revision, image/base versions, lexicon SHA, migration version, service sizes, validation results and release time. Keep the preceding working revision available for rollback.
 
-Manual deployment is the default (`autoDeployTrigger: off`). The API pre-deploy command runs `node apps/server/dist/migrate.js`; both roles also run idempotent migrations on startup under a PostgreSQL advisory transaction lock. New migrations must remain compatible with both old and new processes during overlap. Deploy additive changes first and remove obsolete columns only in a later release after all old processes stop. [Blueprint reference](https://render.com/docs/blueprint-spec).
+Automatic deployment from the linked branch is configured (`autoDeployTrigger: commit`); select `main` when creating the Blueprint if that is your repository branch. The API pre-deploy command runs `node apps/server/dist/migrate.js`; all three roles also run idempotent migrations on startup under a PostgreSQL advisory transaction lock. New migrations must remain compatible with both old and new processes during overlap. Deploy additive changes first and remove obsolete columns only in a later release after all old processes stop. [Blueprint reference](https://render.com/docs/blueprint-spec).
 
-Deploy the API and worker from the same reviewed revision. The API's readiness endpoint excludes instances that have lost dependency health. The 60-second termination allowance gives processes time to record a deployment incident and close connections; it cannot promise an uninterrupted WebSocket. Existing game recovery is the mechanism for that interruption. A rollback must be compatible with the current schema and saved game format; never automatically reverse a migration or discard accepted moves just to start old code.
+Deploy the API, clock worker and AI worker from the same reviewed revision. The API's readiness endpoint excludes instances that have lost dependency health. The 60-second termination allowance gives processes time to record a deployment incident and close connections; it cannot promise an uninterrupted WebSocket. Existing game recovery is the mechanism for that interruption. A rollback must be compatible with the current schema and saved game format; never automatically reverse a migration or discard accepted moves just to start old code.
 
 ## Monitoring and incident response
 
@@ -127,6 +141,6 @@ The initial acceptance target is 100 games, up to 1,000 spectators, 1,200 socket
 
 The larger scenario is 5,000 simultaneous games and 2,500 spectators. Progress in measured steps and cap admission at the last passing level. Measure database transaction/JSON write cost and worker deadline lag before adding API instances. Redis/Valkey connections are per server/adapter rather than one per browser; still monitor its actual limits and stream memory.
 
-Raise API/worker memory or CPU when measurements identify that bottleneck. Raise database resources when transaction latency, CPU, I/O or connection headroom identifies it. With a 100-connection database, account for every API's configured pool, workers, deployment overlap and operator connections before adding instances; the initial pools are 10 and 5. Manual horizontal scaling is available on Render; automatic horizontal scaling requires an eligible workspace plan. New sockets distribute across instances and reconnect may change the selected instance. [Scaling](https://render.com/docs/scaling), [PostgreSQL connection pooling](https://render.com/docs/postgresql-connection-pooling).
+Raise API/worker memory or CPU when measurements identify that bottleneck. Raise database resources when transaction latency, CPU, I/O or connection headroom identifies it. With a 100-connection database, account for every API's configured pool, workers, deployment overlap and operator connections before adding instances; the initial pools are 10 for the API and 5 for each worker. Manual horizontal scaling is available on Render; automatic horizontal scaling requires an eligible workspace plan. New sockets distribute across instances and reconnect may change the selected instance. [Scaling](https://render.com/docs/scaling), [PostgreSQL connection pooling](https://render.com/docs/postgresql-connection-pooling).
 
 Keep autoscaling disabled while operating under the initial budget target. Raising admission or instance counts is a reviewed configuration change with a revised cost estimate and a new capacity report. Hosting 5,000 games remains a scale target until tests demonstrate it on the specific paid infrastructure.

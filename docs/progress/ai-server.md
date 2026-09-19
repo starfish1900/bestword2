@@ -1,0 +1,18 @@
+# Server AI integration
+
+## Implemented
+
+- Signed-in challenge creation uses the existing admission transaction and one-human-playing-slot constraint. Shared, non-login AI identities occupy no playing slots. Difficulty and vocabulary/policy identity are saved with the game; public projection contains only difficulty and seat.
+- PostgreSQL AI jobs are created atomically with turn transitions and repaired by the existing scheduler. A stable turn number and position fingerprint tolerate unrelated presence revisions. Claims have ten-second leases renewed every two seconds and unique fencing tokens. Search occurs outside game transactions; submission rechecks deadlines, health, ownership, position and vocabulary, then commits the move, receipt, event, next job and outbox together.
+- Search threads receive the board, their own consonants, public vowel quantities, public rack/bag sizes, principal history and turn identity. They never receive the human rack, private consonant inventory or saved draw order. Completed decisions and diagnostic statistics are stored in the job result.
+- A separate AI coordinator loads all three dictionaries and marks itself ready only after its bounded search threads confirm the same versions. Default concurrency is one; the separately configurable AI game admission cap starts at ten pending capacity measurements. API and deadline work remain outside search threads. Each search thread has a 128 MiB old-generation heap, 32 MiB young-generation heap and 4 MiB stack limit; dictionary buffers are additional fixed external memory. An unexpected thread exit, search exception or invalid generated action withdraws readiness and stops the pool. A watchdog detects a search that fails to acknowledge its clock deadline.
+- AI presence comes from compatible healthy AI service epochs, not a browser socket. AI outage/deployment participates in durable infrastructure pauses. Recovery is scoped by service kind; a healthy API alone cannot recover a failed AI service. Another compatible live AI replica prevents unnecessary pauses. Normal human disconnect and both-player clocks remain enforced.
+- API creation rejects unavailable AI service, independent AI capacity exhaustion, stale full-dictionary workers, non-human callers and an already-playing human. Human-vs-human creation remains independent of AI availability.
+
+## Verification checkpoint
+
+On 19 September 2026, the isolated real PostgreSQL/Redis AI suite and existing health suite passed **27/27 tests** (15 new AI checks, 12 health regression checks), with no failures or skips. Evidence: `docs/evidence/ai-server-integration.json`. The AI suite covers admission, atomic seek removal, virtual readiness, human disconnect, competing claims, expired-owner fencing, duplicate durable receipts, presence changes during search, private-data projection, incomplete search, dictionary mismatch, ordinary AI clock loss, crash/deployment pause and replacement recovery, healthy replicas, permanent PASS/consecutive AI turns, a real worker-thread search committed through the production engine, actual thread termination and a concurrent shutdown/claim race. Easy and Medium games also pin the full dictionary version: a replacement worker with unchanged restricted vocabulary but a different full dictionary cannot claim work or resume those saved games.
+
+`npx tsc -b apps/server --pretty false` passed after these checks. The final repository-wide checks and capacity/soak results are recorded separately by the root task; this note does not claim Render capacity or completion of those checks.
+
+No public deployment, paid service or credential modification was performed.

@@ -9,6 +9,7 @@
     "dev": "cd ../.. && tsx watch apps/server/src/index.ts"
   },
   "dependencies": {
+    "@bestword/ai": "0.1.0",
     "@bestword/contracts": "0.1.0",
     "@bestword/engine": "0.1.0",
     "@bestword/lexicon": "0.1.0",

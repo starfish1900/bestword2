@@ -46,6 +46,7 @@ jobs:
       LEXICON_PATH: data/lexicon.bin.gz
       BESTWORD_INTEGRATION: "1"
       BESTWORD_CROSS_BROWSER: "1"
+      BESTWORD_AI_E2E: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -60,6 +61,8 @@ jobs:
       - run: npm audit --audit-level=high
       - run: npm test
       - run: npx playwright install --with-deps chromium firefox webkit
+      - name: Start the computer opponent for real browser games
+        run: npm run worker:ai > /tmp/bestword-ai.log 2>&1 &
       - run: npm run test:e2e
       - run: npm run test:load -- --scenario smoke
       - uses: actions/upload-artifact@v4
@@ -94,6 +97,10 @@ jobs:
           cargo +1.98.1 run --release --manifest-path tools/lexicon-builder/Cargo.toml -- data/dictionary.txt tools/lexicon-builder/target/repro.bin tools/lexicon-builder/target/repro-report.json
           cmp data/lexicon.bin tools/lexicon-builder/target/repro.bin
           node tools/lexicon-builder/finalize.mjs tools/lexicon-builder/target/repro.bin
+      - name: Reproduce the AI dictionary intersections and graphs
+        run: |
+          LEXICON_BUILDER="$PWD/tools/lexicon-builder/target/release/bestword-lexicon-builder" node tools/lexicon-builder/prepare-ai.mjs
+          git diff --exit-code -- data/easy.gaddag data/medium.gaddag data/ai/easy.txt data/ai/medium.txt
       - uses: actions/upload-artifact@v4
         with:
           name: lexicon-audit-and-benchmark

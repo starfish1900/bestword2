@@ -94,6 +94,19 @@ describe('prebuilt minimized GADDAG', () => {
     expect(copy.seedWords).toHaveLength(130_220);
   });
 
+  it('loads for search without retaining seeds while preserving graph validation and traversal', () => {
+    const search = Gaddag.load(bytes, { decodeSeeds: false });
+    expect(search.seedWords).toEqual([]);
+    expect(search.binarySha256).toBe(lexicon.binarySha256);
+    expect(search.has('ROOMMATE')).toBe(true);
+    for (let state = 0; state < 1000; state++) {
+      const mask = lexicon.edges(state).reduce((value, edge) => value | (1 << (edge.label === '+' ? 0 : edge.label.charCodeAt(0) - 64)), 0);
+      expect(search.transitionMask(state)).toBe(mask);
+    }
+    expect(() => Gaddag.load(mutate(b => { b[b.readUInt32LE(48)] = 0xff; }), { decodeSeeds: false })).toThrow();
+    expect(() => search.transitionMask(-1)).toThrow(RangeError);
+  });
+
   it('rejects truncation, extra bytes, wrong magic, and unsupported versions', () => {
     expect(() => Gaddag.load(bytes.subarray(0, 100))).toThrow(LexiconFormatError);
     expect(() => Gaddag.load(bytes.subarray(0, -1))).toThrow(LexiconFormatError);

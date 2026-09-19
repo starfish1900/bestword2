@@ -14,11 +14,27 @@ const repeated=new Histogram();for(let index=0;index<200000;index++)repeated.add
 const words=['CROSSWORD','WORDGAMES'],lexicon={has:(word:string)=>words.includes(word)};
 let state=createGame({id:'fixture-game',players:[{id:'player-a',username:'First'},{id:'player-b',username:'Second'}],minutes:5,lexiconVersion:'fixture',seedWords:words,now:1000,randomInt:()=>0,firstSeat:0},lexicon);
 state=setConnected(state,0,true,1000);state=setConnected(state,1,true,1000);state=startIfReady(state,4000);state=applyAction(state,0,{type:'NO_WORDS'},4100,lexicon);
-const expected:ExpectedWireView={seat:0,playerIds:['player-a','player-b'],knownGame:true,racks:[state.players[0].rack,state.players[1].rack],drawn:state.drawnThisTurn};
-const view=projectGame(state,0,4100);
+for(let turn=0;turn<3;turn++)state=applyAction(state,state.activeSeat,{type:'NO_WORDS'},4200+turn*100,lexicon);
+const view=projectGame(state,0,4500);
+const expected:ExpectedWireView={seat:0,historyAccess:'full',playerIds:['player-a','player-b'],knownGame:true,racks:[state.players[0].rack,state.players[1].rack],drawn:state.drawnThisTurn,moveCount:state.moves.length,tileOrigins:view.game.tileOrigins!,lastMoveTiles:view.game.lastMoveTiles!,recentMoves:view.game.recentMoves!,principalHistory:state.principalHistory};
 assert.deepEqual(validateWireView(view,expected),[]);
-assert.deepEqual(validateWireView(projectGame(state,1,4100),{...expected,seat:1}),[]);
-assert.deepEqual(validateWireView(projectGame(state,null,4100),{...expected,seat:null}),[]);
+assert.deepEqual(validateWireView(projectGame(state,1,4500),{...expected,seat:1}),[]);
+assert.deepEqual(validateWireView(projectGame(state,null,4500),{...expected,seat:null}),[]);
+const guest=projectGame(state,null,4500,0,'recent'),guestExpected:ExpectedWireView={...expected,seat:null,historyAccess:'recent'};
+assert.deepEqual(validateWireView(guest,guestExpected),[]);
+assert.equal(guest.game.moves.length,0);assert.equal(guest.game.moveCount,4);assert.equal(guest.game.recentMoves!.length,3);
+function invalidGuest(edit:(value:any)=>void,pattern:RegExp){const altered=structuredClone(guest);edit(altered);assert(validateWireView(altered,guestExpected).some(error=>pattern.test(error)),`Expected guest error ${pattern}`);}
+invalidGuest(value=>{value.game.moves=[structuredClone(state.moves[0])];},/forbidden history/);
+invalidGuest(value=>{value.game.principalHistory.push('PRIVATEHISTORY');},/allowed history/);
+invalidGuest(value=>{value.game.recentMoves.push({...value.game.recentMoves[0]});},/latest three/);
+invalidGuest(value=>{value.game.recentMoves[0].rack=['Z'];},/forbidden private field/);
+invalidGuest(value=>{value.game.recentMoves[0].words=[];},/allowed wire field/);
+invalidGuest(value=>{delete value.game.recentMoves[0].at;},/at is missing/);
+invalidGuest(value=>{value.game.recentMoves[0].score+=1;},/accepted turn/);
+invalidGuest(value=>{value.game.tileOrigins[state.board.findIndex(Boolean)]=0;},/contributors/);
+invalidGuest(value=>{value.game.lastMoveTiles=[{row:0,column:0,letter:'A'}];},/last accepted move/);
+invalidGuest(value=>{value.game.historyAccess='full';},/authenticated access/);
+invalidGuest(value=>{value.game.moveCount=0;},/expected sequence/);
 function invalid(edit:(value:any)=>void,pattern:RegExp){const altered=structuredClone(view);edit(altered);assert(validateWireView(altered,expected).some(error=>pattern.test(error)),`Expected validation error ${pattern}`);}
 invalid(value=>{value.extraPrivateRack=['Z'];},/allowed wire field/);
 invalid(value=>{value.game.players[0].rack=['Z'];},/forbidden private field/);
@@ -32,7 +48,7 @@ invalid(value=>{value.you.opponentRack=['Z'];},/allowed wire field/);
 invalid(value=>{delete value.game.board;},/board is missing/);
 assert(validateWireView(view,{...expected,knownGame:false}).some(error=>/unknown game/.test(error)));
 assert(validateWireView(view,{...expected,seat:null}).some(error=>/Spectator received/.test(error)));
-assert(validateWireView(projectGame(state,null,4100),expected).some(error=>/private view is missing/.test(error)));
+assert(validateWireView(projectGame(state,null,4500),expected).some(error=>/private view is missing/.test(error)));
 for(const malformed of [null,undefined,42,[],{}, {game:null,you:0},{game:{},you:[]},new Proxy({},{ownKeys(){throw new Error('Unreadable object');}})]){
   assert.doesNotThrow(()=>validateWireView(malformed as GameView,expected));assert(validateWireView(malformed as GameView,expected).length>0);
 }

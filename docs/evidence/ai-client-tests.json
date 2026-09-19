@@ -1,0 +1,236 @@
+{
+  "checkedOn": "2026-09-19",
+  "environment": "Local Windows production build, isolated real PostgreSQL schema and reserved Redis database on http://127.0.0.1:3015. Not a public deployment or capacity measurement.",
+  "clientUnit": {
+    "files": 6,
+    "passed": 28,
+    "typecheck": "passed"
+  },
+  "realAiBrowser": {
+    "gameId": "98aac434-56ab-482f-969b-c17ca462bf34",
+    "difficulty": "easy",
+    "firstAiWord": "VACUUM",
+    "score": 75,
+    "position": 2,
+    "revision": 4
+  },
+  "tutorial": {
+    "path": "apps/web/public/tutorial/bestword-9fbe34a89b81/BestWord-Tutorial.mp4",
+    "bytes": 16544578,
+    "sha256": "9fbe34a89b81a63adf2653614849032775ee1c19a90a555736e5c9af326b78be",
+    "http": [
+      "anonymous HEAD200 and video/mp4",
+      "Range0-1023 returns206 exact content range and1024bytes",
+      "immutable31536000sec cache",
+      "missingMP4 returns404 without HTML fallback or immutable cache"
+    ],
+    "nativePlayback": "Chromium actual H.264 playback, chapter seek, cleanup on switch and close; no media source/download before explicit Play. WebKit native H.264 playback not asserted."
+  },
+  "visualReview": [
+    "1280x800 desktop: computer options and tutorial",
+    "390x844 portrait: computer options and tutorial",
+    "320x568 small phone: computer options and tutorial",
+    "Actual AI committed VACUUM75-point replay at move2; earlier sample HOMAGE60"
+  ],
+  "runs": [
+    {
+      "label": "consolidated-chromium",
+      "stats": {
+        "startTime": "2026-09-19T14:42:30.312Z",
+        "duration": 69861.076,
+        "expected": 14,
+        "skipped": 0,
+        "unexpected": 1,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "file": "ack-recovery.spec.ts",
+          "test": "ack fixture preserves a committed command through SERVICE_RECOVERING and retry",
+          "browser": "chromium",
+          "status": "expected",
+          "durationMs": 6144
+        },
+        {
+          "file": "ai-game.spec.ts",
+          "test": "a real computer game starts, commits an AI word and remains replayable",
+          "browser": "chromium",
+          "status": "expected",
+          "durationMs": 5300
+        },
+        {
+          "file": "board.spec.ts",
+          "test": "opening and player tiles retain colors for both players, spectator, reload and replay; all grid boundaries remain visible",
+          "browser": "chromium",
+          "status": "unexpected",
+          "durationMs": 825
+        },
+        {
+          "file": "client-features.spec.ts",
+          "test": "guest board remains public and sign-in restores the requested replay position",
+          "browser": "chromium",
+          "status": "expected",
+          "durationMs": 730
+        },
+        {
+          "file": "client-features.spec.ts",
+          "test": "each AI level posts the selected time and shows level and thinking state",
+          "browser": "chromium",
+          "status": "expected",
+          "durationMs": 901
+        },
+        {
+          "file": "client-features.spec.ts",
+          "test": "tutorial loads only on user request, chapter jumps work, and help preserves the live connection",
+          "browser": "chromium",
+          "status": "expected",
+          "durationMs": 993
+        },
+        {
+          "file": "client-features.spec.ts",
+          "test": "guest help and computer setup remain readable on desktop and small mobile screens",
+          "browser": "chromium",
+          "status": "expected",
+          "durationMs": 1337
+        },
+        {
+          "file": "client-features.spec.ts",
+          "test": "recent game refresh preserves expanded pages, scroll/focus and cursor during overlapping responses",
+          "browser": "chromium",
+          "status": "expected",
+          "durationMs": 619
+        },
+        {
+          "file": "client-features.spec.ts",
+          "test": "guest tutorial media supports native byte ranges and retains the original complete file",
+          "browser": "chromium",
+          "status": "expected",
+          "durationMs": 101
+        },
+        {
+          "file": "clock.spec.ts",
+          "test": "one-hour page wall-clock jump preserves the turn and draft through real periodic sync",
+          "browser": "chromium",
+          "status": "expected",
+          "durationMs": 9966
+        },
+        {
+          "file": "encoding.spec.ts",
+          "test": "production assets negotiate Brotli and gzip without changing content",
+          "browser": "chromium",
+          "status": "expected",
+          "durationMs": 37
+        },
+        {
+          "file": "game.spec.ts",
+          "test": "two real players match, place a word, skip, pass, spectate and replay",
+          "browser": "chromium",
+          "status": "expected",
+          "durationMs": 10820
+        },
+        {
+          "file": "lobby-recovery.spec.ts",
+          "test": "lobby refresh recovers a missed match notification from the session",
+          "browser": "chromium",
+          "status": "expected",
+          "durationMs": 15488
+        },
+        {
+          "file": "scores.spec.ts",
+          "test": "real scores count up for players and spectators, with immediate reduced-motion and replay scrubs",
+          "browser": "chromium",
+          "status": "expected",
+          "durationMs": 9324
+        },
+        {
+          "file": "touch.spec.ts",
+          "test": "real 320x568 touchscreen plays rack and vowel tiles, erases and passes",
+          "browser": "chromium",
+          "status": "expected",
+          "durationMs": 5650
+        }
+      ]
+    },
+    {
+      "label": "board-rerun-chromium",
+      "stats": {
+        "startTime": "2026-09-19T14:46:02.573Z",
+        "duration": 10209.284000000001,
+        "expected": 1,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "file": "board.spec.ts",
+          "test": "opening and player tiles retain colors for both players, spectator, reload and replay; all grid boundaries remain visible",
+          "browser": "chromium",
+          "status": "expected",
+          "durationMs": 9651
+        }
+      ]
+    },
+    {
+      "label": "client-webkit",
+      "stats": {
+        "startTime": "2026-09-19T14:45:24.872Z",
+        "duration": 12554.953,
+        "expected": 5,
+        "skipped": 1,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "cases": [
+        {
+          "file": "client-features.spec.ts",
+          "test": "guest board remains public and sign-in restores the requested replay position",
+          "browser": "webkit",
+          "status": "expected",
+          "durationMs": 2278
+        },
+        {
+          "file": "client-features.spec.ts",
+          "test": "each AI level posts the selected time and shows level and thinking state",
+          "browser": "webkit",
+          "status": "expected",
+          "durationMs": 2922
+        },
+        {
+          "file": "client-features.spec.ts",
+          "test": "tutorial loads only on user request, chapter jumps work, and help preserves the live connection",
+          "browser": "webkit",
+          "status": "skipped",
+          "durationMs": 173
+        },
+        {
+          "file": "client-features.spec.ts",
+          "test": "guest help and computer setup remain readable on desktop and small mobile screens",
+          "browser": "webkit",
+          "status": "expected",
+          "durationMs": 4211
+        },
+        {
+          "file": "client-features.spec.ts",
+          "test": "recent game refresh preserves expanded pages, scroll/focus and cursor during overlapping responses",
+          "browser": "webkit",
+          "status": "expected",
+          "durationMs": 1726
+        },
+        {
+          "file": "client-features.spec.ts",
+          "test": "guest tutorial media supports native byte ranges and retains the original complete file",
+          "browser": "webkit",
+          "status": "expected",
+          "durationMs": 88
+        }
+      ]
+    }
+  ],
+  "initialFailureResolution": "Consolidated board case failed at fixture Bob account registration HTTP429 after prior test runs consumed the local five/hour signup allowance. Root verified isolated Redis ownership and reset only test registration rate keys. The same board case and run ID passed on targeted rerun. Production rate limits unchanged.",
+  "limitations": [
+    "Mocked client presentation fixtures do not prove AI search, server privacy or persistence; server/integration suites cover these.",
+    "Firefox was not rerun for this client milestone; prior installed runtime could not launch.",
+    "Cross-browser CI is configured separately and has not been run on GitHub by this milestone."
+  ]
+}

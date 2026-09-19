@@ -9,6 +9,9 @@ export type Direction = 'H' | 'V';
 export type Board = (Letter | null)[];
 export type LetterCounts = Record<Letter, number>;
 export type TimeControl = 5 | 15 | 25;
+export type AiDifficulty = 'easy' | 'medium' | 'hard';
+export interface AiOpponent { seat: Seat; difficulty: AiDifficulty }
+export type TileOrigin = 'opening' | Seat | null;
 export const BOARD_SIZE = 15;
 export const INCREMENT_MS = 30_000;
 export const DISCONNECT_GRACE_MS = 25_000;
@@ -24,16 +27,22 @@ export type GameCommand = z.infer<typeof gameCommandSchema>;
 export const credentialsSchema = z.object({username:z.string().regex(/^[A-Za-z0-9]{3,15}$/),password:z.string().min(12).max(128)}).strict();
 export const loginSchema = z.object({username:z.string().min(1).max(15),password:z.string().min(1).max(128)}).strict();
 export const seekSchema = z.object({minutes:z.union([z.literal(5),z.literal(15),z.literal(25)])}).strict();
+export const aiGameSchema = seekSchema.extend({difficulty:z.enum(['easy','medium','hard'])}).strict();
 
 export interface User { id: string; username: string }
 export interface PlacedTile { row: number; column: number; letter: Letter }
 export interface ScoredWord { word: string; row: number; column: number; direction: Direction; letterSum: number; consonants: number; spans: number; isPrincipal: boolean; score: number }
 export interface PublicMove { revision: number; seat: Seat; action: GameAction['type']; at: number; score: number; words: ScoredWord[]; tiles: PlacedTile[]; notation: string | null; word: string | null }
+export type RecentMove = Pick<PublicMove,'revision'|'seat'|'action'|'at'|'score'|'word'>;
 export type ResultReason = 'both-passed' | 'clock' | 'disconnect' | 'simultaneous-abandonment' | 'infrastructure-aborted' | 'start-cancelled';
 export interface GameResult { winner: Seat | null; reason: ResultReason; at: number }
 export interface PublicPlayer extends User { score: number; rackSize: number; passed: boolean; connected: boolean }
 export interface GamePause { reason: 'deployment' | 'infrastructure'; since: number; recoveryDeadlineAt: number | null }
 export interface PublicGame {
+  ai?: AiOpponent | null;
+  /** Absent only in legacy client fixtures; production responses always specify access. */
+  historyAccess?: 'full' | 'recent';
+  moveCount?: number; tileOrigins?: TileOrigin[]; lastMoveTiles?: PlacedTile[]; recentMoves?: RecentMove[];
   id: string; revision: number; rulesVersion: string; lexiconVersion: string;
   status: 'waiting' | 'active' | 'paused' | 'finished'; board: Board;
   players: [PublicPlayer, PublicPlayer]; activeSeat: Seat; minutes: TimeControl;
@@ -51,7 +60,7 @@ export type CommandReply = {ok:true;view:GameView;acceptedRevision?:number} | {o
 export type SyncReply = CommandReply | {ok:true;unchanged:true;serverTime:number};
 export interface Seek { id:string;host:User;minutes:TimeControl;createdAt:number }
 export interface SeekPage {items:Seek[];nextCursor:string|null}
-export interface GameSummary {id:string;players:[User,User];scores:[number,number];minutes:TimeControl;status:PublicGame['status'];result:GameResult|null;createdAt:number;spectatorCount:number}
+export interface GameSummary {id:string;players:[User,User];scores:[number,number];minutes:TimeControl;status:PublicGame['status'];result:GameResult|null;createdAt:number;spectatorCount:number;ai?:AiOpponent|null}
 export interface GamePage {items:GameSummary[];nextCursor:string|null}
 
 export function isVowel(letter: Letter): letter is Vowel { return (VOWELS as readonly string[]).includes(letter); }

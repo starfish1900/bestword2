@@ -22,7 +22,7 @@ export class Auth {
   async lookup(token:string|undefined):Promise<Session|null>{
     if(!token||!/^[a-f0-9]{64}$/.test(token))return null;
     const tokenHash=digestToken(token);
-    const result=await this.db.pool.query<{id:string;username:string;expires_at:string}>(`SELECT u.id,u.username,s.expires_at FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=$1 AND s.expires_at>(extract(epoch from clock_timestamp())*1000)::bigint`,[tokenHash]);
+    const result=await this.db.pool.query<{id:string;username:string;expires_at:string}>(`SELECT u.id,u.username,s.expires_at FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=$1 AND u.kind='human' AND s.expires_at>(extract(epoch from clock_timestamp())*1000)::bigint`,[tokenHash]);
     const row=result.rows[0];return row?{user:{id:row.id,username:row.username},tokenHash,expiresAt:Number(row.expires_at)}:null;
   }
   async require(request:FastifyRequest):Promise<Session>{const session=await this.lookup(request.cookies[SESSION_COOKIE]);if(!session)throw new HttpError(401,'AUTH_REQUIRED','Please sign in to continue.');return session;}
@@ -51,7 +51,7 @@ export class Auth {
       const input=loginSchema.parse(request.body);
       await rateLimit(this.kv,`login-ip:${request.ip}`,30,60000);
       await rateLimit(this.kv,`login-name:${input.username.toLowerCase()}`,10,60000);
-      const result=await this.db.pool.query<{id:string;username:string;password_hash:string}>('SELECT id,username,password_hash FROM users WHERE username_key=$1',[input.username.toLowerCase()]);
+      const result=await this.db.pool.query<{id:string;username:string;password_hash:string}>("SELECT id,username,password_hash FROM users WHERE username_key=$1 AND kind='human'",[input.username.toLowerCase()]);
       const row=result.rows[0];const valid=await this.checkPassword(row?.password_hash??await this.dummyHash,input.password);
       if(!row||!valid)throw new HttpError(401,'INVALID_CREDENTIALS','The username or password is incorrect.');
       const user={id:row.id,username:row.username};

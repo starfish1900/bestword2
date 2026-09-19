@@ -1,5 +1,7 @@
-import { useEffect, useId, useRef, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { TutorialVideo } from './TutorialVideo';
+import { useApp } from './store';
 
 export function Icon({ name, size = 20 }: { name: 'arrow' | 'watch' | 'clock' | 'close' | 'backspace' | 'help' | 'check' | 'link' | 'refresh' | 'history' | 'chevron' | 'sound'; size?: number }) {
   const paths: Record<typeof name, ReactNode> = {
@@ -33,15 +35,20 @@ export function ErrorNotice({ message, onRetry }: { message: string; onRetry?: (
 }
 export function Spinner({ label = 'Loading…' }: { label?: string }) { return <div className="loading-state" role="status"><span className="spinner"/>{label}</div>; }
 export function Rules({ onClose }: { onClose: () => void }) {
-  return <Modal title="A good word. A better move." onClose={onClose} className="rules-modal"><div className="rules-content">
+  const [tab,setTab]=useState<'rules'|'video'>('rules');const id=useId();
+  const view=useApp(state=>state.view);const clocksRunning=!!view?.you&&view.game.status==='active'&&!view.game.players[view.you.seat].passed;
+  return <Modal title="A good word. A better move." onClose={onClose} className={`rules-modal ${tab==='video'?'video-modal':''}`}><div className="help-tabs" role="tablist" aria-label="Learn to play">{(['rules','video'] as const).map(item=><button key={item} id={`${id}-${item}-tab`} aria-controls={`${id}-${item}`} role="tab" aria-selected={tab===item} tabIndex={tab===item?0:-1} className={tab===item?'selected':''} onClick={()=>setTab(item)} onKeyDown={event=>{if(event.key==='ArrowLeft'||event.key==='ArrowRight'){event.preventDefault();const next=item==='rules'?'video':'rules';setTab(next);document.getElementById(`${id}-${next}-tab`)?.focus();}}}>{item==='rules'?'Rules':'Video'}</button>)}</div>{clocksRunning&&<p className="help-clock-notice" role="note">Game clocks keep running while help is open.</p>}{tab==='video'?<section role="tabpanel" id={`${id}-video`} aria-labelledby={`${id}-video-tab`}><TutorialVideo/></section>:<div className="rules-content" role="tabpanel" id={`${id}-rules`} aria-labelledby={`${id}-rules-tab`}>
+
     <p className="lead">Build a crossword together. Find the most valuable word for yourself.</p>
     <ol className="rule-steps"><li><strong>Draw automatically.</strong> Each turn, receive up to two consonants, with room for ten on your rack. Vowels come from the shared bag; Y is a vowel.</li><li><strong>Make a connected word.</strong> Place at least two new tiles in one line. Every principal and secondary word must be in the dictionary, have 3–15 letters, and contain at least one vowel and one consonant. Your principal word must be new to this game.</li><li><strong>Find a bridge.</strong> Empty squares between the first and last old tiles in a word are spans. Extensions outside those pillars do not add spans.</li></ol>
     <div className="formula-card"><span>PRINCIPAL WORD</span><strong>Letter total × (consonants + spans)</strong><span>SECONDARY WORDS</span><strong>Letter total × 2 if bridged; otherwise × 1</strong></div>
     <h3>Three ways to finish a turn</h3><p><strong>Play word</strong> places your tiles. <strong>No words</strong> skips just this turn, but is available only if you drew a consonant and your opponent has not passed. <strong>Pass forever</strong> ends all your future turns and fixes your score. Both passing ends the game.</p>
     <h3>Time matters</h3><p>Only your clock runs on your turn; every completed turn adds 30 seconds. Running out of time loses, regardless of score. After a detected disconnection you have 25 seconds to return; your active clock keeps running. A player who has passed may leave freely.</p>
+    <h3>Play the computer</h3><p>Choose Computer in the lobby, then Easy, Medium or Hard and your time control. The computer follows the same word, tile and clock rules. Its difficulty is shown beside its name.</p>
+    <h3>Watching and replay</h3><p>Anyone can watch the current board, scores, clocks and recent moves. Sign in to explore full move history and replay earlier positions. Private rack letters stay hidden from spectators.</p>
     <h3>Tile colors</h3><p>Light grey tiles belong to the two opening words. Each player contributes pale green or pale orange tiles, matching the colored square beside their name. These colors stay the same for both players and spectators. A letter keeps its original color when another word crosses or reuses it. Gold tiles are your draft; an outline marks the latest accepted tiles.</p>
     <h3>Entering a word</h3><p>Click an empty square to select the start. Each click alternates horizontal ⇨ and vertical ⇩ and clears your draft. Type letters or tap rack and vowel tiles. Existing tiles are skipped automatically. Backspace erases your last letter; Enter submits. Your word includes any contiguous existing prefix or suffix.</p>
     <h3>Letter values</h3><p className="values-list">A E I O · 1 &nbsp; U Y S · 2 &nbsp; N R · 3 &nbsp; T D · 4 &nbsp; M L · 5 &nbsp; C G H · 6 &nbsp; K W · 7 &nbsp; P B · 8 &nbsp; F V · 9 &nbsp; X Z · 10 &nbsp; J Q · 11</p>
     <button className="button primary full" onClick={onClose}>Back to BestWord <Icon name="arrow" /></button>
-  </div></Modal>;
+  </div>}</Modal>;
 }

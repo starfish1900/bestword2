@@ -1,0 +1,52 @@
+{
+  "formatVersion": 1,
+  "fullDictionarySha256": "87222d75c77c52574868bf0cefd4faf5703d4df166336a4ec9a70cffe72100af",
+  "fullWordCount": 279320,
+  "levels": {
+    "easy": {
+      "sourceFile": "data/ai/EnEasy.txt",
+      "sourceSha256": "a3379b708bd5b4a5d1a2bf233eff7d8ba3f42a867aa1a85d6dcdcefcf7fdc862",
+      "sourceEntries": 9870,
+      "uniqueSourceEntries": 9870,
+      "words": 9868,
+      "rejected": [
+        "YOU",
+        "EYE"
+      ],
+      "corpusSha256": "6d5653e0a228ba650dcacf3b448c916f34305a285c192e5cca18926e710df666",
+      "artifact": "data/easy.gaddag",
+      "artifactSha256": "097195fcedf8cb78440b3de24abc5ab3a8a958acabb262d84dce5c48749356fb",
+      "artifactBytes": 503403,
+      "exactLanguage": true,
+      "minimal": true,
+      "reproducible": true
+    },
+    "medium": {
+      "sourceFile": "data/ai/EnMedium.txt",
+      "sourceSha256": "aef7bacf38c3ab64c467c9086155f1ec6f2dbeab61f57dbb808e0db612291c1d",
+      "sourceEntries": 38369,
+      "uniqueSourceEntries": 38369,
+      "words": 38359,
+      "rejected": [
+        "YOU",
+        "EYE",
+        "EAU",
+        "AIA",
+        "PST",
+        "AYE",
+        "CWM",
+        "AUE",
+        "MMM",
+        "AYU"
+      ],
+      "corpusSha256": "d0b5987067e438ed63fdbf17f238561f6633791fdfd6f3c9fa98a9e3ea09e20f",
+      "artifact": "data/medium.gaddag",
+      "artifactSha256": "fa56791745f418c7dff8a9468f7c5e30928a6b1c83ff0d10dc2fb7fbe1bdde92",
+      "artifactBytes": 1726848,
+      "exactLanguage": true,
+      "minimal": true,
+      "reproducible": true
+    }
+  },
+  "easySubsetOfMedium": true
+}

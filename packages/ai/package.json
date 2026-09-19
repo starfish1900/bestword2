@@ -1,0 +1,11 @@
+{
+  "name": "@bestword/ai",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {".": {"types": "./dist/index.d.ts", "import": "./dist/index.js"}},
+  "scripts": {"build": "tsc -b", "test": "vitest run"},
+  "dependencies": {"@bestword/contracts": "0.1.0", "@bestword/engine": "0.1.0", "@bestword/lexicon": "0.1.0"}
+}

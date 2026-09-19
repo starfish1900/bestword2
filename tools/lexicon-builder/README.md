@@ -87,3 +87,38 @@ lexicon.edges(state);         // '+' then A..Z, immutable records
 Invalid state handles throw `RangeError`; absent or invalid edge labels return
 `null`. Invalid word strings return `false`. Corrupt artifacts throw
 `LexiconFormatError`. The runtime imports only Node built-ins.
+
+## AI vocabulary artifacts
+
+The user-supplied frequency lists are preserved verbatim as
+`data/ai/EnEasy.txt` and `data/ai/EnMedium.txt`. Their exact intersections with
+the unchanged full dictionary are the sorted `easy.txt` and `medium.txt` in
+that directory: **9,868** and **38,359** words. No words are added or stemmed.
+`manifest.json` records hashes, rejected entries, exact-language/minimality
+audits and deterministic rebuild checks. Easy is a subset of Medium.
+
+After building the existing Rust compiler, set `LEXICON_BUILDER` to its
+executable and run from the repository root:
+
+```sh
+LEXICON_BUILDER=tools/lexicon-builder/target/release/bestword-lexicon-builder node tools/lexicon-builder/prepare-ai.mjs
+```
+
+On Windows PowerShell:
+
+```powershell
+$env:LEXICON_BUILDER=(Resolve-Path tools/lexicon-builder/target/release/bestword-lexicon-builder.exe).Path
+node tools/lexicon-builder/prepare-ai.mjs
+```
+
+Two optional positional arguments replace the Easy and Medium source files
+from explicitly supplied paths. Without them the preserved originals are used.
+The command builds each artifact twice and checks byte equality and exact
+accepted language. The `.gaddag` extension uses the same packed binary format
+as `lexicon.bin`; production never builds these graphs at startup.
+
+Search workers call `Gaddag.open(path, { decodeSeeds: false })` to validate the
+entire file without retaining the opening-word string index. Normal callers
+keep the existing seed-loading behavior. `transitionMask(state)` returns an
+allocation-free integer with separator bit 0 and letter bits 1–26; it avoids
+creating edge arrays in the move generator's inner loop.

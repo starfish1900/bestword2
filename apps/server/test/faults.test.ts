@@ -289,10 +289,10 @@ describe.skipIf(!enabled)('real dependency faults and durable game recovery',()=
     const spectator=await openSocket(instance);expect((await request(spectator,'game:subscribe',{gameId:game.id})).ok).toBe(true);
     revoked.socket.on('game:update',(view:GameView)=>privateUpdates.push(view));spectator.on('game:update',(view:GameView)=>publicUpdates.push(view));
     await observer.pool.query('DELETE FROM sessions WHERE token_hash=$1',[digestToken(revoked.token)]);
-    await acceptedNoWords(game);await eventually(async()=>publicUpdates,updates=>updates.some(view=>view.game.moves.length===1),'spectator publication');
+    await acceptedNoWords(game);await eventually(async()=>publicUpdates,updates=>updates.some(view=>view.game.moveCount===1),'spectator publication');
     // Ignore setup packets already in flight before deletion; the new move was
     // committed only after revocation, so none of its private views may arrive.
-    await delay(100);expect(privateUpdates.filter(view=>view.game.moves.length>=1&&view.you!==null)).toEqual([]);expect(publicUpdates.every(view=>view.you===null)).toBe(true);
+    await delay(100);expect(privateUpdates.filter(view=>view.game.moves.length>=1&&view.you!==null)).toEqual([]);expect(publicUpdates.every(view=>view.you===null&&view.game.moves.length===0&&view.game.historyAccess==='recent')).toBe(true);
     // Reauthenticate a same-game sync: the old player room must become a public spectator room.
     if(revoked.socket.connected){const sync=await request(revoked.socket,'game:sync',{gameId:game.id});expect(sync.ok).toBe(true);if(sync.ok)expect(sync.view.you).toBeNull();}
   },15000);

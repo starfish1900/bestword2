@@ -9,6 +9,7 @@ COPY apps/web/package.json apps/web/package.json
 COPY packages/contracts/package.json packages/contracts/package.json
 COPY packages/engine/package.json packages/engine/package.json
 COPY packages/lexicon/package.json packages/lexicon/package.json
+COPY packages/ai/package.json packages/ai/package.json
 RUN npm ci --include=dev
 
 COPY tsconfig.json tsconfig.base.json ./
@@ -35,7 +36,10 @@ COPY --from=build --chown=node:node /app/packages/engine/package.json ./packages
 COPY --from=build --chown=node:node /app/packages/engine/dist ./packages/engine/dist
 COPY --from=build --chown=node:node /app/packages/lexicon/package.json ./packages/lexicon/package.json
 COPY --from=build --chown=node:node /app/packages/lexicon/dist ./packages/lexicon/dist
+COPY --from=build --chown=node:node /app/packages/ai/package.json ./packages/ai/package.json
+COPY --from=build --chown=node:node /app/packages/ai/dist ./packages/ai/dist
 COPY --chown=node:node data/lexicon.bin.gz data/lexicon-manifest.json ./data/
+COPY --chown=node:node data/easy.gaddag data/medium.gaddag ./data/
 
 USER node
 EXPOSE 3000

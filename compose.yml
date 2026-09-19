@@ -17,6 +17,9 @@ x-app: &app
     DATABASE_URL: postgresql://bestword:bestword-local@postgres:5432/bestword
     REDIS_URL: redis://valkey:6379
     LEXICON_PATH: data/lexicon.bin.gz
+    EASY_LEXICON_PATH: data/easy.gaddag
+    MEDIUM_LEXICON_PATH: data/medium.gaddag
+    AI_MAX_GAMES: "10"
     MAX_ACTIVE_GAMES: "100"
     MAX_SPECTATORS_PER_GAME: "10"
     DB_POOL_SIZE: "10"
@@ -96,6 +99,22 @@ services:
       <<: *app-environment
       DB_POOL_SIZE: "5"
       WORKER_INTERVAL_MS: "250"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+
+  ai:
+    <<: *app
+    command: ["node", "apps/server/dist/ai-worker.js"]
+    environment:
+      <<: *app-environment
+      DB_POOL_SIZE: "5"
+      AI_WORKERS: "1"
+      AI_LOOKAHEAD_MS: "1500"
     depends_on:
       migrate:
         condition: service_completed_successfully

@@ -3,16 +3,16 @@
 ## Scope and evidence
 Implement the supplied original-spec.txt as amended below. Source vocabulary: 279,320 unique sorted uppercase words, 3-15 letters; 2,544,319 letters total; 130,220 words of length 9-12. Raw source SHA256: 87222D75C77C52574868BF0CEFD4FAF5703D4DF166336A4EC9A70CFFE72100AF.
 
-Deliver accounts, public seeks lobby, two-player games, public live spectating, history/replay. No ratings, chat, AI, tournaments, self-service password recovery. No paid provisioning or public deployment. A 5,000-game load scenario is required; measured supported capacity must specify tested hardware. Never infer measured capacity from the architecture.
+Deliver accounts, public seeks lobby, human or computer two-player games, public live spectating, signed-in history/replay, and the existing tutorial through shared help. No ratings, chat, tournaments, self-service password recovery. No paid provisioning or public deployment. A 5,000-game load scenario is required; measured supported capacity must specify tested hardware. Never infer measured capacity from the architecture. The approved AI extension is specified in [AI.md](AI.md).
 
 ## Agreed clarifications
 - Permanent PASS applies the completed turn's increment once, freezes score/clock, stops all future draws and turns, removes disconnect eligibility, and releases the account's currently-playing slot. The opponent takes consecutive normal turns until PASS or loss.
 - Ordinary disconnect grace is 25 seconds FROM SERVER DETECTION. Active clock continues. Use a 5-second socket heartbeat and 10-second heartbeat timeout. A still-connected game tab prevents disconnection.
 - Confirmed infrastructure outages/deployments pause affected clocks and reconnect allowances. Preserve every acknowledged action. After service is healthy, wait up to 120 seconds for remaining non-PASS participants, then close without a winner if someone is absent. Resume with a short countdown.
-- Exact per-vowel counts, total consonants in bag, and both rack sizes are public. Opponent rack letters, per-consonant bag counts, drafts, and private draw history are never public. Spectators and public replays require no account.
+- Exact per-vowel counts, total consonants in bag, and both rack sizes are public. Opponent rack letters, per-consonant bag counts, drafts, and private draw history are never public. Live spectators require no account. Complete move history and replay require any signed-in human account; guest projections contain the current board, tile origins, latest placement and only three recent summaries, including after a game finishes.
 - Mobile inputs: rack/vowel taps and erase/submit controls; physical keyboard implements original spec. Ivory board, navy surroundings, restrained gold. Main play surface fits 320x568 usable portrait viewport and landscape without page scrolling. History/help may open separate panels.
 - Username ASCII alphanumeric 3-15, case-insensitively unique. Password 12-128 characters; Argon2id; secure opaque session cookies; no email/recovery flow.
-- Initial budget target <=US$100/month; indicative paid Render Virginia setup $64 base plus bandwidth/tax. Initial admission target 100 games, 10 spectators per game, configurable. Same code must support multiple servers and include 5,000 games + 2,500 spectator load scenario. No budget claim that this target fits $100.
+- Initial budget target <=US$100/month; indicative paid Render Virginia setup $89 base including the dedicated AI worker, plus bandwidth/tax. Initial admission target 100 total games, at most 10 AI games, 10 spectators per game, configurable and subject to measured capacity. Same code must support multiple servers and include 5,000 games + 2,500 spectator load scenario. No budget claim that this target fits $100.
 
 ## Rules defaults
 - 267 tiles initially: 90 vowels (A E I O U Y), 177 consonants; no blank tiles or bonuses. Use exact distributions and values from original spec.

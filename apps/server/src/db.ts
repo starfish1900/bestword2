@@ -1,6 +1,7 @@
 import pg, { type PoolClient } from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import type { EngineState } from '@bestword/engine';
+import type { AiDifficulty } from '@bestword/contracts';
 
 export function createDatabase(connectionString:string,max=10) {
   // The server limit cannot answer through a half-open network connection. The
@@ -13,6 +14,13 @@ export function createDatabase(connectionString:string,max=10) {
 export type Database=ReturnType<typeof createDatabase>;
 export type GatewaySeats=[string[],string[]];
 export interface GameRow {id:string;state:EngineState;revision:number;created_at:string;updated_at:string;status:string;next_deadline:string|null;gateways:GatewaySeats;handled_incidents:string[]}
+export interface AiCapabilities {policyVersion:string;vocabularies:Record<AiDifficulty,string>}
+export interface AiJob {game_id:string;turn_number:number;position_key:string;status:'queued'|'running'|'completed'|'cancelled';lease_owner:string|null;lease_token:string|null;leased_until:string;available_at:string;attempts:number;result:unknown|null}
+export const AI_USERS:Record<AiDifficulty,{id:string;username:string}>={
+  easy:{id:'00000000-0000-4000-8000-000000000001',username:'BestWord Easy'},
+  medium:{id:'00000000-0000-4000-8000-000000000002',username:'BestWord Medium'},
+  hard:{id:'00000000-0000-4000-8000-000000000003',username:'BestWord Hard'},
+};
 export async function databaseNow(client:PoolClient):Promise<number> { const result=await client.query<{now:string}>('SELECT (extract(epoch from clock_timestamp())*1000)::bigint AS now'); return Number(result.rows[0]!.now); }
 export async function transaction<T>(db:Database,fn:(client:PoolClient)=>Promise<T>):Promise<T> {
   const client=await db.pool.connect();let discard:Error|undefined;
@@ -39,6 +47,7 @@ export async function migrate(db:Database):Promise<void> {
     await c.query(`
       CREATE TABLE IF NOT EXISTS schema_migrations (version integer PRIMARY KEY, applied_at timestamptz NOT NULL DEFAULT now());
       CREATE TABLE IF NOT EXISTS users (id uuid PRIMARY KEY, username varchar(15) NOT NULL, username_key varchar(15) NOT NULL UNIQUE, password_hash text NOT NULL, created_at bigint NOT NULL);
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS kind text NOT NULL DEFAULT 'human';
       CREATE TABLE IF NOT EXISTS sessions (token_hash text PRIMARY KEY, user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE, expires_at bigint NOT NULL);
       CREATE INDEX IF NOT EXISTS sessions_expiry ON sessions(expires_at);
       CREATE INDEX IF NOT EXISTS sessions_user ON sessions(user_id,expires_at);
@@ -59,8 +68,17 @@ export async function migrate(db:Database):Promise<void> {
       CREATE TABLE IF NOT EXISTS outbox (id bigserial PRIMARY KEY,game_id uuid NOT NULL REFERENCES games(id),revision integer NOT NULL,created_at bigint NOT NULL,attempts integer NOT NULL DEFAULT 0,claimed_until bigint NOT NULL DEFAULT 0,UNIQUE(game_id,revision));
       CREATE INDEX IF NOT EXISTS outbox_pending ON outbox(claimed_until,id);
       CREATE TABLE IF NOT EXISTS service_epochs (id uuid PRIMARY KEY,kind text NOT NULL,last_healthy bigint NOT NULL,status text NOT NULL,started_at bigint NOT NULL);
+      ALTER TABLE service_epochs ADD COLUMN IF NOT EXISTS capabilities jsonb;
       CREATE TABLE IF NOT EXISTS incidents (id uuid PRIMARY KEY,epoch_id uuid REFERENCES service_epochs(id),reason text NOT NULL,started_at bigint NOT NULL,recovered_at bigint,UNIQUE(epoch_id,started_at));
       INSERT INTO schema_migrations(version) VALUES(1) ON CONFLICT DO NOTHING;
+      CREATE TABLE IF NOT EXISTS ai_jobs (
+        game_id uuid NOT NULL REFERENCES games(id),turn_number integer NOT NULL,position_key text NOT NULL,
+        status text NOT NULL DEFAULT 'queued',lease_owner uuid REFERENCES service_epochs(id),lease_token uuid,
+        leased_until bigint NOT NULL DEFAULT 0,available_at bigint NOT NULL,attempts integer NOT NULL DEFAULT 0,
+        result jsonb,created_at bigint NOT NULL,updated_at bigint NOT NULL,PRIMARY KEY(game_id,turn_number));
+      CREATE INDEX IF NOT EXISTS ai_jobs_ready ON ai_jobs(available_at,leased_until) WHERE status IN ('queued','running');
+      INSERT INTO schema_migrations(version) VALUES(2) ON CONFLICT DO NOTHING;
     `);
+    for(const identity of Object.values(AI_USERS))await c.query("INSERT INTO users(id,username,username_key,password_hash,created_at,kind) VALUES($1,$2,$3,'!AI-NO-LOGIN!',0,'ai') ON CONFLICT(id) DO NOTHING",[identity.id,identity.username,identity.username.toLowerCase()]);
   });
 }

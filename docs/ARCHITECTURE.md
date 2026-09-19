@@ -6,7 +6,7 @@ This describes the implemented repository, reviewed on 18 September 2026. [DECIS
 
 BestWord is an npm workspace using Node 24 and strict TypeScript. The browser is React 19, React Router, Zustand and Socket.IO Client, built by Vite 8. The API is Fastify 5 with Socket.IO 4. PostgreSQL 18 stores durable state; Redis-compatible Key Value provides presence, rate limits and notification transport. Critical database operations use explicit parameterized SQL through `pg`; a Drizzle handle is available, but the transaction and locking logic is in the server code.
 
-The same application image runs either the API entry point or the continuous worker. The API serves the built browser assets and all HTTP/WebSocket traffic from one origin. There is no separate browser hosting service, application filesystem database, game owner process, or in-memory authoritative game registry.
+The same application image runs the API entry point, continuous deadline/outbox worker, or dedicated AI worker. The API serves the built browser assets and all HTTP/WebSocket traffic from one origin. There is no separate browser hosting service, application filesystem database, game owner process, or in-memory authoritative game registry.
 
 ```mermaid
 flowchart LR
@@ -25,7 +25,7 @@ flowchart LR
 | [packages/engine](../packages/engine/src/index.ts) | Pure rules, seeded setup, draws, scoring, clocks, outcomes, invariants and projections |
 | [packages/lexicon](../packages/lexicon/src/index.ts) | Verified immutable GADDAG artifact loader and word/traversal queries |
 | [apps/server](../apps/server/src/app.ts) | HTTP, sessions, transactions, coordination, health and scheduling |
-| [apps/web](../apps/web/src/Game.tsx) | Local input draft, rendering, live views, retry and public replay |
+| [apps/web](../apps/web/src/Game.tsx) | Local input draft, rendering, live views, retry and signed-in replay |
 | [tools/lexicon-builder](../tools/lexicon-builder/README.md) | Offline Rust compiler and independent dictionary audits |
 
 The original dictionary is compiled offline. Each runtime process opens and verifies the bundled compressed artifact once; startup does not rebuild the vocabulary. Each stored game has a rules version and source dictionary SHA-256. A command is rejected if that game's dictionary version differs from the loaded artifact. Keep the artifact and rules compatible across all processes that can touch an active game.
@@ -79,7 +79,7 @@ Outbox workers claim pending rows with `FOR UPDATE SKIP LOCKED` and a temporary 
 
 ### Privacy boundary
 
-The engine's `projectGame` produces a public `game` object and a nullable private `you` object. Public state includes scores, rack **sizes**, exact vowel counts, total remaining consonants, clocks, board and accepted moves. Only the participant's own `you` object contains rack letters, that turn's draw count and NO WORDS eligibility. It never includes the other rack, per-consonant bag counts or stored future draws. Drafts remain in the browser until an action is submitted.
+The engine's `projectGame` produces a public `game` object and a nullable private `you` object. Public state includes scores, rack **sizes**, exact vowel counts, total remaining consonants, clocks and board. Signed-in viewers also receive accepted moves; guests receive only the latest three summaries, tile origins and latest placement. Only the participant's own `you` object contains rack letters, that turn's draw count and NO WORDS eligibility. It never includes the other rack, per-consonant bag counts or stored future draws. Drafts remain in the browser until an action is submitted.
 
 Private socket rooms have this shape:
 
@@ -87,7 +87,7 @@ Private socket rooms have this shape:
 game:<gameId>:player:<seat>:session:<tokenHash>
 ```
 
-Before every private publication, the gateway queries unexpired PostgreSQL sessions and sends only to their session-specific rooms. Spectators receive the separate `game:<gameId>:spectators` projection with `you: null`. Game data delivery uses `io.local`; private payloads therefore do not enter the shared adapter stream.
+Before every private publication, the gateway queries unexpired PostgreSQL sessions and sends only to their session-specific rooms. Guests receive the separate `game:<gameId>:spectators` projection with `you: null` and withheld full history. Signed-in spectators use `game:<gameId>:spectators:session:<tokenHash>` and their session is rechecked before every full-history publication. Game data delivery uses `io.local`; private payloads therefore do not enter the shared adapter stream.
 
 Opaque session tokens are stored only as hashes in PostgreSQL. The cookie is HttpOnly, SameSite=Lax and Secure in production. Username uniqueness, registration and session issuance are transactional. Password changes revoke prior sessions and create the replacement atomically. Session/user rooms support prompt socket disconnection on logout or password change, but privacy also depends on the database session check before publication and on every command/sync, so a missed disconnect notification does not authorize future private data. The heartbeat also revalidates sessions in batches.
 
@@ -111,6 +111,10 @@ Key Value command replies have a separate 1.5-second bound in addition to client
 
 ## Browser synchronization and replay
 
+The AI extension is detailed in [AI.md](AI.md). A durable `ai_jobs` row is created with the game transition. A dedicated service claims each job with a fencing token and computes its move in a bounded worker thread. The normal engine validates and commits it under the same game lock used for human actions. The saved game pins difficulty, vocabulary hash and policy version. AI health replaces browser presence for the computer seat; a compatible worker restart can resume it. Only public board/bag information and the AI's own rack enter search.
+
+Recent-game refresh merges new pages with already loaded pages and preserves the oldest cursor and scroll anchor. Replay navigation preserves its selected move through sign-in. The shared help dialog embeds the unchanged versioned tutorial locally and leaves the active game mounted, so opening help does not disconnect a player or pause their clock.
+
 The browser first loads a projected view over HTTP and subscribes over WebSocket. It anchors server timestamps to local `performance.now()` and advances displayed deadlines with that monotonic elapsed time. Changing the device wall clock does not expire a turn or change input eligibility. The browser never decides a server result. Paused clocks stay frozen, and a locally expired deadline disables input until the server confirms the outcome.
 
 Every eight seconds a connected game sends `game:sync {gameId, revision}`. An already subscribed socket with the same valid identity, the same revision, and a game that is not paused receives `{ok:true, unchanged:true, serverTime}`. The client refreshes its server-time anchor without replacing the snapshot, revision, projected remaining times or draft. It ignores a stale clock timestamp and does not apply an unchanged reply if its game or revision has since changed. Otherwise the server performs a full subscription and returns a current personalized view. Paused games deliberately use the full path so recovery presence can be reconciled.
@@ -121,17 +125,17 @@ The client ignores older revisions and older timestamps within the same revision
 
 Lobby lists refresh on notifications, connection and a 15-second interval. Authenticated refresh includes `/api/session` and its `activeGameId`; a committed match is therefore discoverable even if `game:matched` was lost. Direct notifications provide prompt navigation, and the session view provides a recoverable Continue game link.
 
-Public replay uses only accepted public moves. The client derives the original seed board by removing accepted new tiles from the final board, then reapplies tiles and scores up to the selected move. It does not invent historical racks, expose future draws, or display reconstructed clock histories.
+Signed-in replay uses only accepted public moves. The client derives the original seed board by removing accepted new tiles from the final board, then reapplies tiles and scores up to the selected move. It does not invent historical racks, expose future draws, or display reconstructed clock histories.
 
 ## Deployment and scaling limits
 
-[render.yaml](../render.yaml) defines one API, one worker, PostgreSQL 18 and Key Value in Virginia. Both application roles use the same Docker image and bundled lexicon. The image runs as the unprivileged `node` user and needs no persistent application disk. Production assets have prebuilt Brotli/gzip variants; hashed assets use immutable caching, while the HTML entry point requires revalidation. HTTP and WebSocket origins are configured together with `APP_ORIGIN`.
+[render.yaml](../render.yaml) defines one API, one deadline/outbox worker, one AI worker, PostgreSQL 18 and Key Value in Virginia. All three application roles use the same Docker image and bundled lexicon. The image runs as the unprivileged `node` user and needs no persistent application disk. Production assets have prebuilt Brotli/gzip variants; hashed assets use immutable caching, while the HTML entry point requires revalidation. HTTP and WebSocket origins are configured together with `APP_ORIGIN`.
 
 WebSocket-only transport allows new/reconnected sockets to land on any API instance without a polling-session affinity requirement. Shared database locks, receipts, sessions, presence and notifications allow two players in the same game to connect to different instances. There is no application-level game sharding or worker leader election to reconfigure when adding an instance.
 
 Adding instances still consumes shared resources. Total database pool capacity grows with API count times `DB_POOL_SIZE`, plus each worker's pool capped at five connections. More instances also add heartbeat work, stream readers and projection reads for games represented on those instances. One busy game remains serialized; its spectators still require outgoing data. PostgreSQL, Key Value, CPU, memory, bandwidth and load-client capacity must all be measured together.
 
-The initial Blueprint admission limits are **100 active games** and **10 spectators per game**. These are operating limits, not benchmark results. The reviewed base-cost estimate in [OPERATIONS.md](OPERATIONS.md) is US$64/month before usage and tax; it is neither a hard US$100 billing cap nor a claim that 5,000 simultaneous games fit that budget. Recheck provider pricing before provisioning.
+The initial Blueprint admission limits are **100 active games** and **10 spectators per game**. These are operating limits, not benchmark results. The reviewed base-cost estimate in [OPERATIONS.md](OPERATIONS.md) is US$89/month before usage and tax; it is neither a hard US$100 billing cap nor a claim that 5,000 simultaneous games fit that budget. Recheck provider pricing before provisioning.
 
 Functional integration tests exercise multiple real gateways and durable retries. Local browser and backup verification are recorded in [client progress](progress/client.md) and [backup progress](progress/backup.md). Only completed [load reports](../tools/load/README.md), with their actual hardware, workload, duration, sync setting, compiled-code hashes and individual gates, establish measured local capacity. A configured 5,000-game scenario alone establishes nothing about achieved throughput or Render service sizes. Any short run, omitted periodic sync, driver bottleneck or failed gate must remain visible in a capacity claim. The repository has not itself provisioned or measured a public Render deployment.
 

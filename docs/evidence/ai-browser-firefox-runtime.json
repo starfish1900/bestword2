@@ -1,0 +1,6 @@
+{
+  "checkedAt": "2026-09-19T14:53:38.519Z",
+  "browser": "firefox",
+  "status": "runtime-unavailable",
+  "error": "Error: browserType.launch: spawn UNKNOWN\nCall log:\n\u001b[2m  - <launching> C:\\Users\\folia\\AppData\\Local\\ms-playwright\\firefox-1543\\firefox\\firefox.exe -no-remote -headless -profile C:\\Users\\folia\\AppData\\Local\\Temp\\playwright_firefoxdev_profile-gG7ARw -juggler-pipe -silent\u001b[22m\n"
+}

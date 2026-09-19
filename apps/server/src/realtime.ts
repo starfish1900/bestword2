@@ -23,8 +23,8 @@ interface Outgoing {'game:update':(view:GameView)=>void;'game:matched':(payload:
 interface SocketData {token:string|undefined;user:User|null;expiresAt:number;game:{id:string;seat:Seat|null;member:string;room:string}|null}
 export type GameIO=Server<Incoming,Outgoing,Record<string,never>,SocketData>;
 type GameSocket=Socket<Incoming,Outgoing,Record<string,never>,SocketData>;
-const subscribeSchema=z.object({gameId:z.uuid()}).strict();
-const syncSchema=z.object({gameId:z.uuid(),revision:z.number().int().nonnegative().optional()}).strict();
+const subscribeSchema=z.object({gameId:z.uuid(),replay:z.boolean().optional()}).strict();
+const syncSchema=subscribeSchema.extend({revision:z.number().int().nonnegative().optional()}).strict();
 const SPECTATOR_ADD="redis.call('ZREMRANGEBYSCORE',KEYS[1],'-inf',ARGV[1]); if not redis.call('ZSCORE',KEYS[1],ARGV[2]) and redis.call('ZCARD',KEYS[1])>=tonumber(ARGV[3]) then return 0 end; redis.call('ZADD',KEYS[1],ARGV[4],ARGV[2]);redis.call('PEXPIRE',KEYS[1],45000);return 1";
 const GAME_STREAM='bw:game-updates';
 function streamReader(kv:KeyValue):KeyValue{
@@ -68,12 +68,19 @@ async function deliverLocal(io:GameIO,games:Games,state:EngineState):Promise<voi
   const time=await games.db.pool.query<{now:string}>('SELECT (extract(epoch from clock_timestamp())*1000)::bigint AS now');const now=Number(time.rows[0]!.now);
   // Session-specific rooms make a lost cross-gateway logout notification safe:
   // revoked sessions are excluded before every private publication.
-  const sessions=await games.db.pool.query<{token_hash:string;user_id:string}>('SELECT token_hash,user_id FROM sessions WHERE user_id=ANY($1::uuid[]) AND expires_at>$2',[state.players.map(player=>player.id),now]);
+  const spectatorHashes=new Set<string>();
+  for(const id of io.sockets.adapter.rooms.get(`watch:${state.id}`)??[]){
+    const data=io.sockets.sockets.get(id)?.data;
+    if(data?.game?.seat===null&&data.user&&data.token)spectatorHashes.add(digestToken(data.token));
+  }
+  const sessions=await games.db.pool.query<{token_hash:string;user_id:string}>("SELECT s.token_hash,s.user_id FROM sessions s JOIN users u ON u.id=s.user_id WHERE (s.user_id=ANY($1::uuid[]) OR s.token_hash=ANY($3::text[])) AND s.expires_at>$2 AND u.kind='human'",[state.players.map(player=>player.id),now,[...spectatorHashes]]);
   for(const seat of [0,1] as const){
     const rooms=sessions.rows.filter(session=>session.user_id===state.players[seat].id).map(session=>`game:${state.id}:player:${seat}:session:${session.token_hash}`);
     if(rooms.length)io.local.to(rooms).emit('game:update',projectGame(state,seat,now,spectators));
   }
-  io.local.to(`game:${state.id}:spectators`).emit('game:update',projectGame(state,null,now,spectators));
+  const authenticatedRooms=sessions.rows.filter(session=>spectatorHashes.has(session.token_hash)).map(session=>`game:${state.id}:spectators:session:${session.token_hash}`);
+  if(authenticatedRooms.length)io.local.to(authenticatedRooms).emit('game:update',projectGame(state,null,now,spectators,'full'));
+  io.local.to(`game:${state.id}:spectators`).emit('game:update',projectGame(state,null,now,spectators,'recent'));
 }
 export function attachRealtime(app:FastifyInstance,auth:Auth,games:Games,config:Config):{io:GameIO;stop:()=>Promise<void>} {
   const allowedOrigin=new URL(config.APP_ORIGIN).origin;
@@ -121,9 +128,10 @@ export function attachRealtime(app:FastifyInstance,auth:Auth,games:Games,config:
     else if(socket.data.user&&games.kv.isReady)await games.connect(current.id,socket.data.user,current.member,false);
   }
   async function subscribe(socket:GameSocket,payload:unknown,ack:Ack):Promise<void>{
-    const {gameId}=subscribeSchema.parse(payload);
+    const {gameId,replay}=subscribeSchema.parse(payload);
     await rateLimit(games.kv,`subscribe:${socket.id}`,20,10000);
     const session=await auth.lookup(socket.data.token);
+    if(replay&&!session)throw new HttpError(401,'AUTH_REQUIRED','Sign in to replay this game.');
     if(socket.data.game?.id!==gameId||socket.data.user?.id!==session?.user.id)await leave(socket);
     socket.data.user=session?.user??null;socket.data.expiresAt=session?.expiresAt??Number.MAX_SAFE_INTEGER;
     const row=await games.read(gameId);const seat=games.seat(row.state,socket.data.user?.id);const member=`${games.health.epoch}/${socket.id}`;
@@ -132,7 +140,7 @@ export function attachRealtime(app:FastifyInstance,auth:Auth,games:Games,config:
     else{
       const admitted=Number(await games.kv.eval(SPECTATOR_ADD,{keys:[`bw:spectators:${gameId}`],arguments:[String(Date.now()),member,String(config.MAX_SPECTATORS_PER_GAME),String(Date.now()+16000)]}));
       if(!admitted)throw new HttpError(429,'SPECTATOR_LIMIT','This game has reached its live spectator limit. The replay will be available afterward.');
-      const room=`game:${gameId}:spectators`;await socket.join([room,`watch:${gameId}`]);socket.data.game={id:gameId,seat:null,member,room};view=projectGame(row.state,null,Date.now(),await games.spectators(gameId));
+      const room=session?`game:${gameId}:spectators:session:${session.tokenHash}`:`game:${gameId}:spectators`;await socket.join([room,`watch:${gameId}`]);socket.data.game={id:gameId,seat:null,member,room};view=projectGame(row.state,null,Date.now(),await games.spectators(gameId),session?'full':'recent');
     }
     safeAck(ack,{ok:true,view});
   }
@@ -149,6 +157,7 @@ export function attachRealtime(app:FastifyInstance,auth:Auth,games:Games,config:
     socket.on('game:subscribe',(payload,ack)=>enqueue(()=>subscribe(socket,payload,ack),ack));
     socket.on('game:sync',(payload,ack)=>enqueue(async()=>{
       const input=syncSchema.parse(payload);const session=await auth.lookup(socket.data.token);
+      if(input.replay&&!session)throw new HttpError(401,'AUTH_REQUIRED','Sign in to replay this game.');
       if(input.revision!==undefined&&socket.data.game?.id===input.gameId&&socket.data.user?.id===session?.user.id){
         await rateLimit(games.kv,`sync:${socket.id}`,20,10000);
         const result=await games.db.pool.query<{revision:number;status:string;now:string}>('SELECT revision,status,(extract(epoch from clock_timestamp())*1000)::bigint AS now FROM games WHERE id=$1',[input.gameId]);
@@ -157,7 +166,7 @@ export function attachRealtime(app:FastifyInstance,auth:Auth,games:Games,config:
           if(typeof ack==='function')ack({ok:true,unchanged:true,serverTime:Number(row.now)});return;
         }
       }
-      await subscribe(socket,{gameId:input.gameId},ack);
+      await subscribe(socket,{gameId:input.gameId,...(input.replay===undefined?{}:{replay:input.replay})},ack);
     },ack));
     socket.on('game:command',(payload,ack)=>{void(async()=>{
       const session=await auth.lookup(socket.data.token);if(!session)throw new HttpError(401,'AUTH_REQUIRED','Please sign in again.');
@@ -178,7 +187,7 @@ export function attachRealtime(app:FastifyInstance,auth:Auth,games:Games,config:
     // query have already authenticated and belong to the next heartbeat.
     const snapshot=[...sockets];
     const hashes=[...new Set(snapshot.filter(socket=>socket.data.user&&socket.data.token).map(socket=>digestToken(socket.data.token!)))];
-    const valid=new Set(hashes.length?(await games.db.pool.query<{token_hash:string}>('SELECT token_hash FROM sessions WHERE token_hash=ANY($1::text[]) AND expires_at>$2',[hashes,now])).rows.map(row=>row.token_hash):[]);
+    const valid=new Set(hashes.length?(await games.db.pool.query<{token_hash:string}>("SELECT s.token_hash FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=ANY($1::text[]) AND s.expires_at>$2 AND u.kind='human'",[hashes,now])).rows.map(row=>row.token_hash):[]);
     for(const socket of snapshot){
       if(!socket.connected)continue;
       if(now>=socket.data.expiresAt||(socket.data.user&&(!socket.data.token||!valid.has(digestToken(socket.data.token))))){socket.disconnect(true);continue;}

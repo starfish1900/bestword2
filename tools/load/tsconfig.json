@@ -1,5 +1,5 @@
 {
   "extends":"../../tsconfig.base.json",
   "compilerOptions":{"noEmit":true,"composite":false,"declaration":false,"declarationMap":false},
-  "include":["runner.ts","../testing/moves.ts"]
+  "include":["runner.ts","observations.ts","observations-check.ts","../testing/moves.ts"]
 }

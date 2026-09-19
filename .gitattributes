@@ -1,7 +1,11 @@
 * text=auto eol=lf
 # Preserve the original corpus/specification bytes through every checkout.
 data/dictionary.txt -text
+data/ai/EnEasy.txt -text
+data/ai/EnMedium.txt -text
 docs/original-spec.txt -text
+*.gaddag binary
+*.mp4 binary
 *.bin binary
 *.gz binary
 *.png binary

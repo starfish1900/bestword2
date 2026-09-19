@@ -12,14 +12,14 @@ import pg from 'pg';
 import { createClient } from 'redis';
 import { io,type Socket } from 'socket.io-client';
 import { Gaddag } from '@bestword/lexicon';
-import { createGame,setConnected,startIfReady,applyAction,nextDeadline,assertStateInvariants,type EngineState } from '@bestword/engine';
-import type { GameAction,GameView,CommandReply,SyncReply,User,Seat,Letter } from '@bestword/contracts';
+import { createGame,setConnected,startIfReady,applyAction,nextDeadline,assertStateInvariants,projectGame,type EngineState } from '@bestword/engine';
+import type { GameAction,GameView,CommandReply,SyncReply,User,Seat,Letter,TileOrigin,PlacedTile,RecentMove } from '@bestword/contracts';
 import { findMove } from '../testing/moves.js';
 import { createDatabase,migrate } from '../../apps/server/dist/db.js';
 import { Histogram,validateWireView } from './observations.js';
 
 type Settings={games:number;spectators:number;commandsPerSecond:number;burst:number;burstEverySeconds:number;durationSeconds:number;apiInstances:number;workers:number;templates:number;syncIntervalSeconds:number};
-type PrivatePrediction={racks:[Letter[],Letter[]];drawn:[number,number]};
+type PrivatePrediction={racks:[Letter[],Letter[]];drawn:[number,number];tileOrigins:TileOrigin[];lastMoveTiles:PlacedTile[];recentMoves:RecentMove[];principalHistory:string[]};
 type Template={initial:EngineState;actions:GameAction[];privateStates:PrivatePrediction[]};
 type Child={process:ChildProcess;role:string;url?:string;epoch?:string;last?:any;peakRss:number;cpuCoreSeconds:number;log:string};
 type Person={user:User;token:string;socket:Socket;gateway:Child};
@@ -112,7 +112,7 @@ async function makeTemplates(lexicon:Gaddag):Promise<Template[]>{
     let state=createGame({id:randomUUID(),players:[{id:randomUUID(),username:'FixtureA'},{id:randomUUID(),username:'FixtureB'}],minutes:25,lexiconVersion:lexicon.sha256,seedWords:lexicon.seedWords,now:1000,randomInt:seeded(715011+index)},lexicon);
     state=setConnected(state,0,true,1000);state=setConnected(state,1,true,1000);state=startIfReady(state,4000);
     const initial=structuredClone(state),actions:GameAction[]=[],privateStates:PrivatePrediction[]=[];
-    const remember=()=>privateStates.push({racks:state.players.map(p=>[...p.rack]) as [Letter[],Letter[]],drawn:[...state.drawnThisTurn]});remember();
+    const remember=()=>{const view=projectGame(state,null,state.lastTransitionAt).game;privateStates.push({racks:state.players.map(p=>[...p.rack]) as [Letter[],Letter[]],drawn:[...state.drawnThisTurn],tileOrigins:view.tileOrigins!,lastMoveTiles:view.lastMoveTiles!,recentMoves:view.recentMoves!,principalHistory:view.principalHistory});};remember();
     while(state.status!=='finished'&&actions.length<180){
       const canNoWords=state.drawnThisTurn[state.activeSeat]>0&&!state.players[state.activeSeat===0?1:0].passed;
       const action:GameAction=actions.length%5===0&&canNoWords?{type:'NO_WORDS'}:findMove(state,lexicon)??{type:canNoWords?'NO_WORDS':'PASS'};
@@ -144,9 +144,9 @@ async function launch(role:'api'|'worker'):Promise<Child>{
   if(ready.url)child.url=ready.url;if(ready.epoch)child.epoch=ready.epoch;return child;
 }
 function acceptView(table:Table,view:GameView,seat:Seat|null,socket?:Socket,isBroadcast=false){
-  const moveCount=Array.isArray(view?.game?.moves)?view.game.moves.length:-1;
+  const moveCount=Number.isSafeInteger(view?.game?.moveCount)?view.game.moveCount!:-1;
   const predicted=table.template.privateStates[moveCount];
-  const privacy=validateWireView(view,{seat,playerIds:table.players.map(p=>p.user.id) as [string,string],knownGame:table.knownGameIds.has(view?.game?.id),racks:predicted?.racks??[[],[]],drawn:predicted?.drawn??[0,0]});
+  const privacy=validateWireView(view,{seat,historyAccess:seat===null?'recent':'full',playerIds:table.players.map(p=>p.user.id) as [string,string],knownGame:table.knownGameIds.has(view?.game?.id),racks:predicted?.racks??[[],[]],drawn:predicted?.drawn??[0,0],moveCount,tileOrigins:predicted?.tileOrigins??[],lastMoveTiles:predicted?.lastMoveTiles??[],recentMoves:predicted?.recentMoves??[],principalHistory:predicted?.principalHistory??[]});
   if(!predicted)privacy.push('Unexpected fixture move count');
   if(privacy.length){privacyFailures++;failure('PRIVACY',privacy.join('; '));return;}
   if(view.game.id!==table.id)return;
@@ -155,7 +155,7 @@ function acceptView(table:Table,view:GameView,seat:Seat|null,socket?:Socket,isBr
     tracked.revision=Math.max(tracked.revision,view.game.revision);
     if(isBroadcast){
       tracked.lastPushRevision=Math.max(tracked.lastPushRevision,view.game.revision);tracked.lastPushAt=Date.now();
-      const move=view.game.moves.at(-1);
+      const move=view.game.recentMoves?.at(-1);
       if(measuring&&move&&move.revision>tracked.lastPushMoveRevision){broadcastLatency.add(Math.max(0,Date.now()-move.at));tracked.lastPushMoveRevision=move.revision;}
     }
   }
@@ -236,7 +236,7 @@ async function command(table:Table,scheduled:number,kind:'baseline'|'burst',burs
   try{
     const current=table.view?.game;if(!current)throw new Error('Missing game view');
     if(current.status!=='active'||current.startsAt!==null){failure('GAME_NOT_ACTIVE',current.status);return;}
-    const action=table.template.actions[current.moves.length];assert(action,'Missing legal fixture action');
+    const action=table.template.actions[current.moveCount!];assert(action,'Missing legal fixture action');
     const person=table.players[current.activeSeat],commandId=randomUUID(),payload={gameId:table.id,commandId,expectedRevision:current.revision,action};
     attempted++;traffic[kind].attempted++;const start=performance.now();let reply:CommandReply;
     try{reply=await person.socket.timeout(15000).emitWithAck('game:command',payload) as CommandReply;}catch{

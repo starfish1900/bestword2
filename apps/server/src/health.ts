@@ -1,10 +1,11 @@
 import { randomUUID } from 'node:crypto';
 import type { PoolClient } from 'pg';
 import type { EngineState } from '@bestword/engine';
-import { type Database,type GatewaySeats,databaseNow,transaction } from './db.js';
+import { type AiCapabilities,type Database,type GatewaySeats,databaseNow,transaction } from './db.js';
 import type { KeyValue } from './kv.js';
 
 export interface EpochRow {id:string;last_healthy:string;status:string;kind:string}
+export interface AiEpoch extends EpochRow {capabilities:AiCapabilities}
 export interface Incident {id:string;epoch_id:string|null;reason:'deployment'|'infrastructure';started_at:string;recovered_at:string|null}
 export class Health {
   readonly epoch=randomUUID();
@@ -15,9 +16,9 @@ export class Health {
   private inFlight:Promise<void>|null=null;
   private stopping=false;
   private stopPromise:Promise<void>|null=null;
-  constructor(private db:Database,private kv:KeyValue,readonly kind:'api'|'worker'){}
+  constructor(private db:Database,private kv:KeyValue,readonly kind:'api'|'worker'|'ai',readonly capabilities:AiCapabilities|null=null){}
   async start():Promise<void>{
-    const checkpoint=await transaction(this.db,async c=>{const now=await databaseNow(c);await c.query('INSERT INTO service_epochs(id,kind,last_healthy,status,started_at) VALUES($1,$2,$3,\'starting\',$3)',[this.epoch,this.kind,now]);return now;});
+    const checkpoint=await transaction(this.db,async c=>{const now=await databaseNow(c);await c.query('INSERT INTO service_epochs(id,kind,last_healthy,status,started_at,capabilities) VALUES($1,$2,$3,\'starting\',$3,$4)',[this.epoch,this.kind,now,this.capabilities===null?null:JSON.stringify(this.capabilities)]);return now;});
     this.lastHealthy=checkpoint;
     await this.tick();if(!this.stopping){this.timer=setInterval(()=>{void this.tick();},1000);this.timer.unref();}
   }
@@ -53,10 +54,14 @@ export class Health {
   }
   async reconcile(c:PoolClient,now:number):Promise<void>{
     // Durable epochs identify crashes even when the process could not record its own outage.
-    const stale=await c.query<EpochRow>('SELECT id,last_healthy,status,kind FROM service_epochs WHERE kind=\'api\' AND status=\'active\' AND last_healthy<$1 ORDER BY id FOR UPDATE SKIP LOCKED',[now-3000]);
+    const stale=await c.query<EpochRow>("SELECT id,last_healthy,status,kind FROM service_epochs WHERE kind IN ('api','ai') AND status='active' AND last_healthy<$1 ORDER BY id FOR UPDATE SKIP LOCKED",[now-3000]);
     for(const epoch of stale.rows){await c.query('UPDATE service_epochs SET status=\'lost\' WHERE id=$1',[epoch.id]);await c.query('INSERT INTO incidents(id,epoch_id,reason,started_at) VALUES($1,$2,\'infrastructure\',$3) ON CONFLICT DO NOTHING',[randomUUID(),epoch.id,epoch.last_healthy]);}
-    const live=await c.query('SELECT 1 FROM service_epochs WHERE kind=\'api\' AND status=\'active\' AND last_healthy>=$1 LIMIT 1',[now-2000]);
-    if(this.kv.isReady&&live.rowCount)await c.query('UPDATE incidents SET recovered_at=$1 WHERE recovered_at IS NULL',[now]);
+    // An API coming back cannot recover an unavailable AI service (or vice versa).
+    if(this.kv.isReady)await c.query("UPDATE incidents i SET recovered_at=$1 FROM service_epochs affected WHERE i.epoch_id=affected.id AND i.recovered_at IS NULL AND EXISTS(SELECT 1 FROM service_epochs live WHERE live.kind=affected.kind AND live.status='active' AND live.last_healthy>=$2)",[now,now-2000]);
+  }
+  async aiWorkers(c:PoolClient,now:number,required?:Pick<EngineState,'ai'|'lexiconVersion'>):Promise<AiEpoch[]>{
+    const rows=await c.query<AiEpoch>("SELECT id,last_healthy,status,kind,capabilities FROM service_epochs WHERE kind='ai' AND status='active' AND last_healthy>=$1 AND capabilities IS NOT NULL ORDER BY started_at DESC,id",[now-3000]);
+    return rows.rows.filter(epoch=>epoch.capabilities&&(!required||(epoch.capabilities.vocabularies.hard===required.lexiconVersion&&(!required.ai||(epoch.capabilities.policyVersion===required.ai.policyVersion&&epoch.capabilities.vocabularies[required.ai.difficulty]===required.ai.vocabularyHash)))));
   }
   async evidence(c:PoolClient,state:EngineState,gateways:GatewaySeats,now:number,deadline:number|null,handled:string[]=[]):Promise<{pauseAt:number|null;reason:'deployment'|'infrastructure';pending:boolean;healthy:boolean;incidentIds:string[]}> {
     const ids=[...new Set(gateways.flat())];
@@ -85,7 +90,8 @@ export class Health {
     const live=await c.query('SELECT 1 FROM service_epochs WHERE kind=\'api\' AND status=\'active\' AND last_healthy>=$1 LIMIT 1',[now-2000]);
     // READ COMMITTED may reveal an incident created after the caller captured `now`.
     // The caller owns monotonic per-game acceptance times; never return a future transition.
-    return {pauseAt:pauseAt===null?null:Math.min(now,Math.max(state.lastTransitionAt,pauseAt)),reason,pending,healthy:this.kv.isReady&&Boolean(live.rowCount),incidentIds:[...new Set(incidentIds)]};
+    const aiHealthy=!state.ai||state.players[state.ai.seat].passed||(await this.aiWorkers(c,now,state)).length>0;
+    return {pauseAt:pauseAt===null?null:Math.min(now,Math.max(state.lastTransitionAt,pauseAt)),reason,pending,healthy:this.kv.isReady&&Boolean(live.rowCount)&&aiHealthy,incidentIds:[...new Set(incidentIds)]};
   }
   async stop():Promise<void>{
     if(this.stopPromise)return this.stopPromise;
@@ -96,7 +102,7 @@ export class Health {
   }
   private async drain(checkpoint:number):Promise<void>{
     await this.inFlight;
-    if(this.kind==='api')await transaction(this.db,async c=>{const now=await databaseNow(c);await c.query('UPDATE service_epochs SET status=\'draining\' WHERE id=$1',[this.epoch]);await c.query('INSERT INTO incidents(id,epoch_id,reason,started_at) VALUES($1,$2,\'deployment\',$3) ON CONFLICT DO NOTHING',[randomUUID(),this.epoch,checkpoint>0?Math.min(checkpoint,now):now]);}).catch(()=>{});
+    if(this.kind==='api'||this.kind==='ai')await transaction(this.db,async c=>{const now=await databaseNow(c);await c.query('UPDATE service_epochs SET status=\'draining\' WHERE id=$1',[this.epoch]);await c.query('INSERT INTO incidents(id,epoch_id,reason,started_at) VALUES($1,$2,\'deployment\',$3) ON CONFLICT DO NOTHING',[randomUUID(),this.epoch,checkpoint>0?Math.min(checkpoint,now):now]);}).catch(()=>{});
     else await this.db.pool.query('UPDATE service_epochs SET status=\'stopped\' WHERE id=$1',[this.epoch]).catch(()=>{});
   }
 }

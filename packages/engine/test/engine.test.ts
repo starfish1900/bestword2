@@ -355,6 +355,17 @@ describe('disconnects, outage suspension and recovery',()=>{
 });
 
 describe('public and private projections',()=>{
+  it('guest live projections retain board ownership without providing replay history',()=>{
+    const state=applyAction(fixture([['1B','A']],'CT'),0,placement('1A','CAT'),3100,dictionary(['CAT']));
+    state.ai={seat:1,difficulty:'easy',vocabularyHash:'private-version-hash',policyVersion:'one'};
+    const guest=projectGame(state,null,3200,0,'recent');
+    expect(guest.game.moves).toEqual([]);expect(guest.game.historyAccess).toBe('recent');expect(guest.game.moveCount).toBe(1);
+    expect(guest.game.tileOrigins?.slice(0,3)).toEqual([0,'opening',0]);
+    expect(guest.game.lastMoveTiles).toEqual(state.moves[0]!.tiles);expect(guest.game.recentMoves?.[0]).not.toHaveProperty('tiles');
+    expect(guest.game.ai).toEqual({seat:1,difficulty:'easy'});expect(JSON.stringify(guest)).not.toContain('private-version-hash');
+    expect(projectGame(state,null,3200,0,'full').game.moves).toHaveLength(1);
+    guest.game.lastMoveTiles![0]!.letter='Z';expect(state.moves[0]!.tiles[0]!.letter).toBe('C');
+  });
   it('reveals only own rack, vowel counts, consonant total, and opponent rack size',()=>{
     const state=active(),spectator=projectGame(state,null,4000,3),player=projectGame(state,0,4000);
     expect(spectator.you).toBeNull();expect(spectator.game.players[0].rackSize).toBe(2);expect(spectator.game.spectatorCount).toBe(3);

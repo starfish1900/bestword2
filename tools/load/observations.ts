@@ -1,4 +1,4 @@
-import { LETTERS,VOWELS,type GameView,type Letter,type Seat } from '@bestword/contracts';
+import { LETTERS,VOWELS,type GameView,type Letter,type Seat,type TileOrigin,type PlacedTile,type RecentMove } from '@bestword/contracts';
 
 export interface HistogramSummary {count:number;p50:number|null;p95:number|null;p99:number|null;max:number|null;resolutionMs:number;overflowThresholdMs:number}
 /** Quantiles round upward to 1ms; the 10s bin is right-censored. Max stays exact. */
@@ -23,12 +23,13 @@ export class Histogram {
   }
 }
 
-export interface ExpectedWireView {seat:Seat|null;playerIds:[string,string];knownGame:boolean;racks:[readonly Letter[],readonly Letter[]];drawn:[number,number]}
+export interface ExpectedWireView {seat:Seat|null;historyAccess:'full'|'recent';playerIds:[string,string];knownGame:boolean;racks:[readonly Letter[],readonly Letter[]];drawn:[number,number];moveCount:number;tileOrigins:readonly TileOrigin[];lastMoveTiles:readonly PlacedTile[];recentMoves:readonly RecentMove[];principalHistory:readonly string[]}
 const TOP=['game','you'] as const;
-const GAME=['id','revision','rulesVersion','lexiconVersion','status','board','players','activeSeat','minutes','clocksMs','turnStartedAt','turnDeadlineAt','startsAt','serverTime','vowelsRemaining','consonantsRemaining','principalHistory','moves','disconnectDeadlines','pause','result','spectatorCount'] as const;
+const GAME=['ai','historyAccess','moveCount','tileOrigins','lastMoveTiles','recentMoves','id','revision','rulesVersion','lexiconVersion','status','board','players','activeSeat','minutes','clocksMs','turnStartedAt','turnDeadlineAt','startsAt','serverTime','vowelsRemaining','consonantsRemaining','principalHistory','moves','disconnectDeadlines','pause','result','spectatorCount'] as const;
 const PLAYER=['id','username','score','rackSize','passed','connected'] as const;
 const PRIVATE=['seat','rack','drawnThisTurn','canNoWords'] as const;
 const MOVE=['revision','seat','action','at','score','words','tiles','notation','word'] as const;
+const RECENT=['revision','seat','action','at','score','word'] as const;
 const WORD=['word','row','column','direction','letterSum','consonants','spans','isPrincipal','score'] as const;
 const TILE=['row','column','letter'] as const;
 const PAUSE=['reason','since','recoveryDeadlineAt'] as const;
@@ -72,6 +73,9 @@ export function validateWireView(view:GameView,expected:ExpectedWireView):string
     const game=view.game as unknown;
     if(fields(game,GAME,'game')){
       scanPublic(game);
+      check(game.ai===null,'Human-only fixture has unexpected AI metadata');
+      check(game.historyAccess===expected.historyAccess,'game.historyAccess differs from authenticated access');
+      check(integer(game.moveCount)&&game.moveCount===expected.moveCount,'game.moveCount differs from expected sequence');
       for(const name of ['id','rulesVersion','lexiconVersion'])check(typeof game[name]==='string'&&game[name]!=='',`game.${name} must be a nonempty string`);
       for(const name of ['revision','serverTime','consonantsRemaining','spectatorCount'])check(integer(game[name]),`game.${name} must be a nonnegative integer`);
       check(['waiting','active','paused','finished'].includes(String(game.status)),'game.status is invalid');
@@ -81,6 +85,23 @@ export function validateWireView(view:GameView,expected:ExpectedWireView):string
       check(Array.isArray(game.disconnectDeadlines)&&game.disconnectDeadlines.length===2&&game.disconnectDeadlines.every(at=>at===null||integer(at)),'game.disconnectDeadlines is invalid');
       for(const name of ['turnStartedAt','turnDeadlineAt','startsAt'])check(game[name]===null||integer(game[name]),`game.${name} is invalid`);
       check(Array.isArray(game.principalHistory)&&game.principalHistory.every(word=>typeof word==='string'),'game.principalHistory is invalid');
+      check(JSON.stringify(game.principalHistory)===JSON.stringify(expected.historyAccess==='full'?expected.principalHistory:expected.principalHistory.slice(0,2)),'game.principalHistory differs from allowed history');
+      check(Array.isArray(game.tileOrigins)&&game.tileOrigins.length===225&&game.tileOrigins.every((origin,index)=>(origin===null||origin==='opening'||seat(origin))&&origin===expected.tileOrigins[index]),'game.tileOrigins differs from expected contributors');
+      if(!Array.isArray(game.lastMoveTiles))add('game.lastMoveTiles must be an array');
+      else {
+        for(const [index,tile]of game.lastMoveTiles.entries())if(fields(tile,TILE,`game.lastMoveTiles[${index}]`))check(coordinate(tile.row)&&coordinate(tile.column)&&typeof tile.letter==='string'&&LETTER_SET.has(tile.letter),`game.lastMoveTiles[${index}] is invalid`);
+        check(JSON.stringify(game.lastMoveTiles)===JSON.stringify(expected.lastMoveTiles),'game.lastMoveTiles differs from the last accepted move');
+      }
+      if(!Array.isArray(game.recentMoves))add('game.recentMoves must be an array');
+      else {
+        check(game.recentMoves.length===Math.min(3,expected.moveCount),'game.recentMoves must contain only the latest three turns');
+        for(const [index,move]of game.recentMoves.entries())if(fields(move,RECENT,`game.recentMoves[${index}]`)){
+          const predicted=expected.recentMoves[index];
+          check(integer(move.revision)&&integer(move.at)&&integer(move.score)&&seat(move.seat)&&['PLACE_WORD','PASS','NO_WORDS'].includes(String(move.action)),`game.recentMoves[${index}] is invalid`);
+          check(predicted!==undefined&&['seat','action','score','word'].every(name=>move[name]===predicted[name as keyof RecentMove]),`game.recentMoves[${index}] differs from the accepted turn`);
+          check(typeof move.revision==='number'&&move.revision<=(game.revision as number)&&(index===0||move.revision>((game.recentMoves[index-1] as RecordValue).revision as number)),`game.recentMoves[${index}] has an invalid revision sequence`);
+        }
+      }
       if(fields(game.vowelsRemaining,VOWELS,'game.vowelsRemaining'))for(const vowel of VOWELS)check(integer(game.vowelsRemaining[vowel]),`game.vowelsRemaining.${vowel} is invalid`);
       if(!Array.isArray(game.players)||game.players.length!==2)add('game.players must contain exactly two players');
       else for(const index of [0,1] as const){
@@ -101,7 +122,7 @@ export function validateWireView(view:GameView,expected:ExpectedWireView):string
         check(integer(game.result.at),'game.result.at is invalid');
       }
       if(!Array.isArray(game.moves))add('game.moves must be an array');
-      else for(const [index,move]of game.moves.entries()){
+      else {check(game.moves.length===(expected.historyAccess==='full'?expected.moveCount:0),'game.moves exposes forbidden history or omits authenticated history');for(const [index,move]of game.moves.entries()){
         const path=`game.moves[${index}]`;if(!fields(move,MOVE,path))continue;
         check(seat(move.seat)&&['PLACE_WORD','PASS','NO_WORDS'].includes(String(move.action)),`${path} action/seat is invalid`);
         for(const name of ['revision','at','score'])check(integer(move[name]),`${path}.${name} is invalid`);
@@ -114,7 +135,7 @@ export function validateWireView(view:GameView,expected:ExpectedWireView):string
         }
         if(!Array.isArray(move.tiles))add(`${path}.tiles must be an array`);
         else for(const [tileIndex,tile]of move.tiles.entries())if(fields(tile,TILE,`${path}.tiles[${tileIndex}]`))check(coordinate(tile.row)&&coordinate(tile.column)&&typeof tile.letter==='string'&&LETTER_SET.has(tile.letter),`${path}.tiles[${tileIndex}] is invalid`);
-      }
+      }}
     }
     const privateView=view.you as unknown;
     if(expected.seat===null)check(privateView===null,'Spectator received a private player view');

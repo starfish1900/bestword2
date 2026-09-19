@@ -4,6 +4,10 @@ A live, two-player crossword game for the browser. Build connected words, find v
 
 BestWord includes accounts, an open game lobby, live spectating, permanent PASS, server-controlled clocks, completed games and move-by-move replay. It uses the supplied English dictionary of **279,320 words**. Racks remain private; vowel counts, total remaining consonants and rack sizes are public.
 
+Signed-in players can also choose **Computer** and challenge Easy, Medium or Hard. Easy uses 9,868 legal frequent words, Medium 38,359, and Hard the full dictionary. Each level searches for its highest-scoring legal placement and can strategically choose NO WORDS to accumulate consonants. Human words always use the full dictionary. AI games are saved and replayed like human games; replay requires sign-in, while live watching remains public. See [AI design and operation](docs/AI.md).
+
+Every Rules/help link opens the shared help panel, with a **Video tutorial** tab containing the original narrated tutorial unchanged. Playback starts only when requested. Opening help during a game keeps its connection alive; the clock continues.
+
 Every completed word must contain at least one vowel and one consonant; **Y is a vowel**. Opening tiles stay grey, and contributed tiles retain each player's green or orange color through later crossings and replay. Confirmed scores count up with a slowing animation, with immediate updates when reduced motion is preferred. See the [playtest update and verification notes](docs/progress/2026-09-18-playtest-improvements.md).
 
 The source rules are in [docs/original-spec.txt](docs/original-spec.txt), with the agreed clarifications in [docs/DECISIONS.md](docs/DECISIONS.md). The delivery does not provision paid services or publish a live website automatically.
@@ -18,7 +22,7 @@ docker compose up --build -d
 
 Open **http://localhost:3000**. Create an account in each of two separate browser profiles or one normal window and one private window. Create a game in one, then join it in the other. A third browser window can watch without signing in.
 
-Compose starts PostgreSQL, Valkey, the application and its background worker. It stores database data in persistent Docker volumes. To stop the local stack while preserving games and accounts:
+Compose starts PostgreSQL, Valkey, the application, its clock/notification worker and its dedicated AI worker. It stores database data in persistent Docker volumes. To stop the local stack while preserving games and accounts:
 
 ```sh
 docker compose down
@@ -34,14 +38,14 @@ Use **Node.js 24 LTS** and npm. Rust is needed only to rebuild the lexicon; a ve
 2. Start PostgreSQL and Valkey with `docker compose up -d postgres valkey`.
 3. Copy `.env.example` to `.env`. On Windows PowerShell: `Copy-Item .env.example .env`; on macOS/Linux: `cp .env.example .env`.
 4. Run `npm run build` once, then `npm run dev`.
-5. In another terminal in this folder, run `npm run worker`.
+5. In separate terminals in this folder, run `npm run worker` and `npm run worker:ai`.
 6. Open **http://localhost:5173**.
 
 The API listens on port 3000 and Vite on port 5173. The browser uses Vite's same-origin proxy. `APP_ORIGIN` must exactly match the URL opened in the browser; `localhost` and `127.0.0.1` are different origins.
 
 Without Docker, use your own PostgreSQL and Redis-compatible services, or see [the portable local services guide](tools/dev/README.md). The portable helper requires an available Redis-compatible binary; it does not bundle one with the game. Avoid starting Docker services on ports already occupied by the portable services.
 
-To serve the compiled browser application directly, set `APP_ORIGIN=http://localhost:3000`, run `npm run build`, then run `npm start` and `npm run worker` in separate terminals. PostgreSQL and the key-value service must already be running.
+To serve the compiled browser application directly, set `APP_ORIGIN=http://localhost:3000`, run `npm run build`, then run `npm start`, `npm run worker` and `npm run worker:ai` in separate terminals. PostgreSQL and the key-value service must already be running.
 
 ## Play
 
@@ -67,7 +71,7 @@ Click an empty square. The first click selects horizontal **⇨**; each subseque
 
 Rejected moves preserve their draft. If a connection drops before an acknowledgement arrives, the client retries the same command identifier, so an accepted move cannot be counted twice.
 
-Use the history icon for the complete scoring breakdown. Completed games support opening-position, previous/next, automatic and final-position replay. Replay shows the board and scores at the selected move; private racks are never revealed.
+Sign in and use the history icon for the complete scoring breakdown. Completed games support opening-position, previous/next, automatic and final-position replay. Replay shows the board and scores at the selected move; private racks are never revealed.
 
 ### Accounts
 

@@ -1,0 +1,24 @@
+# Server-side AI search and vocabulary
+
+## Implementation
+
+- Preserved supplied originals and intersected with the exact full vocabulary. Easy: 9,870 input entries, 9,868 legal words, 503,403-byte packed artifact. Medium: 38,369 entries, 38,359 legal words, 1,726,848-byte packed artifact. The full graph and dictionary remain unchanged.
+- Reused the existing Rust Daciuk minimizer; built each graph twice with byte-identical results. Independent binary audit proves minimality and exact accepted language. `data/ai/manifest.json` records input/corpus/artifact hashes and rejected words.
+- Added immutable seedless runtime loading and allocation-free transition masks. Seedless loading still checks the entire opening-word index; it does not retain those strings.
+- `@bestword/ai` searches every legal placement from pre-move anchors and cross-checks, using canonical earliest anchors to avoid duplicate moves without a retained move collection. Inventory includes own consonants and available shared vowels, including Y. Both principal and secondary AI words use the selected vocabulary.
+- Traversal handles reversed-only terminal paths and prefix/separator/suffix paths. It enforces maximal words, two new tiles, mixed composition and principal history. Scoring uses the engine's shared formula, including independent primary/secondary bridge calculations. Server commit still performs authoritative full validation.
+- Only the exact highest immediate score is retained; ties use word, direction, row and column order. Cancellation explicitly marks a search incomplete. The AI receives no opponent rack or future draw order.
+- Strategic NO WORDS compares the exact current placement against waiting over up to four paired sampled continuations. Both branches use identical sampled hidden consonants, full-vocabulary greedy opponent replies and a selected-vocabulary next AI placement. Sampling uses only initial inventory minus public board and own rack, public opponent rack size and a reproducible game/revision/sample seed.
+- Optional work is capped at 1,500 ms with a 500 ms clock reserve. Incomplete pairs are discarded. Waiting requires at least two complete pairs, mean gain at least max(10 points, 10% of the current best score), and strictly positive gain in at least ceil(75% of pairs). Otherwise the exact current best is played. NO WORDS remains subject to actual draw and opponent-PASS eligibility.
+- A decision is a heuristic against sampled greedy replies, not a claim of optimal play across future turns. Variable available compute time can change the number of completed samples. No move cutoff is used to pretend that a partially searched current position has no legal moves.
+
+## Completed validation
+
+- **35 tests** across AI and lexicon packages: 22 AI tests and 13 lexicon tests. The generator is compared against an independent exhaustive word/start/direction oracle using the production engine across 50 seeded randomized cases. Candidate sets, scores, tie winners and absence of duplicates match. All five published scoring examples pass. Full-rack and empty-bag tests verify that optional waiting is considered only when retaining tiles can increase the next rack.
+- Fixed legal opening fixture: chooses strategic NO WORDS despite an available 54-point move; four paired gains are 17, 4, 177 and -26. A second fixture chooses the exact 66-point placement when waiting is inferior. Tests also exercise missing eligibility, proven no-move PASS behavior, clock reserve, cancellation and discarded incomplete pairs.
+- All 279,320 full-dictionary words and 2,544,319 transforms retain their existing integrity checks. Both new tier corpora load through the production reader. Strict package build passes.
+- `docs/evidence/ai-search-benchmark.json`: 120 local cases across all three levels, including initial, 10-consonant-rack, middle and late positions. **491,502 generated candidates** were individually revalidated and rescored through the full production engine; no mismatches. The largest single result contained **70,734 moves**, streamed without a retained move list.
+- In this run the slowest complete decision took **96.74 ms**. A subsequent 250-search full-vocabulary memory exercise ended below its starting RSS. Peak sampled process RSS was **139,694,080 bytes (133.2 MiB)**, including all three graphs and the full opening-word index used by the benchmark fixture generator.
+- This is single-process local evidence on the recorded Windows desktop, not a Render capacity or concurrent-service benchmark. The optional-work deadline does not replace bounded worker concurrency, admission limits or deadline-aware transactional commits.
+
+Reproduce after building packages with `node --expose-gc packages/ai/tools/benchmark.mjs`. Timing and RSS values naturally vary. The benchmark's audited search timings include authoritative verification of every candidate; decision timings measure the normal search/strategy path.

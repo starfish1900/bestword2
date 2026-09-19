@@ -13,6 +13,7 @@ export class LexiconFormatError extends Error {
 }
 
 export interface GaddagEdge { readonly label: string; readonly target: number }
+export interface GaddagLoadOptions { /** Search workers do not need the opening-word index. */ decodeSeeds?: boolean }
 
 function requireFormat(condition: boolean, message: string): asserts condition {
   if (!condition) throw new LexiconFormatError(message);
@@ -52,7 +53,7 @@ export class Gaddag {
   private readonly nodeOffset: number;
   private readonly edgeOffset: number;
 
-  private constructor(input: Uint8Array) {
+  private constructor(input: Uint8Array, options: GaddagLoadOptions = {}) {
     requireFormat(input.byteLength >= HEADER_BYTES && input.byteLength <= MAX_BINARY_BYTES, 'Invalid lexicon size');
     // Copy so a caller cannot invalidate a verified graph by mutating its input.
     const bytes = Buffer.from(input);
@@ -82,24 +83,30 @@ export class Gaddag {
     this.binaryBytes = bytes.length;
     this.data = bytes;
     this.validateGraph();
-    this.seedWords = Object.freeze(this.decodeSeeds(seedOffset, seedCount));
+    this.seedWords = Object.freeze(this.decodeSeeds(seedOffset, seedCount, options.decodeSeeds !== false));
   }
 
   /** Read a .bin or gzip-compressed artifact once during process startup. */
-  static async open(path: string | URL): Promise<Gaddag> {
+  static async open(path: string | URL, options: GaddagLoadOptions = {}): Promise<Gaddag> {
     const bytes = await readFile(path);
     if (bytes[0] === 0x1f && bytes[1] === 0x8b) {
-      try { return Gaddag.load(gunzipSync(bytes, { maxOutputLength: MAX_BINARY_BYTES })); }
+      try { return Gaddag.load(gunzipSync(bytes, { maxOutputLength: MAX_BINARY_BYTES }), options); }
       catch (error) {
         if (error instanceof LexiconFormatError) throw error;
         throw new LexiconFormatError(`Invalid compressed lexicon: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
-    return Gaddag.load(bytes);
+    return Gaddag.load(bytes, options);
   }
 
   /** Load and validate an uncompressed packed artifact. */
-  static load(bytes: Uint8Array): Gaddag { return new Gaddag(bytes); }
+  static load(bytes: Uint8Array, options: GaddagLoadOptions = {}): Gaddag { return new Gaddag(bytes, options); }
+
+  /** Allocation-free bitmap: bit 0 is '+', bits 1..26 are A..Z. */
+  transitionMask(state: number): number {
+    this.checkState(state);
+    return this.data.readUInt32LE(this.nodeOffset + state * 7) & LABEL_MASK;
+  }
 
   /** Exact uppercase dictionary lookup; lowercase/non-ASCII input is rejected. */
   has(word: string): boolean {
@@ -210,7 +217,7 @@ export class Gaddag {
     requireFormat(!this.terminalUnchecked(this.root), 'Empty word in dictionary');
   }
 
-  private decodeSeeds(offset: number, count: number): string[] {
+  private decodeSeeds(offset: number, count: number, retain: boolean): string[] {
     const words: string[] = [];
     let cursor = offset;
     let previous = '';
@@ -234,7 +241,7 @@ export class Gaddag {
       requireFormat(usedBits === 0 || (this.data[cursor + encodedBytes - 1]! >>> usedBits) === 0, 'Nonzero seed padding');
       cursor += encodedBytes;
       requireFormat(word.length >= 9 && word.length <= 12 && word > previous && this.has(word), 'Invalid or unordered seed word');
-      words.push(word);
+      if (retain) words.push(word);
       previous = word;
     }
     requireFormat(cursor === this.data.length, 'Trailing seed data');

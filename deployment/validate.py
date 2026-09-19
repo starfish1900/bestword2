@@ -60,11 +60,18 @@ for service in services.values():
     if service["type"] in ("web", "worker"):
         assert (root / service["dockerfilePath"]).is_file()
         assert service["numInstances"] == 1
-        assert service["autoDeployTrigger"] == "off"
+        assert service["autoDeployTrigger"] == "commit"
 for database in render["databases"]:
     assert database["region"] == "virginia"
     assert database["ipAllowList"] == []
 assert services["bestword-keyvalue"]["ipAllowList"] == []
+assert services["bestword-ai"]["type"] == "worker"
+assert services["bestword-ai"]["plan"] == "1c-2g"
+assert services["bestword-ai"]["dockerCommand"] == "node apps/server/dist/ai-worker.js"
+ai_env = {item["key"]: item.get("value") for item in services["bestword-ai"]["envVars"]}
+assert str(ai_env["AI_WORKERS"]) == "1"
+assert 1 <= int(ai_env["AI_MAX_GAMES"]) <= 10
+assert int(ai_env["AI_LOOKAHEAD_MS"]) == 1500
 print("Render references, private datastore access, region and manual instance limits: passed")
 
 compose = documents["compose.yml"]

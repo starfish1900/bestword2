@@ -94,7 +94,7 @@ describe.skipIf(!enabled)('real database, multiple gateways, and WebSocket integ
     // other database operations continue while the new socket joins the set.
     a.db.pool.query=((...args:unknown[])=>{
       const result=Reflect.apply(original,a.db.pool,args);
-      if(!held&&typeof args[0]==='string'&&args[0].startsWith('SELECT token_hash FROM sessions WHERE token_hash=ANY')){
+      if(!held&&typeof args[0]==='string'&&args[0].startsWith('SELECT s.token_hash FROM sessions s JOIN users')){
         held=true;return Promise.resolve(result).then(async value=>{entered.resolve();await release.promise;return value;});
       }
       return result;
@@ -132,13 +132,44 @@ describe.skipIf(!enabled)('real database, multiple gateways, and WebSocket integ
     const races=await Promise.all([a.games.command({gameId:g.gameId,commandId:randomUUID(),expectedRevision:current.revision,action:{type:'NO_WORDS'}},nextPlayer.user),b.games.command({gameId:g.gameId,commandId:randomUUID(),expectedRevision:current.revision,action:{type:'NO_WORDS'}},nextPlayer.user)]);expect(races.filter(r=>r.ok)).toHaveLength(1);expect(races.filter(r=>!r.ok&&r.error.code==='STALE_REVISION')).toHaveLength(1);
     const replay=await ack(socket,'game:command',sent);expect(replay).toMatchObject({ok:true,acceptedRevision:reply.acceptedRevision});expect(replay.ok&&replay.view.game.revision).toBeGreaterThan(reply.acceptedRevision!);
   });
-  it('permanent PASS releases the account slot and public replay contains only accepted moves',async()=>{
+  it('permanent PASS releases the account slot and signed-in replay contains only accepted moves',async()=>{
     const g=await readyGame();let row=await a.games.read(g.gameId);const active=row.state.activeSeat;const p=active===0?g.p0:g.p1;const other=active===0?g.p1:g.p0;
     expect((await command(g.gameId,p,{type:'PASS'})).ok).toBe(true);row=await a.games.read(g.gameId);const frozen=row.state.clocksMs[active];expect((await api(a,'/api/session',p)).json().activeGameId).toBeNull();expect((await api(a,'/api/seeks',p,{minutes:25})).statusCode).toBe(201);
     expect(await command(g.gameId,other,{type:'NO_WORDS'})).toMatchObject({ok:false,error:{code:'NO_WORDS_UNAVAILABLE'}});
     expect((await command(g.gameId,other,{type:'PASS'})).ok).toBe(true);row=await a.games.read(g.gameId);expect(row.state.result?.reason).toBe('both-passed');expect(row.state.clocksMs[active]).toBe(frozen);
-    const publicGame=(await api(b,`/api/games/${g.gameId}`)).json() as GameView;expect(publicGame.you).toBeNull();expect(publicGame.game.moves.map(m=>m.action)).toEqual(['PASS','PASS']);expect(JSON.stringify(publicGame)).not.toMatch(/consonantDrawOrder|"bag"|"rack":/);
+    const publicGame=(await api(b,`/api/games/${g.gameId}`)).json() as GameView;expect(publicGame.you).toBeNull();expect(publicGame.game.moves).toEqual([]);expect(publicGame.game.moveCount).toBe(2);expect(JSON.stringify(publicGame)).not.toMatch(/consonantDrawOrder|"bag"|"rack":/);
+    expect((await api(b,`/api/games/${g.gameId}/replay`)).statusCode).toBe(401);
+    const reader=await player();const replay=(await api(b,`/api/games/${g.gameId}/replay`,reader)).json() as GameView;
+    expect(replay.you).toBeNull();expect(replay.game.historyAccess).toBe('full');expect(replay.game.moves.map(m=>m.action)).toEqual(['PASS','PASS']);
     expect((await api(a,`/api/games/history?username=${p.user.username}`)).json().items.some((item:{id:string})=>item.id===g.gameId)).toBe(true);
+  });
+  it('protects full history on live fetches, socket sync and terminal broadcasts, including revoked viewers',async()=>{
+    const g=await readyGame(),reader=await player();
+    const guest=await connect(urlB),signed=await connect(urlB,reader);
+    expect(await ack(guest,'game:subscribe',{gameId:g.gameId,replay:true})).toMatchObject({ok:false,error:{code:'AUTH_REQUIRED'}});
+    expect(await ack(guest,'game:sync',{gameId:g.gameId,replay:true})).toMatchObject({ok:false,error:{code:'AUTH_REQUIRED'}});
+    expect(await ack(guest,'game:subscribe',{gameId:g.gameId})).toMatchObject({ok:true,view:{game:{historyAccess:'recent',moves:[]}}});
+    expect(await ack(signed,'game:subscribe',{gameId:g.gameId,replay:true})).toMatchObject({ok:true,view:{game:{historyAccess:'full'}}});
+    const guestUpdates:GameView[]=[],signedUpdates:GameView[]=[];
+    guest.on('game:update',view=>guestUpdates.push(view));signed.on('game:update',view=>signedUpdates.push(view));
+    for(let turn=0;turn<4;turn++){
+      const row=await a.games.read(g.gameId);const p=row.state.activeSeat===0?g.p0:g.p1;
+      const action=turn===0?findMove(row.state,a.games.lexicon):{type:'NO_WORDS' as const};
+      expect(action).not.toBeNull();expect((await command(g.gameId,p,action!)).ok).toBe(true);
+    }
+    await eventually(async()=>signedUpdates,values=>values.some(view=>view.game.moves.length===4));
+    const anonymous=(await api(a,`/api/games/${g.gameId}`)).json() as GameView;
+    expect(anonymous.game.moves).toEqual([]);expect(anonymous.game.principalHistory).toHaveLength(2);
+    expect(anonymous.game.recentMoves).toHaveLength(3);expect(anonymous.game.tileOrigins).toHaveLength(225);
+    expect(anonymous.game.recentMoves?.every(move=>!('tiles'in move)&&!('words'in move))).toBe(true);
+    expect((await api(a,`/api/games/${g.gameId}`,reader)).json().game.moves).toHaveLength(4);
+    await a.db.pool.query('DELETE FROM sessions WHERE token_hash=$1',[digestToken(reader.cookie.split('=')[1]!)]);
+    for(let turn=0;turn<2;turn++){const row=await a.games.read(g.gameId);expect((await command(g.gameId,row.state.activeSeat===0?g.p0:g.p1,{type:'PASS'})).ok).toBe(true);}
+    await eventually(async()=>guestUpdates,values=>values.some(view=>view.game.status==='finished'));
+    expect(guestUpdates.every(view=>view.game.moves.length===0&&view.game.historyAccess==='recent'&&view.you===null)).toBe(true);
+    expect(signedUpdates.filter(view=>(view.game.moveCount??0)>4)).toEqual([]);
+    expect((await api(a,`/api/games/${g.gameId}/replay`,reader)).statusCode).toBe(401);
+    if(signed.connected)expect(await ack(signed,'game:sync',{gameId:g.gameId})).toMatchObject({ok:true,view:{you:null,game:{historyAccess:'recent',moves:[]}}});
   });
   it('adjudicates a near-zero clock only after healthy gateway evidence',async()=>{
     const g=await readyGame();const row=await a.games.read(g.gameId);const state=row.state;const now=Date.now();state.clocksMs[state.activeSeat]=150;state.turnStartedAt=now;state.turnDeadlineAt=now+150;state.lastTransitionAt=now;

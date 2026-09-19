@@ -1,10 +1,11 @@
 import { randomUUID,randomInt,createHash } from 'node:crypto';
 import type { PoolClient } from 'pg';
-import { EngineError,createGame,applyAction,startIfReady,dueOutcome,adjudicate,pauseGame,beginRecovery,resumeGame,setConnected,nextDeadline,projectGame,restartRecovery,type EngineState } from '@bestword/engine';
+import { EngineError,createGame,applyAction,evaluatePlacement,startIfReady,dueOutcome,adjudicate,pauseGame,beginRecovery,resumeGame,setConnected,nextDeadline,projectGame,restartRecovery,type EngineState } from '@bestword/engine';
 import type { Gaddag } from '@bestword/lexicon';
-import type { User,Seat,GameCommand,CommandReply,GameView,GameSummary,TimeControl,ApiError } from '@bestword/contracts';
+import type { User,Seat,GameCommand,GameAction,CommandReply,GameView,GameSummary,TimeControl,ApiError,AiDifficulty } from '@bestword/contracts';
 import type { Config } from './config.js';
-import { type Database,type GameRow,type GatewaySeats,transaction,databaseNow } from './db.js';
+import { AI_USERS,type AiJob,type Database,type GameRow,type GatewaySeats,transaction,databaseNow } from './db.js';
+import { aiPositionKey,ensureAiJob,type AiClaim } from './ai-jobs.js';
 import { HttpError,isPgError } from './errors.js';
 import { type KeyValue,presence,touchPresence,removePresence,rateLimit } from './kv.js';
 import type { Health } from './health.js';
@@ -16,9 +17,9 @@ export class Games {
   constructor(readonly db:Database,readonly kv:KeyValue,readonly health:Health,readonly lexicon:Gaddag,readonly config:Config){}
   seat(state:EngineState,userId:string|undefined):Seat|null{return state.players[0].id===userId?0:state.players[1].id===userId?1:null;}
   async read(id:string):Promise<GameRow>{const r=await this.db.pool.query<GameRow>('SELECT * FROM games WHERE id=$1',[id]);if(!r.rows[0])throw new HttpError(404,'GAME_NOT_FOUND','This game was not found.');return r.rows[0];}
-  async view(id:string,userId?:string):Promise<GameView>{const row=await this.read(id);return projectGame(row.state,this.seat(row.state,userId),Date.now(),await this.spectators(id));}
+  async view(id:string,userId?:string):Promise<GameView>{const row=await this.read(id);return projectGame(row.state,this.seat(row.state,userId),Date.now(),await this.spectators(id),userId?'full':'recent');}
   async spectators(id:string):Promise<number>{if(!this.kv.isReady)return 0;await this.kv.zRemRangeByScore(`bw:spectators:${id}`,'-inf',Date.now());return this.kv.zCard(`bw:spectators:${id}`);}
-  summary(row:GameRow):GameSummary{return {id:row.id,players:row.state.players.map(({id,username})=>({id,username})) as [User,User],scores:row.state.players.map(p=>p.score) as [number,number],minutes:row.state.minutes,status:row.state.status,result:row.state.result,createdAt:Number(row.created_at),spectatorCount:0};}
+  summary(row:GameRow):GameSummary{return {id:row.id,players:row.state.players.map(({id,username})=>({id,username})) as [User,User],scores:row.state.players.map(p=>p.score) as [number,number],minutes:row.state.minutes,status:row.state.status,result:row.state.result,createdAt:Number(row.created_at),spectatorCount:0,ai:row.state.ai?{seat:row.state.ai.seat,difficulty:row.state.ai.difficulty}:null};}
   async persist(c:PoolClient,before:EngineState,state:EngineState,gateways:GatewaySeats,handled:string[]=[]):Promise<void>{
     await c.query('UPDATE games SET state=$2,revision=$3,status=$4,updated_at=$5,next_deadline=$6,gateways=$7,handled_incidents=$8 WHERE id=$1',[state.id,JSON.stringify(state),state.revision,state.status,state.lastTransitionAt,nextDeadline(state),JSON.stringify(gateways),handled]);
     if(state.revision!==before.revision){
@@ -28,6 +29,7 @@ export class Games {
       await c.query('INSERT INTO outbox(game_id,revision,created_at) VALUES($1,$2,$3) ON CONFLICT DO NOTHING',[state.id,state.revision,state.lastTransitionAt]);
     }
     for(const player of state.players)if(player.passed||state.status==='finished')await c.query('DELETE FROM playing_slots WHERE user_id=$1 AND game_id=$2',[player.id,state.id]);
+    await ensureAiJob(c,state);
   }
   async announce(state:EngineState):Promise<void>{
     try{await this.publish(state);await this.db.pool.query('DELETE FROM outbox WHERE game_id=$1 AND revision<=$2',[state.id,state.revision]);}catch{/* durable outbox will retry */}
@@ -37,6 +39,9 @@ export class Games {
     const epochs=[...new Set(members.map(member=>member.split('/')[0]!))];
     if(!epochs.length)return [];
     return (await c.query<{id:string}>("SELECT id FROM service_epochs WHERE id=ANY($1::uuid[]) AND kind='api' AND status='active' AND last_healthy>=$2",[epochs,now-3000])).rows.map(row=>row.id);
+  }
+  async controllerPresence(c:PoolClient,state:EngineState,seat:Seat,now:number):Promise<string[]>{
+    return state.ai?.seat===seat?(await this.health.aiWorkers(c,now,state)).map(worker=>worker.id):this.livePresence(c,state.id,seat,now);
   }
   async settle(c:PoolClient,row:GameRow,now:number):Promise<{state:EngineState;gateways:GatewaySeats;pending:boolean;handled:string[]}>{
     let state=row.state;const gateways:GatewaySeats=structuredClone(row.gateways);let handled=[...row.handled_incidents];
@@ -51,7 +56,7 @@ export class Games {
         if(state.pause?.recoveryDeadlineAt===null)state=beginRecovery(state,now);
         for(const seat of [0,1] as const){
           if(state.players[seat].passed)continue;
-          const live=await this.livePresence(c,state.id,seat,now);
+          const live=await this.controllerPresence(c,state,seat,now);
           if(live.length)gateways[seat]=live;
           if(state.players[seat].connected!==Boolean(live.length)&&!dueOutcome(state,now))state=setConnected(state,seat,Boolean(live.length),now);
         }
@@ -67,7 +72,7 @@ export class Games {
       for(const seat of [0,1] as const){
         if(dueOutcome(state,now))break;
         if(state.players[seat].passed)continue;
-        const live=await this.livePresence(c,state.id,seat,now);
+        const live=await this.controllerPresence(c,state,seat,now);
         if(live.length)gateways[seat]=live;
         if(state.players[seat].connected!==Boolean(live.length))state=setConnected(state,seat,Boolean(live.length),now);
       }
@@ -87,7 +92,7 @@ export class Games {
     const reply=await transaction(this.db,async c=>{
       const locked=await c.query<GameRow>('SELECT * FROM games WHERE id=$1 FOR UPDATE',[command.gameId]);const row=locked.rows[0];
       if(!row)throw new HttpError(404,'GAME_NOT_FOUND','This game was not found.');
-      const seat=this.seat(row.state,user.id);if(seat===null)throw new HttpError(403,'NOT_A_PLAYER','Only a player in this game can submit moves.');
+      const seat=this.seat(row.state,user.id);if(seat===null||row.state.ai?.seat===seat)throw new HttpError(403,'NOT_A_PLAYER','Only a human player in this game can submit moves.');
       const payloadHash=createHash('sha256').update(JSON.stringify({expectedRevision:command.expectedRevision,action:command.action})).digest('hex');
       const previous=await c.query<{payload_hash:string;reply:Receipt}>('SELECT payload_hash,reply FROM commands WHERE game_id=$1 AND user_id=$2 AND command_id=$3',[row.id,user.id,command.commandId]);
       const prior=previous.rows[0];const now=await databaseNow(c);
@@ -110,7 +115,7 @@ export class Games {
     if(changed)await this.announce(changed);return reply;
   }
   async connect(gameId:string,user:User,member:string,connected:boolean):Promise<GameView>{
-    const first=await this.read(gameId);const seat=this.seat(first.state,user.id);if(seat===null)throw new HttpError(403,'NOT_A_PLAYER','This account is not a player in this game.');
+    const first=await this.read(gameId);const seat=this.seat(first.state,user.id);if(seat===null||first.state.ai?.seat===seat)throw new HttpError(403,'NOT_A_PLAYER','This account is not a human player in this game.');
     if(connected)await touchPresence(this.kv,gameId,seat,member,Date.now());else await removePresence(this.kv,gameId,seat,member);
     let changed:EngineState|undefined;
     const view=await transaction(this.db,async c=>{
@@ -144,6 +149,66 @@ export class Games {
     }catch(error){if(isPgError(error,'23505'))throw new HttpError(409,'ALREADY_PLAYING','One of the players is already playing another game.');throw error;}
     if(!state)throw new Error('Game creation produced no state');await this.announce(state);return state.id;
   }
+  async aiAvailability():Promise<{available:boolean;activeGames:number;maxGames:number}>{
+    return transaction(this.db,async c=>{
+      const now=await databaseNow(c);const workers=(await this.health.aiWorkers(c,now)).filter(worker=>worker.capabilities.vocabularies.hard===this.lexicon.sha256);
+      const result=await c.query<{count:string}>("SELECT count(*) AS count FROM games WHERE status<>'finished' AND state ? 'ai'");
+      const activeGames=Number(result.rows[0]!.count);return {available:this.health.ready&&workers.length>0&&activeGames<this.config.AI_MAX_GAMES,activeGames,maxGames:this.config.AI_MAX_GAMES};
+    });
+  }
+  async createAi(user:User,difficulty:AiDifficulty,minutes:TimeControl):Promise<string>{
+    if(!this.health.ready)throw new HttpError(503,'SERVICE_RECOVERING','The service is recovering. Please try again shortly.');
+    let created:EngineState|undefined;
+    try{await transaction(this.db,async c=>{
+      await c.query('SELECT pg_advisory_xact_lock(421715012)');const now=await databaseNow(c);
+      const human=await c.query("SELECT 1 FROM users WHERE id=$1 AND kind='human'",[user.id]);if(!human.rowCount)throw new HttpError(403,'AUTH_REQUIRED','Sign in with a player account to challenge the computer.');
+      const slot=await c.query('SELECT 1 FROM playing_slots WHERE user_id=$1',[user.id]);if(slot.rowCount)throw new HttpError(409,'ALREADY_PLAYING','Finish or pass your current game before creating another.');
+      const workers=(await this.health.aiWorkers(c,now)).filter(worker=>worker.capabilities.vocabularies.hard===this.lexicon.sha256);const worker=workers[0];
+      if(!worker)throw new HttpError(503,'AI_UNAVAILABLE','The computer opponent is reconnecting. Please try again shortly.');
+      const counts=await c.query<{all_games:string;ai_games:string}>("SELECT count(*) AS all_games,count(*) FILTER(WHERE state ? 'ai') AS ai_games FROM games WHERE status<>'finished'");
+      if(Number(counts.rows[0]!.all_games)>=this.config.MAX_ACTIVE_GAMES)throw new HttpError(503,'CAPACITY_REACHED','All game tables are occupied. Please try again shortly.');
+      if(Number(counts.rows[0]!.ai_games)>=this.config.AI_MAX_GAMES)throw new HttpError(503,'AI_CAPACITY_REACHED','All computer tables are occupied. Please try again shortly.');
+      const id=randomUUID();let state=createGame({id,players:[user,AI_USERS[difficulty]],minutes,lexiconVersion:this.lexicon.sha256,seedWords:this.lexicon.seedWords,now,randomInt},this.lexicon);
+      state.ai={seat:1,difficulty,vocabularyHash:worker.capabilities.vocabularies[difficulty],policyVersion:worker.capabilities.policyVersion};
+      state.players[1].connected=true;
+      const gateways:GatewaySeats=[[],workers.filter(item=>item.capabilities.policyVersion===state.ai!.policyVersion&&item.capabilities.vocabularies[difficulty]===state.ai!.vocabularyHash).map(item=>item.id)];
+      await c.query('INSERT INTO games(id,state,revision,status,created_at,updated_at,next_deadline,gateways) VALUES($1,$2,$3,$4,$5,$5,$6,$7)',[id,JSON.stringify(state),state.revision,state.status,now,nextDeadline(state),JSON.stringify(gateways)]);
+      await c.query('INSERT INTO playing_slots(user_id,game_id) VALUES($1,$2)',[user.id,id]);
+      for(const seat of [0,1] as const)await c.query('INSERT INTO game_players(game_id,user_id,seat) VALUES($1,$2,$3)',[id,state.players[seat].id,seat]);
+      await c.query('INSERT INTO game_events(game_id,revision,kind,at,public_data) VALUES($1,0,\'setup\',$2,$3)',[id,now,JSON.stringify({board:state.board,principalHistory:state.principalHistory,ai:{seat:1,difficulty}})]);
+      await c.query('DELETE FROM seeks WHERE user_id=$1',[user.id]);created=state;
+    });}catch(error){if(isPgError(error,'23505'))throw new HttpError(409,'ALREADY_PLAYING','You are already playing another game.');throw error;}
+    if(!created)throw new Error('AI game creation produced no state');await this.announce(created);return created.id;
+  }
+  /** Trusted worker entry only. No network caller can choose an AI identity or bypass user limits. */
+  async commitAiClaim(claim:AiClaim,decision:{complete:boolean;action:GameAction|null;[key:string]:unknown},vocabulary:Gaddag):Promise<{accepted:boolean;revision?:number}>{
+    if(!decision.complete||!decision.action)return {accepted:false};
+    let changed:EngineState|undefined;
+    const reply=await transaction(this.db,async c=>{
+      const row=(await c.query<GameRow>('SELECT * FROM games WHERE id=$1 FOR UPDATE',[claim.job.game_id])).rows[0];if(!row)return {accepted:false};
+      const job=(await c.query<AiJob>('SELECT * FROM ai_jobs WHERE game_id=$1 AND turn_number=$2 FOR UPDATE',[row.id,claim.job.turn_number])).rows[0];
+      if(job?.status==='completed'&&job.lease_token===claim.token){const result=job.result as {acceptedRevision:number};return {accepted:true,revision:result.acceptedRevision};}
+      const now=await databaseNow(c);
+      if(!job||job.status!=='running'||job.lease_owner!==claim.owner||job.lease_token!==claim.token||Number(job.leased_until)<=now)return {accepted:false};
+      const settled=await this.settle(c,row,now);let state=settled.state;
+      if(settled.pending||state.status!=='active'||state.turnStartedAt===null||!state.ai||state.activeSeat!==state.ai.seat||state.moves.length!==job.turn_number||aiPositionKey(state)!==job.position_key){
+        await this.persist(c,row.state,state,settled.gateways,settled.handled);if(state.revision!==row.revision)changed=state;return {accepted:false};
+      }
+      if(state.lexiconVersion!==this.lexicon.sha256||state.ai.vocabularyHash!==vocabulary.sha256)throw new EngineError('AI_VOCABULARY_MISMATCH','AI dictionary version does not match the saved game');
+      if(decision.action!.type==='PLACE_WORD'){
+        const evaluation=evaluatePlacement(state,state.ai.seat,decision.action!,this.lexicon);
+        if(evaluation.words.some(word=>!vocabulary.has(word.word)))throw new EngineError('AI_VOCABULARY_MISMATCH','AI generated a word outside its difficulty vocabulary');
+      }
+      state=applyAction(state,state.ai.seat,decision.action!,now,this.lexicon);
+      await this.persist(c,row.state,state,settled.gateways,settled.handled);changed=state;
+      const result={...decision,acceptedRevision:state.revision};
+      await c.query("UPDATE ai_jobs SET status='completed',lease_token=$3,leased_until=0,result=$4,updated_at=$5 WHERE game_id=$1 AND turn_number=$2",[row.id,job.turn_number,claim.token,JSON.stringify(result),now]);
+      const payloadHash=createHash('sha256').update(JSON.stringify({turn:job.turn_number,action:decision.action})).digest('hex');
+      await c.query('INSERT INTO commands(game_id,user_id,command_id,payload_hash,reply,created_at) VALUES($1,$2,$3,$4,$5,$6)',[state.id,state.players[state.ai!.seat].id,claim.token,payloadHash,JSON.stringify({ok:true,revision:state.revision}),now]);
+      return {accepted:true,revision:state.revision};
+    });
+    if(changed)await this.announce(changed);return reply;
+  }
   async tick():Promise<void>{
     if(!this.kv.isReady)return;
     const claimed=await transaction(this.db,async c=>{
@@ -163,6 +228,7 @@ export class Games {
             const result=await c.query<GameRow>('SELECT * FROM games WHERE id=$1 FOR UPDATE',[item.id]);const row=result.rows[0];if(!row)return null;
             const now=await databaseNow(c);const settled=await this.settle(c,row,now);
             if(settled.state.revision!==row.revision||settled.handled.length!==row.handled_incidents.length||JSON.stringify(settled.gateways)!==JSON.stringify(row.gateways))await this.persist(c,row.state,settled.state,settled.gateways,settled.handled);
+            else await ensureAiJob(c,settled.state);
             return settled.state.revision!==row.revision?settled.state:null;
           });
           if(changed)await this.announce(changed);

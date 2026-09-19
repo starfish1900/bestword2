@@ -1,0 +1,19 @@
+{
+  "formatVersion":1,
+  "algorithm":"Daciuk sorted incremental minimization",
+  "sourceSha256":"6d5653e0a228ba650dcacf3b448c916f34305a285c192e5cca18926e710df666",
+  "binarySha256":"097195fcedf8cb78440b3de24abc5ab3a8a958acabb262d84dce5c48749356fb",
+  "words":9868,
+  "transforms":71030,
+  "seedWords":2605,
+  "nodes":39461,
+  "edges":71867,
+  "binaryBytes":503403,
+  "transformAndSortMs":9,
+  "minimizeMs":18,
+  "fullVerificationMs":8,
+  "totalMs":40,
+  "allWordsVerified":true,
+  "allTransformsVerified":true,
+  "acceptedLanguageExact":true
+}
